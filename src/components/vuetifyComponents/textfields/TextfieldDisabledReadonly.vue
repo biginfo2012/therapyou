@@ -1,14 +1,11 @@
-<script setup lang="ts">
-</script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- TextfieldDisabledReadonly -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            Text fields can be <code>disabled</code> or <code>readonly</code>.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-form>
                 <v-container>
@@ -90,3 +87,12 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "TextfieldDisabledReadonly",
+
+  data: () => ({
+  })
+};
+</script>

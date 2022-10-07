@@ -1,14 +1,11 @@
-<script setup lang="ts">
-</script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- TextfieldIcons -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            You can add icons to the text field with <code>prepend-icon</code>, <code>append-icon</code> and <code>append-outer-icon</code> props.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-form>
                 <v-container>
@@ -128,3 +125,12 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "TextfieldIcons",
+
+  data: () => ({
+  })
+};
+</script>

@@ -1,0 +1,29 @@
+{
+  "user": {
+    "username": "biginfo2012@gmail.com",
+    "pool": {
+      "userPoolId": "ap-southeast-1_LBZf5wb16",
+      "clientId": "4a2rrv4e9r85i614tlcr7t1elq",
+      "client": {
+        "endpoint": "https://cognito-idp.ap-southeast-1.amazonaws.com/",
+        "userAgent": "aws-amplify/0.1.x js"
+      },
+      "advancedSecurityDataCollectionFlag": true,
+      "storage": {
+        "CognitoIdentityServiceProvider.4a2rrv4e9r85i614tlcr7t1elq.697bce14-724a-4c4d-a41f-9b4d4c433b5a.clockDrift": "0"
+      }
+    },
+    "Session": null,
+    "client": {
+      "endpoint": "https://cognito-idp.ap-southeast-1.amazonaws.com/",
+      "userAgent": "aws-amplify/0.1.x js"
+    },
+    "signInUserSession": null,
+    "authenticationFlowType": "USER_SRP_AUTH",
+    "storage": {
+      "CognitoIdentityServiceProvider.4a2rrv4e9r85i614tlcr7t1elq.697bce14-724a-4c4d-a41f-9b4d4c433b5a.clockDrift": "0"
+    }
+  },
+  "userConfirmed": false,
+  "userSub": "036c47e7-75e8-4e88-a2cd-ebcb9ee2ac2c"
+}

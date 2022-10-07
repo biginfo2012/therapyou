@@ -1,7 +1,18 @@
 <template>
-  <RouterView></RouterView>
+  <v-app
+    id="flexy"
+    :class="`${
+      !$vuetify.breakpoint.smAndDown ? 'full-sidebar' : 'mini-sidebar'
+    }`"
+  >
+    <router-view />
+  </v-app>
 </template>
 
-<script setup lang="ts">
-import { RouterView } from "vue-router";
+<script>
+export default {
+  name: "App",
+
+  components: {},
+};
 </script>

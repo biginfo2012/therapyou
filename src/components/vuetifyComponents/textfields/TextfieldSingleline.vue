@@ -1,14 +1,11 @@
-<script setup lang="ts">
-</script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- TextfieldSingleline -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            Single line text fields do not float their label on focus or with data.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-form>
                 <v-container>
@@ -51,3 +48,12 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "TextfieldSingleline",
+
+  data: () => ({
+  })
+};
+</script>

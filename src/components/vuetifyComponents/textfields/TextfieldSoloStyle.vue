@@ -1,18 +1,11 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-const first = ref("John");
-const last = ref("Doe");
-</script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- TextfieldSoloStyle -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            Text fields can be used with an alternative solo design.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-form>
                 <v-container>
@@ -40,3 +33,14 @@ const last = ref("Doe");
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "TextfieldSoloStyle",
+
+  data: () => ({
+      first: 'John',
+      last: 'Doe',
+  })
+};
+</script>

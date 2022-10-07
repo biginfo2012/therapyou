@@ -1,20 +1,11 @@
-<script setup lang="ts">
-import {ref} from "vue";
-
- const ex1 = ref({ label: 'color', val: 25, color: 'orange darken-3' });
- const ex2 = ref({ label: 'track-color', val: 75, color: 'green lighten-1' });
- const ex3 = ref({ label: 'thumb-color', val: 50, color: 'red' });
-</script>
-
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- SlidersCustomcolors -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            You can set the colors of the slider using the props <code>color</code>, <code>track-color</code> and <code>thumb-color</code>.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-slider
             v-model="ex1.val"
@@ -37,3 +28,15 @@ import {ref} from "vue";
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "SlidersCustomcolors",
+
+  data: () => ({
+      ex1: { label: 'color', val: 25, color: 'orange darken-3' },
+        ex2: { label: 'track-color', val: 75, color: 'green lighten-1' },
+        ex3: { label: 'thumb-color', val: 50, color: 'red' },
+  })
+};
+</script>

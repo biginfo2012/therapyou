@@ -1,0 +1,232 @@
+.mini-sidebar {
+  .logo-text {
+    display: none;
+  }
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.page-wrapper {
+  max-width: 1300px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 600;
+}
+
+// borders
+.border-top {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.border-bottom {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.border-left {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+.border-right {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+.border {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.position-relative {
+  position: relative;
+}
+
+.v-application {
+  .fs-18 {
+    font-size: 18px !important;
+  }
+
+  .fs-30 {
+    font-size: 30px !important;
+  }
+}
+
+.theme--light {
+  .headline,
+  .v-card .title {
+    color: rgba(0, 0, 0, 0.87);
+  }
+  &.v-application {
+    background: #fafbfb;
+  }
+  .v-main {
+    background-color: #fafbfb !important;
+  }
+}
+
+.v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined) {
+  box-shadow: $box-shadow !important;
+}
+
+@media (max-width: 1024px) {
+  .common-left-right {
+    .v-navigation-drawer {
+      position: absolute;
+      transform: translatex(-100%);
+      z-index: 1;
+      box-shadow: none;
+    }
+  }
+}
+@media (min-width: 1025px) {
+  .common-left-right {
+    .v-navigation-drawer {
+      transform: translatex(0%) !important;
+    }
+  }
+  .logo-width {
+    min-width: 235px;
+  }
+}
+
+.custom-shadow,
+.v-menu__content {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  -webkit-box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  -moz-box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+.rounded {
+  border-radius: 4px;
+}
+
+.rounded-circle {
+  border-radius: 50%;
+}
+
+.btn-custom-sm {
+  min-width: 48px !important;
+  width: 48px;
+  height: 48px !important;
+}
+
+a {
+  text-decoration: none;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.v-application a.link {
+  color: #455a64;
+  &:hover {
+    color: #009efb;
+  }
+}
+
+.op-5 {
+  opacity: 0.5;
+}
+
+.v-application .fs-18 {
+  font-size: 18px !important;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.text-decoration-line {
+  text-decoration: line-through;
+}
+
+.lh-22 {
+  line-height: 22px;
+}
+
+.down-top-padding {
+  > .row {
+    &:not(:first-child) {
+      > [class*="col-"] {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+  }
+}
+
+.v-data-table.table-md {
+  table {
+    tbody {
+      tr {
+        &:hover {
+          background: transparent !important;
+        }
+        td {
+          padding: 16px !important;
+          &:first-child {
+            padding-left: 0!important;
+          }
+          &:last-child {
+            padding-right: 0!important;
+          }
+          &:nth-child(2),
+          &:nth-child(3) {
+            padding-right: 0!important;
+          }
+        }
+      }
+    }
+  }
+}
+
+//
+// Apexchart
+//
+.apexcharts-toolbar {
+  z-index: 1 !important;
+}
+.fill-color {
+  fill: currentColor !important;
+}
+
+// Colors
+.color-code code {
+  display: flex;
+}
+
+.theme--light .v-main {
+  background-color: #fff;
+}
+
+.subtitle-2 {
+  color: $subtitle-color;
+}
+
+.text-dark {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.theme--light {
+  .v-text-field--outlined fieldset {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+  &.v-data-table > .v-data-table__wrapper > table > thead > tr > th {
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+@media (min-width: 960px) {
+  .v-application--is-ltr .miniSide .app-navbar.v-sheet {
+    width: calc(100% - 70px) !important;
+  }
+}

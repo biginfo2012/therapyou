@@ -1,23 +1,28 @@
-<script setup lang="ts">
-import { ref } from "vue";
-const page = ref(1);
-</script>
-
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- Icons -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <p class="text-subtitle-1 text-grey-darken-1">
-    Previous and next page icons can be customized with the prev-icon and
-    next-icon props.
-  </p>
-  <div class="text-center mt-6">
-    <v-pagination
-      v-model="page"
-      :length="4"
-      prev-icon="mdi-menu-left"
-      next-icon="mdi-menu-right"
-    ></v-pagination>
-  </div>
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- PaginationIcons -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+        <v-list-item-subtitle class="text-wrap">
+        Previous and next page icons can be customized with the <code>prev-icon</code> and <code>next-icon</code> props.
+        </v-list-item-subtitle>
+        <div class="mt-4">
+            <v-pagination
+            v-model="page"
+            :length="4"
+            prev-icon="mdi-menu-left"
+            next-icon="mdi-menu-right"
+            ></v-pagination>
+        </div>
+    </div>
 </template>
 
+<script>
+export default {
+  name: "PaginationIcons",
+
+  data: () => ({
+      page: 1,
+  })
+};
+</script>

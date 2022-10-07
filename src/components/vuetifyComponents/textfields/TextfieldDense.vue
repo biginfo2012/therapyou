@@ -1,14 +1,11 @@
-<script setup lang="ts">
-</script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- TextfieldDense -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            You can reduces the text field height with <code>dense</code> prop.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-form>
                 <v-container>
@@ -70,3 +67,12 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "TextfieldDense",
+
+  data: () => ({
+  })
+};
+</script>

@@ -1,38 +1,41 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-const items = ref([
-  {
-    text: "Dashboard",
-    disabled: false,
-    href: "breadcrumbs_dashboard",
-  },
-  {
-    text: "Link 1",
-    disabled: false,
-    href: "breadcrumbs_link_1",
-  },
-  {
-    text: "Link 2",
-    disabled: true,
-    href: "breadcrumbs_link_2",
-  },
-]);
-</script>
-
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- Large -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <div>
-    <p class="text-subtitle-1 text-grey-darken-1">
-      Large breadcrumbs have larger font size.
-    </p>
-    <div class="mt-6">
-      <v-breadcrumbs :items="items"></v-breadcrumbs>
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- Large -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+        <v-list-item-subtitle class="text-wrap">
+        Large breadcrumbs have larger font size.
+        </v-list-item-subtitle>
+        <div class="mt-4">
+            <v-breadcrumbs :items="items"></v-breadcrumbs>
 
-      <v-breadcrumbs :items="items" large></v-breadcrumbs>
+            <v-breadcrumbs :items="items" large></v-breadcrumbs>
+        </div>
     </div>
-  </div>
 </template>
 
+<script>
+export default {
+  name: "BreadcrumbLarge",
+
+  data: () => ({
+      items: [
+        {
+          text: 'Dashboard',
+          disabled: false,
+          href: 'breadcrumbs_dashboard',
+        },
+        {
+          text: 'Link 1',
+          disabled: false,
+          href: 'breadcrumbs_link_1',
+        },
+        {
+          text: 'Link 2',
+          disabled: true,
+          href: 'breadcrumbs_link_2',
+        },
+      ],
+  })
+};
+</script>

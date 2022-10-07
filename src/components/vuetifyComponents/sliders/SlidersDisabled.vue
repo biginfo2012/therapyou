@@ -1,13 +1,11 @@
-<script setup lang="ts"></script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- SlidersDisabled -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            You cannot interact with <code>disabled</code> sliders.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-slider
             disabled
@@ -17,3 +15,13 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "SlidersDisabled",
+
+  data: () => ({
+      
+  })
+};
+</script>

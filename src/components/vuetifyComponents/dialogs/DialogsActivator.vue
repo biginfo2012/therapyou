@@ -1,31 +1,62 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-const dialog = ref(false);
-</script>
-
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- Activator -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <p class="text-subtitle-1 text-grey-darken-1">In addition using the activator slot, we can instead use the activator prop to activate a dialog. By placing the dialog component inside the button, and setting the activator prop value to “parent” we can designate the parent (button) as the activator.</p>
-  <div class="text-center">
-    <v-btn color="primary">
-      Open Dialog
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- Without activator -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+       <v-list-item-subtitle class="text-wrap">
+        If for some reason you are unable to use the activator slot, be sure to add the <code>.stop</code> modifier to the event that triggers the dialog.
+        </v-list-item-subtitle>
+        <div class="mt-4 text-center">
+            <v-btn
+                color="primary"
+                dark
+                @click.stop="dialog = true"
+                >
+                Open Dialog
+                </v-btn>
 
-      <v-dialog v-model="dialog" activator="parent">
-        <v-card>
-          <v-card-text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" block @click="dialog = false"
-              >Close Dialog</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-btn>
-  </div>
+                <v-dialog
+                v-model="dialog"
+                max-width="290"
+                >
+                <v-card>
+                    <v-card-title class="headline">Use Google's location service?</v-card-title>
+
+                    <v-card-text>
+                    Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.
+                    </v-card-text>
+
+                    <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="error"
+                        text
+                        @click="dialog = false"
+                    >
+                        Disagree
+                    </v-btn>
+
+                    <v-btn
+                        color="success"
+                        text
+                        @click="dialog = false"
+                    >
+                        Agree
+                    </v-btn>
+                    </v-card-actions>
+                </v-card>
+                </v-dialog>
+        </div>
+    </div>
 </template>
+
+<script>
+export default {
+  name: "DialogsActivator",
+
+  data: () => ({
+      dialog: false,
+  })
+};
+</script>

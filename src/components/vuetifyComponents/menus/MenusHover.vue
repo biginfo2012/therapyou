@@ -1,33 +1,48 @@
-<script setup lang="ts">
-import { ref } from "vue";
-const items = ref([
-  { title: "Click Me" },
-  { title: "Click Me" },
-  { title: "Click Me" },
-  { title: "Click Me 2" },
-]);
-</script>
-
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- Hover -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <p class="text-subtitle-1 text-grey-darken-1">
-    Menus can be accessed using hover instead of clicking with the open-on-hover
-    prop.
-  </p>
-  <div class="text-center mt-4">
-    <v-menu open-on-hover>
-      <template v-slot:activator="{ props }">
-        <v-btn color="secondary" v-bind="props"> Dropdown </v-btn>
-      </template>
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- MenusHover -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+        <v-list-item-subtitle class="text-wrap">
+        Menus can be accessed using hover instead of clicking with the <code>open-on-hover</code> prop.
+        </v-list-item-subtitle>
+        <div class="mt-4 text-center">
+            <v-menu open-on-hover top offset-y>
+                <template v-slot:activator="{ on }">
+                    <v-btn
+                    color="primary"
+                    dark
+                    v-on="on"
+                    >
+                    Dropdown
+                    </v-btn>
+                </template>
 
-      <v-list>
-        <v-list-item v-for="(item, index) in items" :key="index">
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-  </div>
+                <v-list>
+                    <v-list-item
+                    v-for="(item, index) in items"
+                    :key="index"
+                    @click.stop
+                    >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+                </v-menu>
+        </div>
+    </div>
 </template>
 
+<script>
+export default {
+  name: "MenusHover",
+
+  data: () => ({
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
+  })
+};
+</script>

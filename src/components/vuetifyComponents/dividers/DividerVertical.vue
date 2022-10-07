@@ -1,15 +1,13 @@
-<script setup lang="ts"></script>
-
 <template>
   <!-- ----------------------------------------------------------------------------- -->
   <!-- Vertical -->
   <!-- ----------------------------------------------------------------------------- -->
   <div>
-    <p class="text-subtitle-1 text-grey-darken-1">
+    <v-list-item-subtitle class="text-wrap">
       Vertical dividers give you more tools for unique layouts.
-    </p>
+    </v-list-item-subtitle>
     <div class="mt-4">
-      <v-toolbar color="purple" dark>
+      <v-toolbar color="primary" dark>
         <v-toolbar-title>Title</v-toolbar-title>
 
         <v-divider class="mx-4" vertical></v-divider>
@@ -37,3 +35,11 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: "DividerVertical",
+
+  data: () => ({}),
+};
+</script>

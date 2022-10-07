@@ -1,19 +1,17 @@
-<script setup lang="ts"></script>
-
 <template>
   <!-- ----------------------------------------------------------------------------- -->
   <!-- Portrait -->
   <!-- ----------------------------------------------------------------------------- -->
   <div>
-    <p class="text-subtitle-1 text-grey-darken-1">
+    <v-list-item-subtitle class="text-wrap">
       Create custom cards to fit any use-case
-    </p>
+    </v-list-item-subtitle>
     <div class="mt-4">
       <v-row justify="center">
-        <v-col cols="12">
+        <v-col cols="12" sm="8">
           <v-card>
-            <v-card-title class="cyan darken-1">
-              <span class="text-h5 white--text">Sarah Mcbeal</span>
+            <v-card-title class="primary">
+              <span class="headline white--text">Sarah Mcbeal</span>
 
               <v-spacer></v-spacer>
 
@@ -95,3 +93,11 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: "DividerPortrait",
+
+  data: () => ({}),
+};
+</script>

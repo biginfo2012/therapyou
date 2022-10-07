@@ -1,19 +1,27 @@
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- error -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <div>
-    <p class="text-subtitle-1 text-grey-darken-1">
-      You cannot use read-only <code>v-select</code>, but it looks default.
-    </p>
-    <div class="mt-4">
-      <v-select :items="items" readonly label="Read-only"></v-select>
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- error -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+        <v-list-item-subtitle class="text-wrap">
+           You cannot use read-only <code>v-select</code>, but it looks default.
+        </v-list-item-subtitle>
+        <div class="mt-4">
+            <v-select
+                :items="items"
+                readonly
+                label="Read-only"
+            ></v-select>
+        </div>
     </div>
-  </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from "vue";
+<script>
+export default {
+  name: "SelectsReadonly",
 
-const items = ref(["Foo", "Bar", "Fizz", "Buzz"]);
+  data: () => ({
+      items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+  })
+};
 </script>

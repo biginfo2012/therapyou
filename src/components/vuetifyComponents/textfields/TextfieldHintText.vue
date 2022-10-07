@@ -1,14 +1,11 @@
-<script setup lang="ts">
-</script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- TextfieldHintText -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            The <code>hint</code> property on text fields adds the provided string beneath the text field. Using <code>persistent-hint</code> keeps the hint visible when the text field is not focused. Hint prop is not supported in solo mode.
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-form>
             <v-container>
@@ -72,3 +69,12 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "TextfieldHintText",
+
+  data: () => ({
+  })
+};
+</script>

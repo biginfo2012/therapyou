@@ -1,35 +1,12 @@
-<script setup lang="ts">
-import { ref } from "vue";
-const agreement = ref(false);
-const bio = ref(
-  "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts"
-);
-const dialog = ref(false);
-const email = ref(undefined);
-const form = ref(false);
-const isLoading = ref(false);
-const password = ref(undefined);
-const phone = ref(undefined);
-const rules = ref({
-  email: (v: any) => (v || "").match(/@/) || "Please enter a valid email",
-  length: (len: number) => (v: any) =>
-    (v || "").length >= len || `Invalid character length, required ${len}`,
-  password: (v: any) =>
-    (v || "").match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/) ||
-    "Password must contain an upper case letter, a numeric character, and a special character",
-  required: (v: any) => !!v || "This field is required",
-});
-</script>
-
 <template>
   <!-- ----------------------------------------------------------------------------- -->
   <!-- TextareasBeautifulForms -->
   <!-- ----------------------------------------------------------------------------- -->
   <div>
-    <p class="text-subtitle-1 text-grey-darken-1">
+    <v-list-item-subtitle class="text-wrap">
       Utilizing alternative input styles, you can create amazing interfaces that
       are easy to build and easy to use.
-    </p>
+    </v-list-item-subtitle>
     <div class="mt-4">
       <v-card class="mx-auto" style="max-width: 500px">
         <v-system-bar color="primary" dark>
@@ -86,7 +63,6 @@ const rules = ref({
           ></v-textarea>
           <v-checkbox
             v-model="agreement"
-            hide-details
             :rules="[rules.required]"
             color="deep-purple"
           >
@@ -103,6 +79,7 @@ const rules = ref({
         </v-form>
         <v-divider></v-divider>
         <v-card-actions>
+          <v-btn text @click="$refs.form.reset()"> Clear </v-btn>
           <v-spacer></v-spacer>
           <v-btn
             :disabled="!form"
@@ -145,3 +122,30 @@ const rules = ref({
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: "TextareasBeautifulForms",
+
+  data: () => ({
+    agreement: false,
+    bio:
+      "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts",
+    dialog: false,
+    email: undefined,
+    form: false,
+    isLoading: false,
+    password: undefined,
+    phone: undefined,
+    rules: {
+      email: (v) => (v || "").match(/@/) || "Please enter a valid email",
+      length: (len) => (v) =>
+        (v || "").length >= len || `Invalid character length, required ${len}`,
+      password: (v) =>
+        (v || "").match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/) ||
+        "Password must contain an upper case letter, a numeric character, and a special character",
+      required: (v) => !!v || "This field is required",
+    },
+  }),
+};
+</script>

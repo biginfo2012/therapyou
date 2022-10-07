@@ -1,50 +1,97 @@
-<script setup lang="ts">
-</script>
-
-
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- Icon -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <div class="d-flex flex-wrap gap-2">
-    <v-chip color="primary" text-color="white" prepend-icon="mdi-account-circle">
-      Mike
-    </v-chip>
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- Icons -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+        <v-list-item-subtitle class="text-wrap">
+        Chips can use text or any icon available in the Material Icons font library.
+        </v-list-item-subtitle>
+        <div class="mt-4">
+            <div class="text-center">
+                <v-chip
+                class="ma-2"
+                color="info"
+                text-color="white"
+                >
+                <v-avatar left>
+                    <v-icon>mdi-account-circle</v-icon>
+                </v-avatar>
+                Ranee
+                </v-chip>
 
-    <v-chip color="secondary" text-color="white" append-icon="mdi-star">
-      Premium
-    </v-chip>
+                <v-chip
+                class="ma-2"
+                color="warning"
+                text-color="white"
+                >
+                Premium
+                <v-icon right>mdi-star</v-icon>
+                </v-chip>
 
-    <v-chip color="warning" text-color="white" append-icon="mdi-cake-variant">
-      1 Year
-    </v-chip>
+                <v-chip
+                class="ma-2"
+                color="success"
+                text-color="white"
+                >
+                1 Year
+                <v-icon right>mdi-cake-variant</v-icon>
+                </v-chip>
 
-    <v-chip color="success" text-color="white" prepend->
-      <template v-slot:prepend>
-        <v-avatar class="green-darken-4"> 1 </v-avatar>
-      </template>
-      Years
-    </v-chip>
+                <v-chip
+                class="ma-2"
+                color="error"
+                text-color="white"
+                >
+                <v-avatar
+                    left
+                    class="error darken-1"
+                >
+                    1
+                </v-avatar>
+                Years
+                </v-chip>
 
-    <v-chip
-      closable
-      color="error"
-      text-color="white"
-      prepend-icon="mdi-checkbox-marked-circle"
-      :model-value="true"
-    >
-      Confirmed
-    </v-chip>
+                <v-chip
+                class="ma-2"
+                close
+                color="indigo"
+                text-color="white"
+                @click:close="close"
+                >
+                <v-avatar left>
+                    <v-icon>mdi-checkbox-marked-circle</v-icon>
+                </v-avatar>
+                Confirmed
+                </v-chip>
 
-    <v-chip
-      closable
-      color="teal"
-      text-color="white"
-      close-icon="mdi-delete"
-      prepend-icon="mdi-checkbox-marked-circle"
-      :model-value="true"
-    >
-      Confirmed
-    </v-chip>
-  </div>
+                <v-chip
+                class="ma-2"
+                close
+                color="secondary"
+                text-color="white"
+                close-icon="mdi-delete"
+                @click:close="close"
+                >
+                <v-avatar left>
+                    <v-icon>mdi-checkbox-marked-circle</v-icon>
+                </v-avatar>
+                Confirmed
+                </v-chip>
+            </div>
+        </div>
+    </div>
 </template>
+
+<script>
+export default {
+  name: "ChipsIcon",
+
+  data: () => ({
+  }),
+  methods: {
+      close () {
+        alert('Chip close clicked')
+      },
+    },
+};
+</script>

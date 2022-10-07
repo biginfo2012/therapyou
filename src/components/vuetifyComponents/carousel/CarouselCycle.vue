@@ -1,35 +1,59 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-const colors = ref([
-  "green",
-  "secondary",
-  "yellow darken-4",
-  "red lighten-2",
-  "orange darken-1",
-]);
-
-const slides = ref(["First", "Second", "Third", "Fourth", "Fifth"]);
-</script>
-
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- Cycle -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <v-card>
-    <v-carousel
-      cycle
-      height="350"
-      hide-delimiter-background
-      show-arrows="hover"
-    >
-      <v-carousel-item v-for="(slide, i) in slides" :key="i">
-        <v-sheet :color="colors[i]" height="100%">
-          <div class="d-flex fill-height justify-center align-center">
-            <div class="text-h2">{{ slide }} Slide</div>
-          </div>
-        </v-sheet>
-      </v-carousel-item>
-    </v-carousel>
-  </v-card>
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- Cycle -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+        <v-list-item-subtitle class="text-wrap">
+        With the <span class="grey--text text--darken-4 font-weight-bold">cycle</span> prop you can have your slides automatically transition to the next available every 6s (default).
+        </v-list-item-subtitle>
+        <div class="mt-4">
+            <v-carousel
+                cycle
+                height="400"
+                hide-delimiter-background
+                show-arrows-on-hover
+            >
+                <v-carousel-item
+                v-for="(slide, i) in slides"
+                :key="i"
+                >
+                <v-sheet
+                    :color="colors[i]"
+                    height="100%"
+                >
+                    <v-row
+                    class="fill-height"
+                    align="center"
+                    justify="center"
+                    >
+                    <div class="display-3">{{ slide }} Slide</div>
+                    </v-row>
+                </v-sheet>
+                </v-carousel-item>
+            </v-carousel>
+        </div>
+    </div>
 </template>
+
+<script>
+export default {
+  name: "CarouselCycle",
+
+  data: () => ({
+      colors: [
+          'info',
+          'warning',
+          'error',
+          'success',
+          'deep-purple accent-4',
+        ],
+        slides: [
+          'First',
+          'Second',
+          'Third',
+          'Fourth',
+          'Fifth',
+        ],
+  })
+};
+</script>

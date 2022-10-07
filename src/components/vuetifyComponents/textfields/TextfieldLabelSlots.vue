@@ -1,14 +1,11 @@
-<script setup lang="ts">
-</script>
-
 <template>
     <!-- ----------------------------------------------------------------------------- -->
     <!-- TextfieldLabelSlots -->
     <!-- ----------------------------------------------------------------------------- -->
     <div>
-        <p class="text-subtitle-1 text-grey-darken-1">
+        <v-list-item-subtitle class="text-wrap">
            Text field label can be defined in <code>label</code> slot - that will allow to use HTML content
-        </p>
+        </v-list-item-subtitle>
         <div class="mt-4">
             <v-form>
                 <v-container>
@@ -22,3 +19,12 @@
         </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: "TextfieldLabelSlots",
+
+  data: () => ({
+  })
+};
+</script>

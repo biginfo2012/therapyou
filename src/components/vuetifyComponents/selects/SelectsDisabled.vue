@@ -1,19 +1,27 @@
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- error -->
-  <!-- ----------------------------------------------------------------------------- -->
-  <div>
-    <p class="text-subtitle-1 text-grey-darken-1">
-      You cannot use disabled <code>v-select</code>.
-    </p>
-    <div class="mt-4">
-      <v-select :items="items" disabled label="Disabled"></v-select>
+    <!-- ----------------------------------------------------------------------------- -->
+    <!-- error -->
+    <!-- ----------------------------------------------------------------------------- -->
+    <div>
+        <v-list-item-subtitle class="text-wrap">
+           You cannot use disabled <code>v-select</code>.
+        </v-list-item-subtitle>
+        <div class="mt-4">
+            <v-select
+                :items="items"
+                disabled
+                label="Disabled"
+            ></v-select>
+        </div>
     </div>
-  </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from "vue";
+<script>
+export default {
+  name: "SelectsDisabled",
 
-const items = ref(["Foo", "Bar", "Fizz", "Buzz"]);
+  data: () => ({
+      items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+  })
+};
 </script>
