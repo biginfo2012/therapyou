@@ -10,6 +10,11 @@ export default [
     to: "/admin/appointment/list",
   },
   {
+    title: "Invoices",
+    icon: "file-text",
+    to: "/admin/invoice/list",
+  },
+  {
     title: "Clients",
     icon: "user",
     to: "/admin/client/list",

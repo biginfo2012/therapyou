@@ -20,6 +20,13 @@ export const adminRoutes = {
                 import("@/views/admin/AppointmentList.vue"),
         },
         {
+            name: "Invoices",
+            path: "invoice/list",
+            beforeEnter: AuthRequired,
+            component: () =>
+                import("@/views/admin/InvoiceList.vue"),
+        },
+        {
             name: "Clients",
             path: "client/list",
             beforeEnter: AuthRequired,

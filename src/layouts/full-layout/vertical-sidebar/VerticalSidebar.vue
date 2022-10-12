@@ -52,22 +52,6 @@
       <!---Sidebar Items -->
     </v-list>
     <!--- Buy Now -->
-    <template v-slot:append>
-      <div class="pa-4">
-        <div class="bg-light-primary sidebar-footer overflow-hidden">
-          <img
-            src="@/assets/images/background/sidebar-buynow-bg.svg"
-            alt="buy now"
-            class="buy-now-img"
-          />
-          <div class="sidebar-footer-text">
-            <h4 class="text-dark">Ugrade to</h4>
-            <h4 class="text-dark">Premium</h4>
-            <v-btn depressed color="primary" class="mt-4"> Upgrade </v-btn>
-          </div>
-        </div>
-      </div>
-    </template>
   </v-navigation-drawer>
 </template>
 
