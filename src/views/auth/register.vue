@@ -24,7 +24,7 @@
       <v-container>
         <div class="pa-7 pa-sm-12">
           <v-row>
-            <v-col cols="12" lg="9" xl="6">
+            <v-col cols="12" lg="12" xl="8">
               <img src="@/assets/images/logo-icon.png" />
               <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">Sign Up</h2>
               <h6 class="subtitle-1">
@@ -36,18 +36,23 @@
                 <v-alert outlined type="error" dismissible class="mb-4 mt-0" v-model="showerr">
                   {{ errmsg }}
                 </v-alert>
-                <v-text-field v-model="phone" :rules="phoneRules" label="Phone Number" required outlined></v-text-field>
-                <v-text-field v-model="email" :rules="emailRules" label="E-mail" required outlined></v-text-field>
+                <v-row>
+                  <v-col cols="12" lg="12" xl="12">
+                    <v-text-field v-model="phone" :rules="phoneRules" label="Phone Number" required outlined></v-text-field>
+                    <v-text-field v-model="email" :rules="emailRules" label="E-mail" required outlined></v-text-field>
 
-                <v-text-field
-                    v-model="password"
-                    :rules="passwordRules"
-                    label="Password"
-                    required
-                    outlined
-                    :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                    :type="show1 ? 'text' : 'password'"
-                ></v-text-field>
+                    <v-text-field
+                        v-model="password"
+                        :rules="passwordRules"
+                        label="Password"
+                        required
+                        outlined
+                        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                        :type="show1 ? 'text' : 'password'"
+                    ></v-text-field>
+                  </v-col>          
+                </v-row>
+
 
                 <div class="d-block d-sm-flex align-center mb-4 mb-sm-0">
                   <v-checkbox
@@ -67,6 +72,7 @@
                 >Sign Up</v-btn>
               </v-form>
             </v-col>
+
           </v-row>
         </div>
       </v-container>
@@ -75,8 +81,8 @@
 </template>
 
 <script>
-import router from '../../router'
-import config from '../../config'
+import router from '@/router/router'
+import {poolData} from "@/constants/config"
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
 var userPool = []
@@ -130,7 +136,7 @@ export default {
         attributeList.push(attributeEmail)
         attributeList.push(attributePhone)
         console.log('attribute list: ' + attributeList)
-        userPool = new AmazonCognitoIdentity.CognitoUserPool(config.poolData)
+        userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
         console.log('sign up with: ' + this.email + ' ' + this.password)
         this.callback = false
         this.errcode = ''
@@ -146,7 +152,7 @@ export default {
               console.log('registration success: ' + JSON.stringify(result))
               this.message = JSON.stringify(result.message)
               console.log('user name is ' + result.user.getUsername())
-              this.$store.commit('setUsername', this.username)
+              this.$store.commit('setUsername', result.user.getUsername())
               router.push('/confirm')
             }
           }

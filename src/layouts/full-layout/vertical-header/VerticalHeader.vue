@@ -21,148 +21,10 @@
     </div>
     <!---/Toggle sidebar part -->
 
-    <!-- ---------------------------------------------- -->
-    <!---Search part -->
-    <!-- ---------------------------------------------- -->
-    <v-btn icon class="mr-1 d-sm-block d-none" @click="searchbox">
-      <feather type="search" class="feather-sm"></feather>
-    </v-btn>
-
-    <v-card v-if="showSearch" class="searchinput">
-      <template>
-        <v-text-field
-          placeholder="Search & hit enter"
-          class="mt-3 mb-0"
-          append-icon="mdi-close"
-          @click:append="searchbox"
-        ></v-text-field>
-      </template>
-    </v-card>
-    <!---/Search part -->
-
     <v-spacer />
     <!-- ---------------------------------------------- -->
     <!---right part -->
     <!-- ---------------------------------------------- -->
-
-    <!-- ---------------------------------------------- -->
-    <!-- Messages -->
-    <!-- ---------------------------------------------- -->
-    <v-menu
-      bottom
-      left
-      offset-y
-      origin="top right"
-      transition="scale-transition"
-      min-width="385"
-    >
-      <template v-slot:activator="{ on }">
-        <v-btn icon v-on="on">
-          <v-badge color="secondary" dot offset-x="4" offset-y="4">
-            <feather type="message-square" class="feather-sm"></feather>
-          </v-badge>
-        </v-btn>
-      </template>
-
-      <v-list class="pa-8">
-        <h4 class="font-weight-medium fs-18">
-          Messages
-          <v-chip class="ma-2" label small color="secondary"> 5 new </v-chip>
-        </h4>
-
-        <v-list-item
-          v-for="(item, i) in messages"
-          class="px-0"
-          :key="i"
-          @click="href"
-        >
-          <v-list-item-title>
-            <div class="d-flex align-center py-4 px-3 border-bottom">
-              <div class>
-                <v-badge
-                  bordered
-                  bottom
-                  :color="item.avatarstatus"
-                  dot
-                  offset-x="20"
-                  offset-y="40"
-                >
-                  <v-avatar size="42" class="mr-3"
-                    ><img
-                      :src="require(`@/assets/images/users/${item.image}`)"
-                      :alt="item.image"
-                  /></v-avatar>
-                </v-badge>
-              </div>
-              <div class="ml-3">
-                <h4 class="font-weight-medium">{{ item.title }}</h4>
-                <span
-                  class="grey--text subtitle-2 descpart d-block text-truncate font-weight-regular"
-                  >{{ item.desc }}</span
-                >
-                <small class="grey--text caption">{{ item.time }}</small>
-              </div>
-            </div>
-          </v-list-item-title>
-        </v-list-item>
-        <v-btn block depressed color="primary" class="mt-4 py-4"
-          >See all Messages</v-btn
-        >
-      </v-list>
-    </v-menu>
-
-    <!-- ---------------------------------------------- -->
-    <!-- Notification -->
-    <!-- ---------------------------------------------- -->
-    <v-menu
-      bottom
-      left
-      offset-y
-      origin="top right"
-      transition="scale-transition"
-      min-width="385"
-    >
-      <template v-slot:activator="{ on }">
-        <v-btn icon v-on="on">
-          <v-badge color="primary" dot offset-x="5" offset-y="5">
-            <feather type="bell" class="feather-sm"></feather>
-          </v-badge>
-        </v-btn>
-      </template>
-
-      <v-list class="pa-8">
-        <h4 class="font-weight-medium fs-18">
-          Notifications
-          <v-chip class="ma-2" label small color="warning"> 5 new </v-chip>
-        </h4>
-        <v-list-item
-          class="px-0"
-          v-for="(item, i) in notifications"
-          :key="i"
-          @click="href"
-        >
-          <v-list-item-title>
-            <div class="d-flex align-center py-4 px-3 border-bottom">
-              <div class>
-                <v-btn :color="item.color" fab small elevation="0" class="mr-3">
-                  <feather :type="item.icon" size="18"></feather>
-                </v-btn>
-              </div>
-              <div class="ml-2">
-                <h4 class="font-weight-medium">{{ item.title }}</h4>
-                <span
-                  class="grey--text subtitle-2 descpart d-block text-truncate font-weight-regular"
-                  >{{ item.desc }}</span
-                >
-              </div>
-            </div>
-          </v-list-item-title>
-        </v-list-item>
-        <v-btn block depressed color="secondary" class="mt-4 py-4"
-          >See all Notifications</v-btn
-        >
-      </v-list>
-    </v-menu>
 
     <!-- ---------------------------------------------- -->
     <!-- User Profile -->
@@ -200,51 +62,11 @@
             width="90"
           />
           <div class="ml-4">
-            <h4 class="font-weight-medium fs-18">Julia Roberts</h4>
-            <span class="subtitle-2 font-weight-light">Administrator</span>
-            <div class="d-flex align-center">
-              <feather
-                type="mail"
-                size="16"
-                class="d-flex grey--text"
-              ></feather>
-              <span class="subtitle-2 font-weight-light ml-1"
-                >info@flexy.com</span
-              >
-            </div>
+            <h4 class="font-weight-medium fs-18">{{ userInfo.name}}</h4>
+            <span class="subtitle-2 font-weight-light">{{ userInfo.role }}</span>
           </div>
         </div>
-        <v-list-item
-          class="px-0"
-          v-for="(item, i) in userprofile"
-          :key="i"
-          @click="href"
-        >
-          <v-list-item-title>
-            <div class="d-flex align-center py-4 px-3 border-bottom">
-              <div class>
-                <v-btn
-                  :class="'bg-light-' + item.color"
-                  fab
-                  elevation="0"
-                  class="mr-3"
-                >
-                  <span :class="item.color + '--text'">
-                    <feather :type="item.icon" width="20"></feather>
-                  </span>
-                </v-btn>
-              </div>
-              <div class="ml-2">
-                <h4 class="font-weight-medium">{{ item.title }}</h4>
-                <span
-                  class="grey--text subtitle-2 descpart d-block text-truncate font-weight-regular"
-                  >{{ item.desc }}</span
-                >
-              </div>
-            </div>
-          </v-list-item-title>
-        </v-list-item>
-        <v-btn block depressed color="secondary" class="mt-4 py-4">Logout</v-btn>
+        <v-btn block depressed color="secondary" class="mt-4 py-4" @click="logout">Logout</v-btn>
       </v-list>
     </v-menu>
   </v-app-bar>
@@ -252,6 +74,7 @@
 <script>
 // Utilities
 import { mapState, mapMutations } from "vuex";
+import {getLoginInfo} from "@/utils";
 export default {
   name: "VerticalHeader",
 
@@ -343,6 +166,11 @@ export default {
         desc: "To-do and Daily Tasks",
       },
     ],
+    userInfo:{
+      id: 0,
+      name: "",
+      role: "",
+    },
     href() {
       return undefined;
     },
@@ -356,16 +184,21 @@ export default {
     ...mapMutations({
       setSidebarDrawer: "SET_SIDEBAR_DRAWER",
     }),
-
-    searchbox: function () {
-      this.showSearch = !this.showSearch;
-    },
+    logout(){
+      this.$store.dispatch('signOut');
+    }
   },
   watch: {
     group() {
       this.drawer = false;
     },
   },
+  mounted() {
+    let loginInfo = getLoginInfo();
+    this.userInfo.id = loginInfo.id
+    this.userInfo.name = loginInfo.name
+    this.userInfo.role = loginInfo.role == 2 ? "Super Admin" : "Therapist"
+  }
 };
 </script>
 

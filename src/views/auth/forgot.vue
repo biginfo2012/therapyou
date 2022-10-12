@@ -82,8 +82,8 @@
 </template>
 
 <script>
-import router from '../../router'
-import config from '../../config'
+import router from '@/router/router'
+import {poolData} from "@/constants/config"
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 var userPool = []
 export default {
@@ -128,7 +128,7 @@ export default {
       const l = this.loader
       this[l] = !this[l]
 
-      userPool = new AmazonCognitoIdentity.CognitoUserPool(config.poolData)
+      userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
       var userData = {
         Username: this.username,
         Pool: userPool
@@ -160,7 +160,7 @@ export default {
       const l = this.loader
       this[l] = !this[l]
 
-      userPool = new AmazonCognitoIdentity.CognitoUserPool(config.poolData)
+      userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
       var userData = {
         Username: this.username,
         Pool: userPool

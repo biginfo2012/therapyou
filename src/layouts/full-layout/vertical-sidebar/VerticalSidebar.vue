@@ -74,6 +74,8 @@
 <script>
 import { mapState } from "vuex";
 import VerticalSidebarItems from "./VerticalSidebarItems";
+import VerticalSidebarItemsUser from "./VerticalSidebarItemsUser";
+import {isLoggedInAsAdmin} from "../../../utils/index";
 export default {
   name: "Vertical-Sidebar",
   props: {
@@ -82,10 +84,12 @@ export default {
       default: false,
     },
   },
-  data: () => ({
-    items: VerticalSidebarItems,
-    showLogo: true,
-  }),
+  data() {
+    return {
+      items: VerticalSidebarItems,
+      showLogo: true,
+    }
+  },
   computed: {
     ...mapState(["SidebarColor", "SidebarBg"]),
     Sidebar_drawer: {
@@ -104,6 +108,11 @@ export default {
   },
 
   methods: {},
+  mounted() {
+    if(!isLoggedInAsAdmin()){
+      this.items = VerticalSidebarItemsUser
+    }
+  }
 };
 </script>
 <style lang="scss">

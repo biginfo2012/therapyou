@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import router from '../../router'
+import router from '@/router/router'
 export default {
   name: "registered",
   methods: {

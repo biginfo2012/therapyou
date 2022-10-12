@@ -100,7 +100,6 @@ export default {
           Password: this.password
         }
         this.$store.dispatch('signIn', authData)
-        //this.$router.push({ path: "/dashboard" });
       }
     }
   },

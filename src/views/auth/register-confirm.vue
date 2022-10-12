@@ -30,7 +30,7 @@
                   @click.native="onSubmit()"
                   :disabled="!valid"
                   class="mt-3 mb-3 white--text"
-                  color="submit">
+                  color="info">
                 Confirm
                 <span slot="loader">Connecting...</span>
               </v-btn>
@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import router from '../../router'
-import config from '../../config'
+import router from '@/router/router'
+import {poolData} from "@/constants/config"
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 var userPool = []
 export default {
@@ -77,7 +77,7 @@ export default {
       this.showerr = false
       this.callback = false
 
-      userPool = new AmazonCognitoIdentity.CognitoUserPool(config.poolData)
+      userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
       var userData = {
         Username: this.$store.state.auth.username,
         Pool: userPool
