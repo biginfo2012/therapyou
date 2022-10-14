@@ -41,6 +41,20 @@ export const getLoginInfo = () => {
 
     return false;
 };
+export const getToken = () => {
+    let token = sessionStorage.getItem('token');
+    try {
+        token = JSON.parse(token);
+        if (token) {
+            return token
+        }
+        // eslint-disable-next-line no-empty
+    } catch (e) {
+        return false
+    }
+
+    return false;
+};
 
 export const getLoggedUserInfo = (cognitoId) => {
     axios.get(apiBaseUrl + 'therapist/get?cognitoId=' + cognitoId).then((response) => {

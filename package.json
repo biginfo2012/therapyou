@@ -23,6 +23,7 @@
         "devextreme": "^19.2.9",
         "devextreme-vue": "^19.2.9",
         "dx-systemjs-vue-browser": "latest",
+        "element-ui": "^2.15.10",
         "feather-icons": "^4.28.0",
         "instantsearch.css": "^7.4.5",
         "jszip": "3.1.3",

@@ -54,7 +54,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-<!--              <v-icon small class="mr-2" @click="cancelItem(item)">mdi-pencil</v-icon>-->
+              <!--              <v-icon small class="mr-2" @click="cancelItem(item)">mdi-pencil</v-icon>-->
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
@@ -65,7 +65,6 @@
       </div>
     </BaseCard>
   </v-container>
-
 </template>
 
 <script>
@@ -75,14 +74,14 @@ import {getAppointmentList, getUserList} from "@/api/appointment_master";
 import {getLoginInfo} from '@/utils'
 
 export default {
-  name: "AppointmentList",
+  name: "ClientList",
   data: () => ({
     page: {
-      title: "AppointmentList",
+      title: "ClientList",
     },
     breadcrumbs: [
       {
-        text: "AppointmentList",
+        text: "ClientList",
         disabled: false,
         to: "#",
       }

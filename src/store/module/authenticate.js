@@ -37,7 +37,8 @@ const mutations = {
         state.username = ''
         state.cognitoId = ''
         state.userPool = []
-        sessionStorage.setItem('userData', '');
+        sessionStorage.removeItem('userData');
+        sessionStorage.removeItem('token');
     },
     setAttributes(state, attributes) {
         state.attributes = attributes
@@ -66,6 +67,8 @@ const mutations = {
         state.tokens.accessToken = payload.getAccessToken().getJwtToken()
         state.tokens.idToken = payload.getIdToken().getJwtToken()
         state.tokens.refreshToken = payload.getRefreshToken().getToken()
+        console.log(state.tokens)
+        sessionStorage.setItem('token', JSON.stringify(state.tokens));
     },
     setCognitoUser(state, payload) {
         state.cognitoUser = payload

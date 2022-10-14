@@ -8,10 +8,10 @@
               <div class="pa-7 pa-sm-12">
                 <img src="@/assets/images/logo-icon.png" />
                 <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">Sign in</h2>
-                <h6 class="subtitle-1">
-                  Don't have an account?
-                  <a href="/register" class>Sign Up</a>
-                </h6>
+<!--                <h6 class="subtitle-1">-->
+<!--                  Don't have an account?-->
+<!--                  <a href="/register" class>Sign Up</a>-->
+<!--                </h6>-->
                 <v-alert outlined type="error" dismissible class="mb-4 mt-0" v-model="showerr">
                   {{ errmsg }}
                   <v-btn v-if="resend" color="primary" text small :to="'/resend'">Re-send Confirmation</v-btn>
@@ -59,6 +59,12 @@
             </v-col>
           </v-row>
         </v-card>
+        <v-progress-circular
+            indeterminate
+            color="info"
+            class="middle"
+            v-show="loading"
+        ></v-progress-circular>
       </v-col>
     </v-row>
   </v-container>
@@ -75,6 +81,7 @@ export default {
     valid: true,
     password: "",
     show1: false,
+    loading: false,
     passwordRules: [
       v => !!v || "Password is required",
       v => (v && v.length >= 8) || 'Password must be at least 8 characters'
@@ -93,6 +100,7 @@ export default {
   },
   methods: {
     submit() {
+      this.loading = true;
       this.$refs.form.validate();
       if (this.$refs.form.validate(true)) {
         var authData = {
@@ -101,12 +109,16 @@ export default {
         }
         this.$store.dispatch('signIn', authData)
       }
+      else{
+        this.loading = false;
+      }
     }
   },
   watch: {
     errcode () {
       console.log('watched error code: ' + this.errcode)
       if (this.errcode !== '') {
+        this.loading = false;
         if (this.errcode === '"NotAuthorizedException"') {
           this.errmsg = 'Incorrect username or password'
         } else if (this.errcode === '"UserNotFoundException"') {
@@ -130,5 +142,9 @@ export default {
 </script>
 
 <style scoped>
-
+.middle{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
 </style>

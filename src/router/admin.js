@@ -31,14 +31,14 @@ export const adminRoutes = {
             path: "client/list",
             beforeEnter: AuthRequired,
             component: () =>
-                import("@/views/admin/AppointmentList.vue"),
+                import("@/views/admin/ClientList.vue"),
         },
         {
             name: "Therapists",
             path: "therapist/list",
             beforeEnter: AuthRequired,
             component: () =>
-                import("@/views/admin/AppointmentList.vue"),
+                import("@/views/admin/TherapistList.vue"),
         },
     ],
 };

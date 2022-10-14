@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <BaseCard heading="Appointments">
+    <BaseCard heading="Invoices">
       <div>
         <v-list-item-subtitle class="text-wrap">
 
@@ -10,12 +10,12 @@
           <v-data-table :headers="headers" :items="desserts" sort-by="calories" class="border">
             <template v-slot:top>
               <v-toolbar flat color="white">
-                <v-toolbar-title>My Appointments</v-toolbar-title>
+                <v-toolbar-title>My Invoices</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on">Create Appointment</v-btn>
+                    <v-btn color="primary" dark class="mb-2" v-on="on">Create Invoice</v-btn>
                   </template>
                   <v-card>
                     <v-card-title>
@@ -54,7 +54,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-<!--              <v-icon small class="mr-2" @click="cancelItem(item)">mdi-pencil</v-icon>-->
+              <!--              <v-icon small class="mr-2" @click="cancelItem(item)">mdi-pencil</v-icon>-->
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
@@ -65,24 +65,21 @@
       </div>
     </BaseCard>
   </v-container>
-
 </template>
 
 <script>
 import axios from "axios";
 import {apiBaseUrl} from "@/constants/config";
-import {getAppointmentList, getUserList} from "@/api/appointment_master";
 import {getLoginInfo} from '@/utils'
-
 export default {
-  name: "AppointmentList",
+  name: "InvoiceList",
   data: () => ({
     page: {
-      title: "AppointmentList",
+      title: "InvoiceList",
     },
     breadcrumbs: [
       {
-        text: "AppointmentList",
+        text: "InvoiceList",
         disabled: false,
         to: "#",
       }
@@ -201,53 +198,31 @@ export default {
     },
     getData(){
       let loginInfo = getLoginInfo();
-      let data = {
+      axios.post(apiBaseUrl + 'invoices/list', {
         cognitoId: loginInfo.cognitoId,
         offset: 0,
         limit: 500
-      }
-      getAppointmentList(data).then(res => {
-        if(res.data.message == "success"){
-          console.log(res.data.data.appointments)
+      }).then((response) => {
+        if(response.data.message == "success"){
+          console.log(response.data.data.invoices)
         }
       }).catch(error => {
         alert(error)
       });
-      // axios.post(apiBaseUrl + 'appointments/list', {
-      //   cognitoId: loginInfo.cognitoId,
-      //   offset: 0,
-      //   limit: 500
-      // }).then((response) => {
-      //   if(response.data.message == "success"){
-      //     console.log(response.data.data.appointments)
-      //   }
-      // }).catch(error => {
-      //   alert(error)
-      // });
     },
     getUserData(){
       let loginInfo = getLoginInfo();
-      let data = {
+      axios.post(apiBaseUrl + 'invoices/list', {
         cognitoId: loginInfo.cognitoId,
-      }
-      getUserList(data).then(res => {
-        if(res.data.message == "success"){
-          console.log(res.data.data)
+        offset: 0,
+        limit: 500
+      }).then((response) => {
+        if(response.data.message == "success"){
+          console.log(response.data.data.invoices)
         }
       }).catch(error => {
         alert(error)
       });
-      // axios.post(apiBaseUrl + 'appointments/list', {
-      //   cognitoId: loginInfo.cognitoId,
-      //   offset: 0,
-      //   limit: 500
-      // }).then((response) => {
-      //   if(response.data.message == "success"){
-      //     console.log(response.data.data.appointments)
-      //   }
-      // }).catch(error => {
-      //   alert(error)
-      // });
     },
 
     cancelItem(item) {
@@ -257,8 +232,8 @@ export default {
     },
 
     deleteItem(item) {
-      if(confirm("Are you sure you want to delete this appointment?")){
-        axios.get(apiBaseUrl + 'appointments/delete/' + item.id).then((response) => {
+      if(confirm("Are you sure you want to delete this invoice?")){
+        axios.get(apiBaseUrl + 'invoices/delete/' + item.id).then((response) => {
           if(response.data.message == "success"){
             const index = this.desserts.indexOf(item);
             this.desserts.splice(index, 1);
@@ -288,7 +263,7 @@ export default {
         }
         let loginInfo = getLoginInfo();
         console.log(Date.parse(this.editedItem.start_time));
-        axios.post(apiBaseUrl + 'appointments/create', {
+        axios.post(apiBaseUrl + 'invoices/create', {
           cognitoId: loginInfo.cognitoId,
           userId: this.editedItem.username,
           datetime: Date.parse(this.editedItem.start_time)

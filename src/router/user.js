@@ -19,5 +19,12 @@ export const userRoutes = {
             component: () =>
                 import("@/views/user/AppointmentList.vue"),
         },
+        {
+            name: "Invoices",
+            path: "invoice/list",
+            beforeEnter: AuthRequired,
+            component: () =>
+                import("@/views/user/InvoiceList.vue"),
+        },
     ],
 };
