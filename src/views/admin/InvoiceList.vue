@@ -61,6 +61,15 @@
               <v-btn color="primary" @click="initialize">Reset</v-btn>
             </template>
           </v-data-table>
+          <FilePond
+              ref="pond"
+              :server="{
+                  process: (fieldName, file, metadata, load, error, progress, abort) => {
+                    uploadFile(file, metadata, load, error, progress, abort)
+                  },
+                }"
+              @removefile="onRemoveFile"
+          />
         </div>
       </div>
     </BaseCard>
@@ -71,6 +80,7 @@
 import axios from "axios";
 import {apiBaseUrl} from "@/constants/config";
 import {getLoginInfo} from '@/utils'
+//import vueFilePond from 'vue-filepond'
 export default {
   name: "InvoiceList",
   data: () => ({

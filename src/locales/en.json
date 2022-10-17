@@ -1,0 +1,11 @@
+{
+  "general": {
+    "copyright": "TherapYou  2018 All Rights Reserved."
+  },
+  "response-messages": {
+
+  },
+  "login":{
+    "login": "Login"
+  }
+}

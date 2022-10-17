@@ -1,6 +1,10 @@
 import request from '@/utils/request'
+//import axios from "axios";
 
 export function getAppointmentList(data) {
+    // return axios.post({
+    //
+    // })
     return request({
         url: 'appointments/list',
         method: 'get',

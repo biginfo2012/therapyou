@@ -32,8 +32,8 @@
                     :loading="loading"
                     @click.native="onFind()"
                     :disabled="!validemail"
-                    class="mt-3 mb-3 white--text"
-                    color="submit">
+                    class="mt-3 mb-3"
+                    color="info">
                   Find
                   <span slot="loader">Verifying account...</span>
                 </v-btn>
@@ -55,8 +55,7 @@
                       label="New Password"
                       v-model="password"
                       :rules="passRules"
-                      :append-icon="hidepw ? 'visibility' : 'visibility_off'"
-                      :append-icon-cb="() => (hidepw = !hidepw)"
+                      :append-icon="hidepw ? 'mdi-eye' : 'mdi-eye-off'"
                       :type="hidepw ? 'password' : 'text'"
                       required>
                   </v-text-field>
@@ -66,8 +65,8 @@
                     :loading="loading"
                     @click.native="onSubmit()"
                     :disabled="!validcode"
-                    class="mt-3 mb-3 white--text"
-                    color="submit">
+                    class="mt-3 mb-3"
+                    color="info">
                   Confirm
                   <span slot="loader">Updating password...</span>
                 </v-btn>

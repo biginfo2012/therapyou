@@ -47,7 +47,7 @@
                     </div>
                   </div>
                   <v-btn
-                      :disabled="!valid"
+                      :disabled="!valid || loading"
                       color="info"
                       block
                       class="mr-4"

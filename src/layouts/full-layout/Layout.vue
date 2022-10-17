@@ -14,17 +14,17 @@
         <!-- ---------------------------------- -->
         <HorizontalHeader v-else></HorizontalHeader>
         <router-view />
-        <v-btn
-          bottom
-          color="primary"
-          dark
-          fab
-          fixed
-          right
-          @click.stop="setCustomizerDrawer(!Customizer_drawer)"
-        >
-          <v-icon>mdi-cog</v-icon>
-        </v-btn>
+<!--        <v-btn-->
+<!--          bottom-->
+<!--          color="primary"-->
+<!--          dark-->
+<!--          fab-->
+<!--          fixed-->
+<!--          right-->
+<!--          @click.stop="setCustomizerDrawer(!Customizer_drawer)"-->
+<!--        >-->
+<!--          <v-icon>mdi-cog</v-icon>-->
+<!--        </v-btn>-->
       </v-container>
     </v-main>
     <!-- ---------------------------------- -->

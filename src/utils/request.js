@@ -17,14 +17,10 @@ const service = axios.create({
 service.interceptors.request.use(config => {
     NProgress.start()
     if (getToken()) {
-        console.log(getToken());
-        // var base64Url = getToken().accessToken.split('.')[1];
-        // var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        // var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        //     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        // }).join(''));
-        // console.log(JSON.parse(jsonPayload))
-        //config.headers['Authorization'] = "Bearer " + getToken().accessToken;
+        console.log(config);
+        config.headers['Authorization'] = getToken().accessToken
+        config.headers['Accept'] = 'application/json';
+        config.headers['Content-Type'] = 'application/json';
     }
     return config
 }, error => {

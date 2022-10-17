@@ -71,7 +71,7 @@
 <script>
 import axios from "axios";
 import {apiBaseUrl} from "@/constants/config";
-import {getAppointmentList, getUserList} from "@/api/appointment_master";
+import {getAppointmentList} from "@/api/appointment_master";
 import {getLoginInfo} from '@/utils'
 
 export default {
@@ -227,27 +227,33 @@ export default {
     },
     getUserData(){
       let loginInfo = getLoginInfo();
-      let data = {
-        cognitoId: loginInfo.cognitoId,
-      }
-      getUserList(data).then(res => {
-        if(res.data.message == "success"){
-          console.log(res.data.data)
-        }
-      }).catch(error => {
-        alert(error)
-      });
-      // axios.post(apiBaseUrl + 'appointments/list', {
+      // let data = {
       //   cognitoId: loginInfo.cognitoId,
-      //   offset: 0,
-      //   limit: 500
-      // }).then((response) => {
-      //   if(response.data.message == "success"){
-      //     console.log(response.data.data.appointments)
+      // }
+      // getUserList(data).then(res => {
+      //   if(res.data.message == "success"){
+      //     console.log(res.data.data)
       //   }
       // }).catch(error => {
       //   alert(error)
       // });
+      axios.post(apiBaseUrl + 'user/list', {
+        cognitoId: loginInfo.cognitoId
+      },
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'eyJraWQiOiJUcHZKdm80RHpuTUhKRlJ3N0dyMHBUNU5cL3hZMG1VczN6NjhDV2k0S1k0MD0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI4Y2Q2NDRhOC0wYTYwLTQ2ZmUtYTUwNy0xM2I2NGEwZmMyNWUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5ldS13ZXN0LTEuYW1hem9uYXdzLmNvbVwvZXUtd2VzdC0xX09neUl1VWRyOSIsInBob25lX251bWJlcl92ZXJpZmllZCI6dHJ1ZSwiY29nbml0bzp1c2VybmFtZSI6IjhjZDY0NGE4LTBhNjAtNDZmZS1hNTA3LTEzYjY0YTBmYzI1ZSIsImF1ZCI6IjZvYjhtMzdkZ3F2YWh2cGpjYmJhNnN1djMyIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2NjU3NDkzNTUsInBob25lX251bWJlciI6IiszOTM1MTE5MDU2NDUiLCJleHAiOjE2NjU3NTI5NTUsImlhdCI6MTY2NTc0OTM1NSwiZW1haWwiOiJiaWdpbmZvMjAxMkBnbWFpbC5jb20ifQ.P96m7LC9bdiZvHh-FozPC7ZB0NUkLm0n6c3s1fxa57dLkBAQ-KwAhGQcgkySw1jkwS8bTl9uDNIBQnp1XlDXMnXSIjPhVml1aOZxvRI9lf-jtlkQwugsLDbrD62IjCoMJZXF84Nf5xgh4XKs13wTJpBFs4s49uXFoxDtStiXx0SNp-077OnaNdZMTNeZB7WUUC3XAmwjrdfYGZANW0bSIg0a6mD_TVl2F8h31oGKh4nbvl36-bSlpAniAvaL-fWBZqXrWpYA-DcwjQxlBhAGFOlHbPDh4TlHlQ5sd73CK_lIt_h2ODFiQ2tUYlBzP4yxHzHWFYOoHqZleCp0iTwRhA',
+              'Content-Type': 'application/json'
+            }
+          }
+      ).then((response) => {
+        if(response.data.message == "success"){
+          console.log(response.data.data.appointments)
+        }
+      }).catch(error => {
+        alert(error)
+      });
     },
 
     cancelItem(item) {
