@@ -4,18 +4,17 @@
     <BaseCard heading="Appointments">
       <div>
         <v-list-item-subtitle class="text-wrap">
-
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="desserts" sort-by="calories" class="border">
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat color="white">
-                <v-toolbar-title>My Appointments</v-toolbar-title>
+                <v-toolbar-title>{{ $t('appointment.my') }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on">Create Appointment</v-btn>
+                    <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('appointment.create') }}</v-btn>
                   </template>
                   <v-card>
                     <v-card-title>
@@ -27,8 +26,8 @@
                         <v-row>
                           <v-col cols="12" sm="12" md="12">
                             <v-select :items="items" item-text="username"
-                                      item-value="cognitoId" label="User Name"
-                                      v-model="editedItem.username" class="mt-0 pt-0"></v-select>
+                                      item-value="cognitoId" :label="$t('appointment.user-name')"
+                                      v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-select>
                           </v-col>
                           <v-col cols="12" sm="12" md="12">
                             <v-text-field
@@ -37,7 +36,7 @@
                                 hide-details
                                 filled
                                 background-color="transparent"
-                                label="Start Time"
+                                :label="$t('appointment.start-time')"
                             ></v-text-field>
                           </v-col>
                         </v-row>
@@ -46,19 +45,18 @@
 
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-<!--              <v-icon small class="mr-2" @click="cancelItem(item)">mdi-pencil</v-icon>-->
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize">Reset</v-btn>
+              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
         </div>
@@ -71,54 +69,53 @@
 <script>
 import axios from "axios";
 import {apiBaseUrl} from "@/constants/config";
-import {getAppointmentList} from "@/api/appointment_master";
-import {getLoginInfo} from '@/utils'
+//import {getAppointmentList} from "@/api/appointment_master";
+import {getLoginInfo, getToken, convertToDate} from '@/utils'
+//import {getApiManager} from "@/api";
 
 export default {
   name: "AppointmentList",
-  data: () => ({
-    page: {
-      title: "AppointmentList",
-    },
-    breadcrumbs: [
-      {
-        text: "AppointmentList",
-        disabled: false,
-        to: "#",
-      }
-    ],
-    dialog: false,
-    items: [
-      {username: 'ghost', cognitoId: '8cd644a8-0a60-46fe-a507-13b64a0fc25f'},
-      {username: 'big', cognitoId: '8cd644a8-0a60-46fe-a507-13b64a0fc25e'},
-    ],
-    headers: [
-      {
-        text: "User Name",
-        align: "start",
-        sortable: false,
-        value: "username"
+  data: function () {
+    return {
+      page: {
+        title: this.$t('appointment.list'),
       },
-      { text: "Start Time", value: "start_time" },
-      { text: "Created Time", value: "created_at" },
-      { text: "Actions", value: "actions", sortable: false }
-    ],
-    desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      username: "",
-      start_time: 0,
-      created_at: 0
-    },
-    defaultItem: {
-      username: "",
-      start_time: 0,
-      created_at: 0
+      breadcrumbs: [
+        {
+          text: this.$t('appointment.list'),
+          disabled: false,
+          to: "#",
+        }
+      ],
+      dialog: false,
+      loading: false,
+      items: [],
+      headers: [
+        {
+          text: this.$t('appointment.user-name'),
+          align: "start",
+          sortable: false,
+          value: "username"
+        },
+        {text: this.$t('appointment.start-time'), value: "start_time"},
+        {text: this.$t('appointment.end-time'), value: "end_time"},
+        {text: this.$t('appointment.action'), value: "actions", sortable: false}
+      ],
+      datas: [],
+      editedIndex: -1,
+      editedItem: {
+        cognitoId: "",
+        start_time: 0,
+      },
+      defaultItem: {
+        cognitoId: "",
+        start_time: 0,
+      }
     }
-  }),
+  },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New" : "Edit";
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
     }
   },
 
@@ -134,144 +131,97 @@ export default {
 
   methods: {
     initialize() {
-      this.desserts = [
-        {
-          id: 1,
-          username: "Frozen Yogurt",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 2,
-          username: "Ice cream sandwich",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 3,
-          username: "Eclair",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 4,
-          username: "Cupcake",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 5,
-          username: "Gingerbread",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 6,
-          username: "Jelly bean",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 7,
-          username: "Lollipop",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 8,
-          username: "Honeycomb",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 9,
-          username: "Donut",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 10,
-          username: "KitKat",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        }
-      ];
       this.getData()
       this.getUserData()
     },
-    getData(){
+    getData() {
+      this.loading = true;
       let loginInfo = getLoginInfo();
       let data = {
         cognitoId: loginInfo.cognitoId,
         offset: 0,
         limit: 500
       }
-      getAppointmentList(data).then(res => {
-        if(res.data.message == "success"){
-          console.log(res.data.data.appointments)
+      let config = {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': getToken().accessToken,
+          'Content-Type': 'application/json'
         }
-      }).catch(error => {
-        alert(error)
-      });
-      // axios.post(apiBaseUrl + 'appointments/list', {
-      //   cognitoId: loginInfo.cognitoId,
-      //   offset: 0,
-      //   limit: 500
-      // }).then((response) => {
-      //   if(response.data.message == "success"){
-      //     console.log(response.data.data.appointments)
-      //   }
-      // }).catch(error => {
-      //   alert(error)
-      // });
-    },
-    getUserData(){
-      let loginInfo = getLoginInfo();
-      // let data = {
-      //   cognitoId: loginInfo.cognitoId,
-      // }
-      // getUserList(data).then(res => {
-      //   if(res.data.message == "success"){
-      //     console.log(res.data.data)
-      //   }
-      // }).catch(error => {
-      //   alert(error)
-      // });
-      axios.post(apiBaseUrl + 'user/list', {
-        cognitoId: loginInfo.cognitoId
-      },
-          {
-            headers: {
-              'Accept': 'application/json',
-              'Authorization': 'eyJraWQiOiJUcHZKdm80RHpuTUhKRlJ3N0dyMHBUNU5cL3hZMG1VczN6NjhDV2k0S1k0MD0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI4Y2Q2NDRhOC0wYTYwLTQ2ZmUtYTUwNy0xM2I2NGEwZmMyNWUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5ldS13ZXN0LTEuYW1hem9uYXdzLmNvbVwvZXUtd2VzdC0xX09neUl1VWRyOSIsInBob25lX251bWJlcl92ZXJpZmllZCI6dHJ1ZSwiY29nbml0bzp1c2VybmFtZSI6IjhjZDY0NGE4LTBhNjAtNDZmZS1hNTA3LTEzYjY0YTBmYzI1ZSIsImF1ZCI6IjZvYjhtMzdkZ3F2YWh2cGpjYmJhNnN1djMyIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2NjU3NDkzNTUsInBob25lX251bWJlciI6IiszOTM1MTE5MDU2NDUiLCJleHAiOjE2NjU3NTI5NTUsImlhdCI6MTY2NTc0OTM1NSwiZW1haWwiOiJiaWdpbmZvMjAxMkBnbWFpbC5jb20ifQ.P96m7LC9bdiZvHh-FozPC7ZB0NUkLm0n6c3s1fxa57dLkBAQ-KwAhGQcgkySw1jkwS8bTl9uDNIBQnp1XlDXMnXSIjPhVml1aOZxvRI9lf-jtlkQwugsLDbrD62IjCoMJZXF84Nf5xgh4XKs13wTJpBFs4s49uXFoxDtStiXx0SNp-077OnaNdZMTNeZB7WUUC3XAmwjrdfYGZANW0bSIg0a6mD_TVl2F8h31oGKh4nbvl36-bSlpAniAvaL-fWBZqXrWpYA-DcwjQxlBhAGFOlHbPDh4TlHlQ5sd73CK_lIt_h2ODFiQ2tUYlBzP4yxHzHWFYOoHqZleCp0iTwRhA',
-              'Content-Type': 'application/json'
-            }
+      }
+      axios.post(apiBaseUrl + 'appointments/list', data, config).then((response) => {
+        if (response.data.msg == "success") {
+          let appointmens = response.data.data.appointments
+          this.datas = [];
+          for (let i = 0; i < appointmens.length; i++) {
+            let tmp = {}
+            tmp['id'] = appointmens[i]['id'];
+            tmp['username'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
+            tmp['start_time'] = convertToDate(appointmens[i]['startTime'])
+            tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
+            this.datas.push(tmp)
           }
-      ).then((response) => {
-        if(response.data.message == "success"){
-          console.log(response.data.data.appointments)
+        }
+        this.loading = false;
+      }).catch(error => {
+        this.loading = false;
+        alert(error);
+      });
+
+    },
+    getUserData() {
+      let loginInfo = getLoginInfo();
+      let data = {
+        cognitoId: loginInfo.cognitoId,
+      }
+      let config = {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': getToken().idToken,
+          'Content-Type': 'application/json'
+        }
+      }
+      axios.post(apiBaseUrl + 'user/list', data, config).then((response) => {
+        if (response.data.msg == "success") {
+          let users = response.data.data.userList
+          this.items = [];
+          for (let i = 0; i < users.length; i++) {
+            let tmp = {}
+            tmp['username'] = users[i]['firstName'] + ' ' + users[i]['lastName']
+            tmp['cognitoId'] = users[i]['cognitoId']
+            this.items.push(tmp)
+          }
         }
       }).catch(error => {
-        alert(error)
+        console.log(error);
+        if(error.message == "Internal server error"){
+          console.log('d')
+        }
       });
     },
 
-    cancelItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
+    // cancelItem(item) {
+    //   this.editedIndex = this.datas.indexOf(item);
+    //   this.editedItem = Object.assign({}, item);
+    //   this.dialog = true;
+    // },
 
     deleteItem(item) {
-      if(confirm("Are you sure you want to delete this appointment?")){
+      if (confirm(this.$t('appointment.delete-confirm'))) {
         axios.get(apiBaseUrl + 'appointments/delete/' + item.id).then((response) => {
-          if(response.data.message == "success"){
-            const index = this.desserts.indexOf(item);
-            this.desserts.splice(index, 1);
+          if (response.data.msg == "success") {
+            // const index = this.datas.indexOf(item);
+            // this.datas.splice(index, 1);
             this.getData();
           }
         }).catch(error => {
-          alert(error)
+          console.log(error);
+          if(error.response.data.message == "The incoming token has expired"){
+            console.log('refresh_token')
+          }
+          else{
+            alert(error.response.data.message)
+          }
         });
       }
     },
@@ -286,21 +236,27 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+        Object.assign(this.datas[this.editedIndex], this.editedItem);
       } else {
-        //this.desserts.push(this.editedItem);
-        if(this.editedItem.username == "" || this.editedItem.start_time == 0){
+        //this.datas.push(this.editedItem);
+        if (this.editedItem.cognitoId == "" || this.editedItem.start_time == 0) {
           return
         }
         let loginInfo = getLoginInfo();
-        console.log(Date.parse(this.editedItem.start_time));
-        axios.post(apiBaseUrl + 'appointments/create', {
+        let data = {
           cognitoId: loginInfo.cognitoId,
-          userId: this.editedItem.username,
+          userId: this.editedItem.cognitoId,
           datetime: Date.parse(this.editedItem.start_time)
-        }).then((response) => {
-          console.log(response)
-          if(response.data.message == "success"){
+        }
+        let config = {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': getToken().idToken,
+            'Content-Type': 'application/json'
+          }
+        }
+        axios.post(apiBaseUrl + 'appointments/create', data, config).then((response) => {
+          if (response.data.msg == "success") {
             this.getData();
           }
         }).catch(error => {

@@ -6,65 +6,46 @@
           <v-row>
             <v-col lg="12">
               <div class="pa-7 pa-sm-12">
-                <img src="@/assets/images/logo-icon.png" />
-                <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">Sign in</h2>
-<!--                <h6 class="subtitle-1">-->
-<!--                  Don't have an account?-->
-<!--                  <a href="/register" class>Sign Up</a>-->
-<!--                </h6>-->
+                <img src="@/assets/images/logo-icon.png" width="64"/>
+                <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">{{ $t('login.login')}}</h2>
                 <v-alert outlined type="error" dismissible class="mb-4 mt-0" v-model="showerr">
                   {{ errmsg }}
-                  <v-btn v-if="resend" color="primary" text small :to="'/resend'">Re-send Confirmation</v-btn>
+                  <v-btn v-if="resend" color="primary" text small :to="'/resend'">{{ $t('login.resend') }}</v-btn>
                 </v-alert>
                 <v-form ref="form" v-model="valid">
                   <v-text-field
                       v-model="email"
                       :rules="emailRules"
-                      label="E-mail"
+                      :label="$t('login.email')"
                       class="mt-4"
                       required
-                      outlined
-                  ></v-text-field>
+                      outlined></v-text-field>
                   <v-text-field
                       v-model="password"
                       :rules="passwordRules"
-                      label="Password"
+                      :label="$t('login.password')"
                       required
                       outlined
                       :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                      :type="show1 ? 'text' : 'password'"
-                  ></v-text-field>
-
+                      :type="show1 ? 'text' : 'password'"></v-text-field>
                   <div class="d-block d-sm-flex align-center mb-4 mb-sm-0">
-<!--                    <v-checkbox-->
-<!--                        v-model="checkbox"-->
-<!--                        :rules="[v => !!v || 'You must agree to continue!']"-->
-<!--                        label="Remember me?"-->
-<!--                        required-->
-<!--                    ></v-checkbox>-->
                     <div class="ml-auto">
-                      <a href="/forgot" class="link">Forgot pwd?</a>
+                      <a href="/forgot" class="link">{{$t('login.forgot')}}</a>
                     </div>
                   </div>
                   <v-btn
                       :disabled="!valid || loading"
-                      color="info"
+                      color="success"
                       block
                       class="mr-4"
                       submit
-                      @click="submit"
-                  >Sign In</v-btn>
+                      @click="submit">{{ $t('login.login')}}</v-btn>
                 </v-form>
               </div>
             </v-col>
           </v-row>
         </v-card>
-        <v-progress-circular
-            indeterminate
-            color="info"
-            class="middle"
-            v-show="loading"
-        ></v-progress-circular>
+        <img src="@/assets/images/logo-icon.gif" width="80" class="middle" v-show="loading"/>
       </v-col>
     </v-row>
   </v-container>
@@ -73,26 +54,28 @@
 <script>
 export default {
   name: "login",
-  data: () => ({
-    callback: false,
-    showerr: false,
-    resend: false,
-    errmsg: '',
-    valid: true,
-    password: "",
-    show1: false,
-    loading: false,
-    passwordRules: [
-      v => !!v || "Password is required",
-      v => (v && v.length >= 8) || 'Password must be at least 8 characters'
-    ],
-    email: "",
-    emailRules: [
-      v => !!v || "E-mail is required",
-      v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-    ],
-    checkbox: false
-  }),
+  data: function () {
+    return{
+      callback: false,
+      showerr: false,
+      resend: false,
+      errmsg: '',
+      valid: true,
+      password: "",
+      show1: false,
+      loading: false,
+      passwordRules: [
+        v => !!v || this.$t('error-messages.password-required'),
+        v => (v && v.length >= 8) || this.$t('error-messages.password-length')
+      ],
+      email: "",
+      emailRules: [
+        v => !!v || this.$t('error-messages.email-required'),
+        v => /.+@.+\..+/.test(v) || this.$t('error-messages.email-valid'),
+      ],
+      checkbox: false
+    }
+  },
   computed: {
     errcode: function () {
       return this.$store.state.auth.errcode
@@ -120,17 +103,17 @@ export default {
       if (this.errcode !== '') {
         this.loading = false;
         if (this.errcode === '"NotAuthorizedException"') {
-          this.errmsg = 'Incorrect username or password'
+          this.errmsg = this.$t('cognito-messages.NotAuthorizedException')
         } else if (this.errcode === '"UserNotFoundException"') {
-          this.errmsg = 'User not found'
+          this.errmsg = this.$t('cognito-messages.UserNotFoundException')
         } else if (this.errcode === '"UserNotConfirmedException"') {
           this.$store.commit('setUsername', this.email)
           this.resend = true
-          this.errmsg = 'User registration not confirmed'
+          this.errmsg = this.$t('cognito-messages.UserNotConfirmedException')
         } else if (this.errcode === '"LimitExceededException"') {
-          this.errmsg = 'Attempt limit exceeded, please try after some time'
+          this.errmsg = this.$t('cognito-messages.LimitExceededException')
         } else {
-          this.errmsg = 'An error has occured!'
+          this.errmsg = this.$t('error-messages.error')
         }
         this.showerr = true
       } else {
@@ -144,7 +127,7 @@ export default {
 <style scoped>
 .middle{
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: calc(50% - 40px);
+  top: calc(50% - 40px);
 }
 </style>

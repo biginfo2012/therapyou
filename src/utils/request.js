@@ -17,7 +17,6 @@ const service = axios.create({
 service.interceptors.request.use(config => {
     NProgress.start()
     if (getToken()) {
-        console.log(config);
         config.headers['Authorization'] = getToken().accessToken
         config.headers['Accept'] = 'application/json';
         config.headers['Content-Type'] = 'application/json';

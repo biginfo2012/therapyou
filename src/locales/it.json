@@ -1,0 +1,26 @@
+{
+  "general": {
+    "copyright": "TherapYou  2018 All Rights Reserved."
+  },
+  "cognito-messages": {
+    "NotAuthorizedException": "Incorrect username or password1",
+    "UserNotFoundException": "User not found",
+    "UserNotConfirmedException": "User registration not confirmed",
+    "LimitExceededException": "Attempt limit exceeded, please try after some time"
+  },
+  "error-messages": {
+    "password-required": "Password is required",
+    "password-length": "Password must be at least 8 characters",
+    "email-required": "E-mail is required",
+    "email-valid": "E-mail must be valid",
+    "error": "An error has occured!"
+  },
+  "login":{
+    "login": "Sign in",
+    "resend": "Re-send Confirmation",
+    "email": "E-mail",
+    "password": "Password",
+    "forgot": "Forgot pwd?"
+  }
+
+}

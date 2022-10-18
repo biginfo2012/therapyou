@@ -20,13 +20,13 @@
 
       <!---Dark Logo part -->
       <v-toolbar-title
-        class="align-center d-flex mb-9"
+        class="align-center d-flex mb-5"
         v-if="SidebarColor == 'white' && !$vuetify.theme.dark"
       >
-        <img src="../../../assets/images/logos/logo-dark.svg" class="mt-2" />
+        <img src="../../../assets/images/logo-icon.png" class="mt-2" width="64"/>
       </v-toolbar-title>
-      <v-toolbar-title class="align-center d-flex mb-9" v-else>
-        <img src="../../../assets/images/logos/logo-white.svg" class="mt-2" />
+      <v-toolbar-title class="align-center d-flex mb-5" v-else>
+        <img src="../../../assets/images/logo-icon.png" class="mt-2" width="64"/>
       </v-toolbar-title>
       <!-- ---------------------------------------------- -->
       <!---Logo part -->

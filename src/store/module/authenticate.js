@@ -1,6 +1,8 @@
 import {poolData} from "@/constants/config"
 import router from '@/router/router'
 import {getLoggedUserInfo} from "../../utils/index"
+import {getToken} from "../../utils/index";
+import * as AWS from "aws-sdk";
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -67,7 +69,6 @@ const mutations = {
         state.tokens.accessToken = payload.getAccessToken().getJwtToken()
         state.tokens.idToken = payload.getIdToken().getJwtToken()
         state.tokens.refreshToken = payload.getRefreshToken().getToken()
-        console.log(state.tokens)
         sessionStorage.setItem('token', JSON.stringify(state.tokens));
     },
     setCognitoUser(state, payload) {
@@ -105,6 +106,27 @@ const actions = {
                 commit('setError', JSON.stringify(err.code))
             }
         })
+    },
+    refreshToken({state}) {
+        let refresh_token = getToken().refreshToken
+        if (AWS.config.credentials.needsRefresh()) {
+            state.cognitoUser.refreshSession(refresh_token, (err, session) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    AWS.config.credentials.params.Logins[
+                        'cognito-idp.eu-west-1.amazonaws.com/eu-west-1_OgyIuUdr9'
+                        ] = session.getIdToken().getJwtToken();
+                    AWS.config.credentials.refresh(err => {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log('TOKEN SUCCESSFULLY UPDATED');
+                        }
+                    });
+                }
+            });
+        }
     },
     tryAutoSignIn({state, commit, dispatch}) {
         commit('setUserPool')

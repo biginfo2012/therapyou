@@ -6,7 +6,7 @@
           <v-card class="pa-2">
             <v-card-title primary-title>
               <div>
-                <h4 class="headline mb-0">RESET PASSWORD</h4>
+                <h4 class="headline mb-0">{{ $t('forgot.reset') }}</h4>
               </div>
             </v-card-title>
             <v-card-text>
@@ -14,14 +14,14 @@
                 {{ errmsg }}
               </v-alert>
               <v-alert outlined type="success" dismissible class="mb-4 mt-0" v-model="showsent">
-                A confirmation was code sent to your email.
+                {{ $t('forgot.show-sent') }}
               </v-alert>
               <div v-show="!codesent">
-                <h4 class="subheading mb-2">Find your account</h4>
+                <h4 class="subheading mb-2">{{ $t('forgot.find-account') }}</h4>
                 <v-form  v-model="validemail">
                   <v-text-field
                       autocomplete="username"
-                      label="Enter E-mail"
+                      :label="$t('login.email')"
                       v-model="username"
                       :rules="emailRules"
                       required clearable>
@@ -33,26 +33,26 @@
                     @click.native="onFind()"
                     :disabled="!validemail"
                     class="mt-3 mb-3"
-                    color="info">
-                  Find
-                  <span slot="loader">Verifying account...</span>
+                    color="success">
+                  {{ $t('forgot.find') }}
+                  <span slot="loader"> {{ $t('forgot.verify-account') }}</span>
                 </v-btn>
                 <div class="accent--text">
-                  A confirmation code will be sent to your email address.
+                  {{ $t('forgot.show-sent') }}
                 </div>
               </div>
               <div v-show="codesent">
-                <h4 class="subheading mb-2 accent--text">Confirm password change</h4>
+                <h4 class="subheading mb-2 accent--text"> {{ $t('forgot.confirm-pwd') }}</h4>
                 <v-form  v-model="validcode" ref="form">
                   <v-text-field
-                      label="Confirmation Code"
+                      :label="$t('forgot.confirm-code')"
                       v-model="code"
                       :rules="codeRules"
                       required clearable>
                   </v-text-field>
                   <v-text-field
                       autocomplete="new-password"
-                      label="New Password"
+                      :label="$t('forgot.new-pwd')"
                       v-model="password"
                       :rules="passRules"
                       :append-icon="hidepw ? 'mdi-eye' : 'mdi-eye-off'"
@@ -66,9 +66,9 @@
                     @click.native="onSubmit()"
                     :disabled="!validcode"
                     class="mt-3 mb-3"
-                    color="info">
-                  Confirm
-                  <span slot="loader">Updating password...</span>
+                    color="success">
+                  {{ $t('forgot.confirm') }}
+                  <span slot="loader">{{ $t('forgot.update-pwd') }}</span>
                 </v-btn>
               </div>
             </v-card-text>
@@ -99,22 +99,22 @@ export default {
       validcode: false,
       username: '',
       emailRules: [
-        (v) => !!v || 'E-mail is required',
+        (v) => !!v || this.$t('error-messages.email-required'),
         // eslint-disable-next-line
-        (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+        (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || this.$t('error-messages.email-valid')
       ],
       password: '',
       passRules: [
-        (v) => !!v || 'Password is required',
-        (v) => !v || v.length >= 8 || 'Password must be 8-20 characters',
-        (v) => /^(?=.*[0-9])/.test(v) || 'Password must contain at least 1 number',
-        (v) => /^(?=.*[a-z])/.test(v) || 'Password must contain at least 1 lower case letter',
-        (v) => /^(?=.*[A-Z])/.test(v) || 'Password must contain at least 1 upper case letter',
-        (v) => /^(?=.*[!@#$%^&*"])/.test(v) || 'Password must contain at least 1 special character (!@#$%^&*")'
+        (v) => !!v || this.$t('error-messages.password-required'),
+        (v) => !v || v.length >= 8 || this.$t('error-messages.password-length'),
+        (v) => /^(?=.*[0-9])/.test(v) || this.$t('error-messages.password-number'),
+        (v) => /^(?=.*[a-z])/.test(v) || this.$t('error-messages.password-lower'),
+        (v) => /^(?=.*[A-Z])/.test(v) || this.$t('error-messages.password-upper'),
+        (v) => /^(?=.*[!@#$%^&*"])/.test(v) || this.$t('error-messages.password-special'),
       ],
       code: '',
       codeRules: [
-        (v) => !!v || 'Code is required'
+        (v) => !!v || this.$t('error-messages.code-required'),
       ],
       hidepw: true,
       loader: false,
@@ -199,17 +199,17 @@ export default {
       console.log('watched error code: ' + this.errcode)
       if (this.errcode !== '') {
         if (this.errcode === '"CodeMismatchException"') {
-          this.errmsg = 'Invalid verification code provided'
+          this.errmsg = this.$t('cognito-messages.CodeMismatchException')
         } else if (this.errcode === '"NotAuthorizedException"') {
-          this.errmsg = 'The user has already been confirmed'
+          this.errmsg = this.$t('cognito-messages.NotAuthorizedException')
         } else if (this.errcode === '"UserNotFoundException"') {
-          this.errmsg = 'Username email not found!'
+          this.errmsg = this.$t('cognito-messages.UserNotFoundException')
         } else if (this.errcode === '"LimitExceededException"') {
-          this.errmsg = 'Attempt limit exceeded, please try after some time'
+          this.errmsg = this.$t('cognito-messages.LimitExceededException')
         } else if (this.errcode === '"UserNotConfirmedException"') {
-          this.errmsg = 'User registration not confirmed'
+          this.errmsg = this.$t('cognito-messages.UserNotConfirmedException')
         } else {
-          this.errmsg = 'An error has occured!'
+          this.errmsg = this.$t('error-messages.error')
         }
         this.showerr = true
       }

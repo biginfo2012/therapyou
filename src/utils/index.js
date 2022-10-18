@@ -122,3 +122,30 @@ export const getLoggedUserInfo = (cognitoId) => {
         alert(error)
     });
 };
+
+export const setLocale = localValue => {
+    sessionStorage.setItem('currentLanguage', localValue);
+};
+export const convertToDate = milliseconds => {
+    let d = new Date(parseInt(milliseconds, 10));
+    return formatDate(new Date(d))
+};
+
+function padTo2Digits(num) {
+    return num.toString().padStart(2, '0');
+}
+
+function formatDate(date) {
+    return (
+        [
+            padTo2Digits(date.getMonth() + 1),
+            padTo2Digits(date.getDate()),
+            date.getFullYear(),
+        ].join('/') +
+        ' ' +
+        [
+            padTo2Digits(date.getHours()),
+            padTo2Digits(date.getMinutes()),
+        ].join(':')
+    );
+}

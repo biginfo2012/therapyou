@@ -4,7 +4,7 @@
     :rel="href && href !== '#' ? 'noopener' : undefined"
     :target="href && href !== '#' ? '_blank' : undefined"
     :to="item.to"
-    :active-class="`secondary white--text`"
+    :active-class="`success white--text`"
   >
     <v-list-item-icon v-if="item.icon">
       <feather :type="item.icon" class="feather-sm"></feather>

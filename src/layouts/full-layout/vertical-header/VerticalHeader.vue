@@ -5,26 +5,59 @@
     clipped-right
     :color="navbarColor"
     :dark="navbarColor !== '#fafafa'"
-    class="app-navbar"
-  >
+    class="app-navbar">
     <!-- ---------------------------------------------- -->
     <!---/Toggle sidebar part -->
     <!-- ---------------------------------------------- -->
     <div>
       <v-app-bar-nav-icon
-        @click="
-          $vuetify.breakpoint.smAndDown
+        @click="$vuetify.breakpoint.smAndDown
             ? setSidebarDrawer(!Sidebar_drawer)
-            : $emit('input', !value)
-        "
-      />
+            : $emit('input', !value)"/>
     </div>
     <!---/Toggle sidebar part -->
 
-    <v-spacer />
+    <v-spacer/>
     <!-- ---------------------------------------------- -->
     <!---right part -->
     <!-- ---------------------------------------------- -->
+
+    <!-- ---------------------------------------------- -->
+    <!-- Notification -->
+    <!-- ---------------------------------------------- -->
+    <v-menu
+        bottom
+        left
+        offset-y
+        origin="top right"
+        transition="scale-transition"
+        min-width="150">
+      <template v-slot:activator="{ on }">
+        <v-btn icon v-on="on">
+          <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false"/>
+          <span class="name ml-2 mr-3">{{$i18n.locale.toUpperCase()}}</span>
+        </v-btn>
+      </template>
+
+      <v-list class="pa-1">
+        <v-list-item
+            class="px-0"
+            v-for="(l,index) in localeOptions" :key="index" @click="changeLocale(l)">
+          <v-list-item-title>
+            <div class="d-flex align-center py-2 pl-3">
+              <div class>
+                <v-btn fab small elevation="0" class="mr-3">
+                  <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false"/>
+                </v-btn>
+              </div>
+              <div class="ml-2">
+                <h4 class="font-weight-medium">{{ l.name }}</h4>
+              </div>
+            </div>
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
     <!-- ---------------------------------------------- -->
     <!-- User Profile -->
@@ -35,8 +68,7 @@
       offset-y
       origin="top right"
       transition="scale-transition"
-      min-width="385"
-    >
+      min-width="280">
       <template v-slot:activator="{ on }">
         <v-btn
           v-on="on"
@@ -44,8 +76,7 @@
           elevation="0"
           color="transparent"
           plain
-          :ripple="false"
-        >
+          :ripple="false">
           <v-avatar size="35">
             <img src="@/assets/images/users/user2.jpg" alt="Julia" />
           </v-avatar>
@@ -55,26 +86,24 @@
       <v-list class="pa-8">
         <h4 class="font-weight-medium fs-18">User Profile</h4>
         <div class="d-flex align-center my-4">
-          <img
-            src="@/assets/images/users/user2.jpg"
-            alt="Julia"
-            class="rounded-circle"
-            width="90"
-          />
+          <img src="@/assets/images/users/user2.jpg"
+            alt="Julia" class="rounded-circle" width="90"/>
           <div class="ml-4">
             <h4 class="font-weight-medium fs-18">{{ userInfo.name}}</h4>
             <span class="subtitle-2 font-weight-light">{{ userInfo.role }}</span>
           </div>
         </div>
-        <v-btn block depressed color="secondary" class="mt-4 py-4" @click="logout">Logout</v-btn>
+        <v-btn block depressed color="success" class="mt-4 py-4" @click="logout">Logout</v-btn>
       </v-list>
     </v-menu>
   </v-app-bar>
 </template>
 <script>
 // Utilities
-import { mapState, mapMutations } from "vuex";
-import {getLoginInfo} from "@/utils";
+import { mapState, mapMutations, mapActions } from "vuex";
+import {getLoginInfo, setLocale} from "@/utils";
+import {localeOptions} from "@/constants/config";
+
 export default {
   name: "VerticalHeader",
 
@@ -90,82 +119,7 @@ export default {
     showSearch: false,
     drawer: false,
     group: null,
-    messages: [
-      {
-        image: "1.jpg",
-        avatarstatus: "success",
-        title: "Romen Joined the Team!",
-        desc: "Congratulate him",
-        time: "9:30 AM",
-      },
-      {
-        image: "2.jpg",
-        avatarstatus: "warning",
-        title: "New message received",
-        desc: "Salma sent you new message",
-        time: "9:08 AM",
-      },
-      {
-        image: "3.jpg",
-        avatarstatus: "error",
-        title: "New Payment received",
-        desc: "Check your earnings",
-        time: "9:08 AM",
-      },
-      // {
-      //   image: "4.jpg",
-      //   avatarstatus: "success",
-      //   title: "Jolly completed tasks",
-      //   desc: "Assign her new tasks",
-      //   time: "9:08 AM",
-      // },
-    ],
-    notifications: [
-      {
-        color: "error",
-        icon: "home",
-        title: "Luanch Admin",
-        desc: "Just see the my new admin!",
-      },
-      {
-        color: "primary",
-        icon: "calendar",
-        title: "Event today",
-        desc: "Just a reminder that you have event",
-      },
-      {
-        color: "success",
-        icon: "settings",
-        title: "Settings",
-        desc: "You can customize this template as you want",
-      },
-      {
-        color: "secondary",
-        icon: "users",
-        title: "Johny John",
-        desc: "Assign her new tasks",
-      },
-    ],
-    userprofile: [
-      {
-        color: "error",
-        icon: "dollar-sign",
-        title: "My Profile",
-        desc: "Account Settings",
-      },
-      {
-        color: "success",
-        icon: "shield",
-        title: "My Inbox",
-        desc: "Messages & Emails",
-      },
-      {
-        color: "secondary",
-        icon: "credit-card",
-        title: "My Tasks",
-        desc: "To-do and Daily Tasks",
-      },
-    ],
+    localeOptions,
     userInfo:{
       id: 0,
       name: "",
@@ -184,20 +138,42 @@ export default {
     ...mapMutations({
       setSidebarDrawer: "SET_SIDEBAR_DRAWER",
     }),
+    ...mapActions(['setLang']),
+
     logout(){
       this.$store.dispatch('signOut');
-    }
+    },
+    changeLocale(l) {
+      let locale = l.id;
+      this.setLang(locale);
+    },
+    getLocaleIcon() {
+      const locale = this.$i18n.locale;
+      for (let l of localeOptions) {
+        if (l.id === locale) return l.icon;
+      }
+      return localeOptions[1].icon;
+    },
+    setLanguageInfo(){
+      setLocale(this.$i18n.locale);
+    },
   },
   watch: {
     group() {
       this.drawer = false;
+    },
+    '$i18n.locale'(to, from) {
+      if (from !== to) {
+        this.$router.go(this.$route.path)
+      }
     },
   },
   mounted() {
     let loginInfo = getLoginInfo();
     this.userInfo.id = loginInfo.id
     this.userInfo.name = loginInfo.name
-    this.userInfo.role = loginInfo.role == 2 ? "Super Admin" : "Therapist"
+    this.userInfo.role = loginInfo.role == 2 ? "Admin" : "Therapist"
+    this.setLanguageInfo();
   }
 };
 </script>

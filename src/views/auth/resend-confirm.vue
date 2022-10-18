@@ -29,7 +29,7 @@
                   @click.native="onSubmit()"
                   :disabled="!valid"
                   class="mt-3 mb-3 white--text"
-                  color="info">
+                  color="success">
                 Resend
                 <span slot="loader">Connecting...</span>
               </v-btn>

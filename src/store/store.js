@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import auth from "./module/authenticate";
+import app from "../main"
 
 Vue.use(Vuex);
 
@@ -29,10 +30,18 @@ export default new Vuex.Store({
     SET_LAYOUT(state, payload) {
       state.setHorizontalLayout = payload;
     },
+    changeLang(state, payload) {
+      app.$i18n.locale = payload
+      sessionStorage.setItem('currentLanguage', payload)
+    }
   },
   modules: {
     auth
   },
-  actions: {},
+  actions: {
+    setLang ({ commit }, payload) {
+      commit('changeLang', payload)
+    }
+  },
   getters: {},
 });

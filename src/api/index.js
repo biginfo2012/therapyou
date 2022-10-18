@@ -1,24 +1,26 @@
 import axios from 'axios'
 import app from '../main';
+import {getToken} from "@/utils";
 
 const getApiManager = function () {
-
+    console.log(getToken().accessToken);
     const apiManager = axios.create({
-        headers: {'X-AUTH-TOKEN': 'token'},
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': getToken().accessToken,
+            'Content-Type': 'application/json'
+        },
         validateStatus: function (status) {
-
             return status >= 200 && status <= 503;
         },
     });
     apiManager.interceptors.response.use((response) => {
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
-
+        console.log("getApiManager")
+        console.log(response)
         let message = response.data.message;
-
-
         switch (message) {
-
             case 'invalid-token':
                 break;
             case 'token-expired':

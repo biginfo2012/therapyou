@@ -1,11 +1,62 @@
 {
   "general": {
-    "copyright": "TherapYou  2018 All Rights Reserved."
+    "copyright": "TherapYou  2018 All Rights Reserved.",
+    "new": "New",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "reset": "Reset"
   },
-  "response-messages": {
-
+  "cognito-messages": {
+    "NotAuthorizedException": "Incorrect username or password",
+    "UserNotFoundException": "User not found",
+    "UserNotConfirmedException": "User registration not confirmed",
+    "LimitExceededException": "Attempt limit exceeded, please try after some time",
+    "CodeMismatchException": "Invalid verification code provided"
+  },
+  "error-messages": {
+    "password-required": "Password is required",
+    "password-length": "Password must be at least 8 characters",
+    "email-required": "E-mail is required",
+    "email-valid": "E-mail must be valid",
+    "error": "An error has occurred!",
+    "password-number": "Password must contain at least 1 number",
+    "password-lower": "Password must contain at least 1 lower case letter",
+    "password-upper": "Password must contain at least 1 upper case letter",
+    "password-special": "Password must contain at least 1 special character (!@#$%^&*\")",
+    "code-required": "Code is required"
   },
   "login":{
-    "login": "Login"
+    "login": "Sign in",
+    "resend": "Re-send Confirmation",
+    "email": "E-mail",
+    "password": "Password",
+    "forgot": "Forgot pwd?"
+  },
+  "forgot": {
+    "reset": "RESET PASSWORD",
+    "show-sent": "A confirmation was code sent to your phone.",
+    "find-account": "Find your account",
+    "find": "Find",
+    "verify-account": "Verifying account...",
+    "confirm-pwd": "Confirm password change",
+    "confirm-code": "Confirmation Code",
+    "new-pwd": "New Password",
+    "confirm": "Confirm",
+    "update-pwd": "Updating password..."
+  },
+  "changed": {
+    "update-pwd": "You have updated your password."
+  },
+  "appointment": {
+    "list": "Appointment List",
+    "user-name": "User Name",
+    "start-time": "Start Time",
+    "end-time": "End Time",
+    "created-time": "Created Time",
+    "action": "Actions",
+    "my": "My Appointments",
+    "create": "Create Appointments",
+    "delete-confirm": "Are you sure you want to delete this appointment?"
   }
 }

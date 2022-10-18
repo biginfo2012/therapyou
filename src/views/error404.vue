@@ -5,7 +5,7 @@
         <h1 class="error-title error--text">404</h1>
         <h3 class="text-uppercase error-subtitle">PAGE NOT FOUND !</h3>
         <p class="text-muted mt-4 mb-4">YOU SEEM TO BE TRYING TO FIND HIS WAY HOME</p>
-        <v-btn color="info" href="/">Go to Home</v-btn>
+        <v-btn color="success" href="/">Go to Home</v-btn>
       </div>
     </div>
   </div>
