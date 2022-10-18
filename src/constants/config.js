@@ -5,7 +5,8 @@ export const AWS_ACCESS_KEY = "AKIAVHIAZNTO5XHGEATV";
 export const AWS_REGION = "eu-west-1"
 export const AWS_BUCKET = "storage-bkt"
 export const defaultLocale = 'en';
+
 export const localeOptions = [
-    {id: 'en', name: 'English', icon: '/assets/images/flags/united-kingdom.svg'},
-    {id: 'it', name: 'Italian', icon: '/assets/images/flags/italy.svg'}
+    {id: 'en', name: 'English', icon: require('../assets/images/flags/en.svg')},
+    {id: 'it', name: 'Italian', icon: require('../assets/images/flags/it.svg')}
 ];

@@ -33,21 +33,21 @@
         transition="scale-transition"
         min-width="150">
       <template v-slot:activator="{ on }">
-        <v-btn icon v-on="on">
-          <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false"/>
+        <v-btn icon v-on="on" class="mr-5">
+          <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false" width="32"/>
           <span class="name ml-2 mr-3">{{$i18n.locale.toUpperCase()}}</span>
         </v-btn>
       </template>
 
       <v-list class="pa-1">
         <v-list-item
-            class="px-0"
+            class="px-3"
             v-for="(l,index) in localeOptions" :key="index" @click="changeLocale(l)">
           <v-list-item-title>
             <div class="d-flex align-center py-2 pl-3">
               <div class>
                 <v-btn fab small elevation="0" class="mr-3">
-                  <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false"/>
+                  <img class="locale" :alt="l.name.toUpperCase()" :src="l.icon" draggable="false"/>
                 </v-btn>
               </div>
               <div class="ml-2">

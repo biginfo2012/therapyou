@@ -1,21 +1,20 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <BaseCard heading="Invoices">
+    <BaseCard :heading="$t('invoice.invoices')">
       <div>
         <v-list-item-subtitle class="text-wrap">
-
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="desserts" sort-by="calories" class="border">
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat color="white">
-                <v-toolbar-title>My Invoices</v-toolbar-title>
+                <v-toolbar-title>{{ $t('invoice.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on">Create Invoice</v-btn>
+                    <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('invoice.create') }}</v-btn>
                   </template>
                   <v-card>
                     <v-card-title>
@@ -26,19 +25,14 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12" sm="12" md="12">
-                            <v-select :items="items" item-text="username"
-                                      item-value="cognitoId" label="User Name"
-                                      v-model="editedItem.username" class="mt-0 pt-0"></v-select>
+                            <v-select :items="items" item-text="label"
+                                      item-value="id" :label="$t('appointment.list')"
+                                      v-model="editedItem.id" class="mt-0 pt-0"></v-select>
                           </v-col>
                           <v-col cols="12" sm="12" md="12">
-                            <v-text-field
-                                v-model="editedItem.start_time"
-                                type="datetime-local"
-                                hide-details
-                                filled
-                                background-color="transparent"
-                                label="Start Time"
-                            ></v-text-field>
+                            <v-file-input
+                            :label="$t('invoice.file')"
+                            @change="uploadFile"></v-file-input>
                           </v-col>
                         </v-row>
                       </v-container>
@@ -46,30 +40,20 @@
 
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <!--              <v-icon small class="mr-2" @click="cancelItem(item)">mdi-pencil</v-icon>-->
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize">Reset</v-btn>
+              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
-          <FilePond
-              ref="pond"
-              :server="{
-                  process: (fieldName, file, metadata, load, error, progress, abort) => {
-                    uploadFile(file, metadata, load, error, progress, abort)
-                  },
-                }"
-              @removefile="onRemoveFile"
-          />
         </div>
       </div>
     </BaseCard>
@@ -79,53 +63,49 @@
 <script>
 import axios from "axios";
 import {apiBaseUrl} from "@/constants/config";
-import {getLoginInfo} from '@/utils'
-//import vueFilePond from 'vue-filepond'
+import {convertToDate, getLoginInfo, getToken, singleUpload} from '@/utils'
 export default {
   name: "InvoiceList",
-  data: () => ({
-    page: {
-      title: "InvoiceList",
-    },
-    breadcrumbs: [
-      {
-        text: "InvoiceList",
-        disabled: false,
-        to: "#",
-      }
-    ],
-    dialog: false,
-    items: [
-      {username: 'ghost', cognitoId: '8cd644a8-0a60-46fe-a507-13b64a0fc25f'},
-      {username: 'big', cognitoId: '8cd644a8-0a60-46fe-a507-13b64a0fc25e'},
-    ],
-    headers: [
-      {
-        text: "User Name",
-        align: "start",
-        sortable: false,
-        value: "username"
+  data: function () {
+    return {
+      page: {
+        title: this.$t('invoice.list'),
       },
-      { text: "Start Time", value: "start_time" },
-      { text: "Created Time", value: "created_at" },
-      { text: "Actions", value: "actions", sortable: false }
-    ],
-    desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      username: "",
-      start_time: 0,
-      created_at: 0
-    },
-    defaultItem: {
-      username: "",
-      start_time: 0,
-      created_at: 0
+      breadcrumbs: [
+        {
+          text: this.$t('invoice.list'),
+          disabled: false,
+          to: "#",
+        }
+      ],
+      dialog: false,
+      loading: false,
+      items: [
+      ],
+      headers: [
+        {
+          text: this.$t('invoice.url'),
+          align: "start",
+          sortable: false,
+          value: "invoiceUrl"
+        },
+        { text: this.$t('appointment.action'), value: "actions", sortable: false }
+      ],
+      datas: [],
+      editedIndex: -1,
+      editedItem: {
+        id: 0,
+        invoiceUrl: ""
+      },
+      defaultItem: {
+        id: 0,
+        invoiceUrl: ""
+      }
     }
-  }),
+  },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New" : "Edit";
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
     }
   },
 
@@ -141,116 +121,106 @@ export default {
 
   methods: {
     initialize() {
-      this.desserts = [
-        {
-          id: 1,
-          username: "Frozen Yogurt",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 2,
-          username: "Ice cream sandwich",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 3,
-          username: "Eclair",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 4,
-          username: "Cupcake",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 5,
-          username: "Gingerbread",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 6,
-          username: "Jelly bean",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 7,
-          username: "Lollipop",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 8,
-          username: "Honeycomb",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 9,
-          username: "Donut",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 10,
-          username: "KitKat",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        }
-      ];
       this.getData()
-      this.getUserData()
+      this.getAppointmentData()
     },
-    getData(){
+    getData() {
+      this.loading = true;
       let loginInfo = getLoginInfo();
-      axios.post(apiBaseUrl + 'invoices/list', {
+      let data = {
         cognitoId: loginInfo.cognitoId,
-        offset: 0,
-        limit: 500
-      }).then((response) => {
-        if(response.data.message == "success"){
-          console.log(response.data.data.invoices)
+        isTherapist: true
+      }
+      let config = {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': getToken().idToken,
+          'Content-Type': 'application/json'
         }
+      }
+      axios.post(apiBaseUrl + 'invoice/list', data, config).then((response) => {
+        if (response.data.msg == "Success") {
+          this.datas = response.data.data.invoices;
+        }
+        this.loading = false;
       }).catch(error => {
-        alert(error)
+        this.loading = false;
+        alert(error);
       });
+
     },
-    getUserData(){
+    getAppointmentData(){
       let loginInfo = getLoginInfo();
-      axios.post(apiBaseUrl + 'invoices/list', {
+      let data = {
         cognitoId: loginInfo.cognitoId,
         offset: 0,
         limit: 500
-      }).then((response) => {
-        if(response.data.message == "success"){
-          console.log(response.data.data.invoices)
+      }
+      let config = {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': getToken().accessToken,
+          'Content-Type': 'application/json'
+        }
+      }
+      axios.post(apiBaseUrl + 'appointments/list', data, config).then((response) => {
+        if (response.data.msg == "success") {
+          let appointmens = response.data.data.appointments
+          this.items = [];
+          for (let i = 0; i < appointmens.length; i++) {
+            let tmp = {}
+            tmp['id'] = appointmens[i]['id'];
+            tmp['label'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName'] + ': ' + convertToDate(appointmens[i]['startTime'])
+            this.items.push(tmp)
+          }
         }
       }).catch(error => {
-        alert(error)
+        alert(error);
       });
     },
 
-    cancelItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+    async uploadFile(file){
+      if(file != undefined){
+        const result = await singleUpload(
+            file,
+            'invoices' // folder of the file, you should change it to your variable or a string
+        )
+        if (result.status === 200) {
+          // Handle storing it to your database here
+          this.editedItem.invoiceUrl = result.fullPath;
+          console.log(result)
+        } else {
+          alert("File Upload to S3 failed")
+        }
+        return {
+          abort: () => {
+            // This function is entered if the user has tapped the cancel button
+            // Let FilePond know the request has been cancelled
+            alert("File Upload to S3 aborted")
+          },
+        }
+      }
+
     },
 
     deleteItem(item) {
-      if(confirm("Are you sure you want to delete this invoice?")){
-        axios.get(apiBaseUrl + 'invoices/delete/' + item.id).then((response) => {
-          if(response.data.message == "success"){
-            const index = this.desserts.indexOf(item);
-            this.desserts.splice(index, 1);
+      if(confirm(this.$t('invoice.delete-confirm'))){
+        let data = {
+          invoiceUrl: item.invoiceUrl
+        }
+        let config = {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': getToken().accessToken,
+            'Content-Type': 'application/json'
+          }
+        }
+        axios.post(apiBaseUrl + 'invoice/delete', data, config).then((response) => {
+          if (response.data.msg == "OK") {
             this.getData();
           }
         }).catch(error => {
-          alert(error)
+          alert(error);
         });
       }
     },
@@ -265,21 +235,24 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+        Object.assign(this.datas[this.editedIndex], this.editedItem);
       } else {
-        //this.desserts.push(this.editedItem);
-        if(this.editedItem.username == "" || this.editedItem.start_time == 0){
+        if(this.editedItem.id == 0 || this.editedItem.invoiceUrl == ""){
           return
         }
-        let loginInfo = getLoginInfo();
-        console.log(Date.parse(this.editedItem.start_time));
-        axios.post(apiBaseUrl + 'invoices/create', {
-          cognitoId: loginInfo.cognitoId,
-          userId: this.editedItem.username,
-          datetime: Date.parse(this.editedItem.start_time)
-        }).then((response) => {
-          console.log(response)
-          if(response.data.message == "success"){
+        let data = {
+          appointmentId: this.editedItem.id,
+          invoiceUrl: this.editedItem.invoiceUrl
+        }
+        let config = {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': getToken().idToken,
+            'Content-Type': 'application/json'
+          }
+        }
+        axios.post(apiBaseUrl + 'invoice/upload', data, config).then((response) => {
+          if (response.data.msg == "OK") {
             this.getData();
           }
         }).catch(error => {

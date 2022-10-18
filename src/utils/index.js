@@ -112,6 +112,7 @@ export const getLoggedUserInfo = (cognitoId) => {
     axios.get(apiBaseUrl + 'therapist/get?cognitoId=' + cognitoId).then((response) => {
         let userData = response.data.data.therapist[0];
         sessionStorage.setItem('userData', JSON.stringify(userData));
+        console.log(userData);
         if(userData.role == 2){
             router.push('/admin/dashboard')
         }

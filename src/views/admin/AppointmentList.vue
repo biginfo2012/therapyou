@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <BaseCard heading="Appointments">
+    <BaseCard :heading="$t('appointment.appointments')">
       <div>
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
@@ -69,9 +69,7 @@
 <script>
 import axios from "axios";
 import {apiBaseUrl} from "@/constants/config";
-//import {getAppointmentList} from "@/api/appointment_master";
 import {getLoginInfo, getToken, convertToDate} from '@/utils'
-//import {getApiManager} from "@/api";
 
 export default {
   name: "AppointmentList",
@@ -200,18 +198,10 @@ export default {
       });
     },
 
-    // cancelItem(item) {
-    //   this.editedIndex = this.datas.indexOf(item);
-    //   this.editedItem = Object.assign({}, item);
-    //   this.dialog = true;
-    // },
-
     deleteItem(item) {
       if (confirm(this.$t('appointment.delete-confirm'))) {
         axios.get(apiBaseUrl + 'appointments/delete/' + item.id).then((response) => {
           if (response.data.msg == "success") {
-            // const index = this.datas.indexOf(item);
-            // this.datas.splice(index, 1);
             this.getData();
           }
         }).catch(error => {

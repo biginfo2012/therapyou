@@ -1,21 +1,20 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <BaseCard heading="Clients">
+    <BaseCard :heading="$t('client.clients')">
       <div>
         <v-list-item-subtitle class="text-wrap">
-
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border">
+          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat color="white">
-                <v-toolbar-title>My Clients</v-toolbar-title>
+                <v-toolbar-title>{{$t('client.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="1000px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on">Create Client</v-btn>
+                    <v-btn color="success" dark class="mb-2" v-on="on">{{$t('client.create')}}</v-btn>
                   </template>
                   <v-card>
                     <v-card-title>
@@ -31,36 +30,48 @@
                           <v-row>
                             <v-col cols="12" sm="12" md="6" class="pb-0">
                               <v-text-field
-                                  v-model="editedItem.firstname"
+                                  v-model="editedItem.firstName"
                                   :rules="firstRules"
                                   required outlined
-                                  label="User Firstname"
+                                  :label="$t('client.first-name')"
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="12" md="6" class="pb-0">
                               <v-text-field
-                                  v-model="editedItem.lastname"
+                                  v-model="editedItem.lastName"
                                   :rules="lastRules"
                                   required outlined
-                                  label="User Lastname"
+                                  :label="$t('client.last-name')"
                               ></v-text-field>
                             </v-col>
                           </v-row>
                           <v-row>
                             <v-col cols="12" sm="12" md="6" class="pb-0">
                               <v-text-field
-                                  v-model="editedItem.user_email"
+                                  v-model="editedItem.email"
                                   :rules="emailRules"
                                   required outlined
-                                  label="User Email"
+                                  :label="$t('login.email')"
+                                  :disabled="editedIndex === -1 ? false : true"
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="12" md="6" class="pb-0">
                               <v-text-field
-                                  v-model="editedItem.user_phone"
+                                  v-model="editedItem.phoneNumber"
                                   :rules="phoneRules"
                                   required outlined
-                                  label="User Phone"
+                                  :label="$t('client.phone')"
+                                  :disabled="editedIndex === -1 ? false : true"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="6" class="pb-0" v-if="editedIndex === -1">
+                              <v-text-field
+                                  v-model="editedItem.password"
+                                  :rules="passwordRules"
+                                  outlined required
+                                  :disabled="editedIndex === -1 ? false : true"
+                                  :label="$t('login.password')"
+                                  type="password"
                               ></v-text-field>
                             </v-col>
                           </v-row>
@@ -71,8 +82,8 @@
 
                     <v-card-actions class="px-10 pb-3">
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -83,7 +94,7 @@
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize">Reset</v-btn>
+              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
         </div>
@@ -93,94 +104,131 @@
 </template>
 
 <script>
-import {getUserList} from "@/api/appointment_master";
-import {saveClient} from "@/api/client_master";
-import {getLoginInfo} from '@/utils'
+import {getLoginInfo, getToken} from '@/utils'
+import axios from "axios";
+import {apiBaseUrl, poolData} from "@/constants/config";
+
+var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
+
+var userPool = []
+var attributeList = []
+var dataEmail = {
+  Name: 'email',
+  Value: ''
+}
+var dataPhone = {
+  Name: 'phone_number',
+  Value: ''
+}
 
 export default {
   name: "ClientList",
-  data: () => ({
-    showerr: false,
-    errcode: '',
-    errmsg: '',
-    page: {
-      title: "ClientList",
-    },
-    breadcrumbs: [
-      {
-        text: "ClientList",
-        disabled: false,
-        to: "#",
-      }
-    ],
-    dialog: false,
-    headers: [
-      {
-        text: "User FirstName",
-        align: "start",
-        sortable: false,
-        value: "firstname"
+  data: function () {
+    return {
+      callback: false,
+      showerr: false,
+      errcode: '',
+      errmsg: '',
+      page: {
+        title: this.$t('client.list'),
       },
-      {
-        text: "User LastName",
-        align: "start",
-        sortable: false,
-        value: "lastname"
+      breadcrumbs: [
+        {
+          text: this.$t('client.list'),
+          disabled: false,
+          to: "#",
+        }
+      ],
+      dialog: false,
+      loading: false,
+      headers: [
+        {
+          text: this.$t('client.first-name'),
+          align: "start",
+          sortable: true,
+          value: "firstName"
+        },
+        {
+          text: this.$t('client.last-name'),
+          align: "start",
+          sortable: true,
+          value: "lastName"
+        },
+        {
+          text: this.$t('login.email'),
+          align: "start",
+          sortable: true,
+          value: "email"
+        },
+        {
+          text: this.$t('client.phone'),
+          align: "start",
+          sortable: false,
+          value: "phoneNumber"
+        },
+        { text: this.$t('general.actions'), value: "actions", sortable: false }
+      ],
+      listData: [],
+      editedIndex: -1,
+      editedItem: {
+        cognitoId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        password: ""
       },
-      {
-        text: "User Email",
-        align: "start",
-        sortable: false,
-        value: "user_email"
+      defaultItem: {
+        cognitoId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        password: ""
       },
-      {
-        text: "User Phone",
-        align: "start",
-        sortable: false,
-        value: "user_phone"
-      },
-      { text: "Created Time", value: "created_at" },
-      { text: "Actions", value: "actions", sortable: false }
-    ],
-    listData: [],
-    editedIndex: -1,
-    editedItem: {
-      firstname: "",
-      lastname: "",
-      user_email: "",
-      user_phone: "",
-      created_at: 0
-    },
-    defaultItem: {
-      firstname: "",
-      lastname: "",
-      user_email: "",
-      user_phone: "",
-      created_at: 0
-    },
-    emailRules: [
-      v => !!v || "E-mail is required",
-      v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-    ],
-    phoneRules:[
-      v => !!v || "Phone Number is required",
-    ],
-    firstRules:[
-      v => !!v || "User First Name is required",
-    ],
-    lastRules:[
-      v => !!v || "User Last Name is required",
-    ],
-  }),
+      emailRules: [
+        v => !!v || this.$t('error-messages.email-required'),
+        v => /.+@.+\..+/.test(v) || this.$t('error-messages.email-valid'),
+      ],
+      passwordRules: [
+        (v) => !!v || this.$t('error-messages.password-required'),
+        (v) => !v || v.length >= 8 || this.$t('error-messages.password-length'),
+        (v) => /^(?=.*[0-9])/.test(v) || this.$t('error-messages.password-number'),
+        (v) => /^(?=.*[a-z])/.test(v) || this.$t('error-messages.password-lower'),
+        (v) => /^(?=.*[A-Z])/.test(v) || this.$t('error-messages.password-upper'),
+        (v) => /^(?=.*[!@#$%^&*"])/.test(v) || this.$t('error-messages.password-special'),
+      ],
+      phoneRules:[
+        v => !!v || this.$t('error-messages.phone-required'),
+      ],
+      firstRules:[
+        v => !!v || this.$t('error-messages.first-required'),
+      ],
+      lastRules:[
+        v => !!v || this.$t('error-messages.last-required'),
+      ],
+    }
+  },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New" : "Edit";
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
     }
   },
 
   watch: {
     dialog(val) {
       val || this.close();
+    },
+    errcode () {
+      console.log('watched error code: ' + this.errcode)
+      if (this.errcode !== '') {
+        if (this.errcode === '"UsernameExistsException"') {
+          this.errmsg = this.$t('cognito-messages.UsernameExistsException')
+        } else {
+          this.errmsg = this.$t('error-messages.error')
+        }
+        this.showerr = true
+      }
     }
   },
 
@@ -190,34 +238,36 @@ export default {
 
   methods: {
     initialize() {
-      this.listData = [
-        {
-          id: 1,
-          firstname: "Frozen Yogurt",
-          lastname: "last",
-          user_email: "t1@t.com",
-          user_phone: "12345789",
-          created_at: "2022/10/10 10:10",
-        }
-      ];
-      //this.getData()
-      //this.getUserData()
+      this.getData()
     },
     getData(){
-      let loginInfo = getLoginInfo();
-      console.log(loginInfo)
-    },
-    getUserData(){
+      this.loading = true;
       let loginInfo = getLoginInfo();
       let data = {
         cognitoId: loginInfo.cognitoId,
       }
-      getUserList(data).then(res => {
-        if(res.data.message == "success"){
-          console.log(res.data.data)
+      let config = {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': getToken().idToken,
+          'Content-Type': 'application/json'
+        }
+      }
+      axios.post(apiBaseUrl + 'user/list', data, config).then((response) => {
+        if (response.data.msg == "success") {
+          this.listData = response.data.data.userList;
+          this.loading = false;
         }
       }).catch(error => {
-        alert(error)
+        this.loading = false;
+        console.log(error);
+        if(error.response.status == 401){
+          console.log(error.response.status);
+          this.$store.dispatch('refreshToken')
+        }
+        else{
+          alert(error.message)
+        }
       });
     },
 
@@ -228,8 +278,27 @@ export default {
     },
 
     deleteItem(item) {
-      if(confirm("Are you sure you want to delete this appointment?")){
-        console.log(item)
+      if(confirm(this.$t('client.delete-confirm'))){
+        let data = {
+          cognitoId: item.cognitoId,
+        }
+        let config = {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': getToken().idToken,
+            'Content-Type': 'application/json'
+          }
+        }
+        axios.post(apiBaseUrl + 'user/delete', data, config).then((response) => {
+          if (response.data.msg == "success") {
+            this.getData()
+          }
+        }).catch(error => {
+          console.log(error);
+          if(error.message == "Internal server error"){
+            console.log('d')
+          }
+        });
       }
     },
 
@@ -245,25 +314,88 @@ export default {
       this.$refs.form.validate();
       if (this.$refs.form.validate(true)) {
         if (this.editedIndex > -1) {
-          Object.assign(this.listData[this.editedIndex], this.editedItem);
-        } else {
-          let loginInfo = getLoginInfo();
+          // Object.assign(this.listData[this.editedIndex], this.editedItem);
           let data = {
-            cognitoId: loginInfo.cognitoId,
-            userFirstname: this.editedIndex.firstname,
-            userLastname: this.editedIndex.lastname,
-            userEmail: this.editedIndex.user_email,
-            userPhone: this.editedIndex.user_phone
+            cognitoId: this.editedItem.cognitoId,
+            parameters: {
+              firstName: this.editedItem.firstName,
+              lastName: this.editedItem.lastName
+            }
           }
-          saveClient(data).then(res => {
-            if(res.data.message == "success"){
-              console.log(res.data.data)
+          let config = {
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': getToken().idToken,
+              'Content-Type': 'application/json'
+            }
+          }
+          axios.post(apiBaseUrl + 'user/update', data, config).then((response) => {
+            if (response.data.msg == "success") {
+              this.close();
+              this.getData();
             }
           }).catch(error => {
-            alert(error)
+            console.log(error);
+            if(error.message == "Internal server error"){
+              console.log('d')
+            }
           });
+
+        } else {
+          dataEmail.Value = this.editedItem.email
+          dataPhone.Value = this.editedItem.phoneNumber
+          var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail)
+          var attributePhone = new AmazonCognitoIdentity.CognitoUserAttribute(dataPhone)
+          attributeList.push(attributeEmail)
+          attributeList.push(attributePhone)
+          console.log('attribute list: ' + attributeList)
+          userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
+          console.log('sign up with: ' + this.editedItem.email + ' ' + this.editedItem.password)
+          this.callback = false
+          this.errcode = ''
+
+          userPool.signUp(this.editedItem.email, this.editedItem.password, attributeList, null, (err, result) => {
+            if (!this.callback) {
+              this.callback = true
+              console.log('register callback')
+              if (err) {
+                console.error('registration error: ' + JSON.stringify(err))
+                this.errcode = JSON.stringify(err.code)
+              } else {
+                this.showerr = false;
+                this.errmsg = "";
+                this.editedItem.cognitoId = result.userSub
+                let data = {
+                  cognitoId: this.editedItem.cognitoId,
+                  userFirstname: this.editedItem.firstName,
+                  userLastname: this.editedItem.lastName,
+                  userEmail: this.editedItem.email,
+                  userPhone: this.editedItem.phoneNumber
+                }
+                let config = {
+                  headers: {
+                    'Accept': 'application/json',
+                    'Authorization': getToken().idToken,
+                    'Content-Type': 'application/json'
+                  }
+                }
+                axios.post(apiBaseUrl + 'user/init-user', data, config).then((response) => {
+                  if (response.data.msg == "success") {
+                    this.close();
+                    this.getData();
+                  }
+                }).catch(error => {
+                  this.close();
+                  console.log(error);
+                  if(error.message == "Internal server error"){
+                    console.log('d')
+                  }
+                });
+              }
+            }
+          })
         }
-        this.close();
+        // this.close();
       }
     }
   }
