@@ -378,9 +378,11 @@ export default {
         }
       }).catch(error => {
         this.loading = false;
-        console.log(error);
-        if(error.message == "Internal server error"){
-          console.log('d')
+        if(error.response.status == 401){
+          this.$store.dispatch('tryAutoSignIn')
+        }
+        else{
+          alert(error.message)
         }
       });
     },
@@ -406,9 +408,11 @@ export default {
             this.getData()
           }
         }).catch(error => {
-          console.log(error);
-          if(error.message == "Internal server error"){
-            console.log('d')
+          if(error.response.status == 401){
+            this.$store.dispatch('tryAutoSignIn')
+          }
+          else{
+            alert(error.message)
           }
         });
       }
@@ -459,9 +463,11 @@ export default {
               this.getData();
             }
           }).catch(error => {
-            console.log(error);
-            if(error.message == "Internal server error"){
-              console.log('d')
+            if(error.response.status == 401){
+              this.$store.dispatch('tryAutoSignIn')
+            }
+            else{
+              alert(error.message)
             }
           });
 
@@ -521,9 +527,11 @@ export default {
                   }
                 }).catch(error => {
                   this.close();
-                  console.log(error);
-                  if(error.message == "Internal server error"){
-                    console.log('d')
+                  if(error.response.status == 401){
+                    this.$store.dispatch('tryAutoSignIn')
+                  }
+                  else{
+                    alert(error.message)
                   }
                 });
               }

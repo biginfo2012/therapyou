@@ -163,7 +163,12 @@ export default {
         this.loading = false;
       }).catch(error => {
         this.loading = false;
-        alert(error);
+        if(error.response.status == 401){
+          this.$store.dispatch('tryAutoSignIn')
+        }
+        else{
+          alert(error.message)
+        }
       });
 
     },
@@ -191,9 +196,11 @@ export default {
           }
         }
       }).catch(error => {
-        console.log(error);
-        if(error.message == "Internal server error"){
-          console.log('d')
+        if(error.response.status == 401){
+          this.$store.dispatch('tryAutoSignIn')
+        }
+        else{
+          alert(error.message)
         }
       });
     },
@@ -250,7 +257,12 @@ export default {
             this.getData();
           }
         }).catch(error => {
-          alert(error)
+          if(error.response.status == 401){
+            this.$store.dispatch('tryAutoSignIn')
+          }
+          else{
+            alert(error.message)
+          }
         });
       }
       this.close();

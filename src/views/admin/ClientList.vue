@@ -28,7 +28,7 @@
                             {{ errmsg }}
                           </v-alert>
                           <v-row>
-                            <v-col cols="12" sm="12" md="6" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.firstName"
                                   :rules="firstRules"
@@ -36,7 +36,7 @@
                                   :label="$t('client.first-name')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="6" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.lastName"
                                   :rules="lastRules"
@@ -44,9 +44,14 @@
                                   :label="$t('client.last-name')"
                               ></v-text-field>
                             </v-col>
-                          </v-row>
-                          <v-row>
-                            <v-col cols="12" sm="12" md="6" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                              <v-text-field
+                                  v-model="editedItem.credits"
+                                  outlined
+                                  :label="$t('client.credits')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.email"
                                   :rules="emailRules"
@@ -55,7 +60,7 @@
                                   :disabled="editedIndex === -1 ? false : true"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="6" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.phoneNumber"
                                   :rules="phoneRules"
@@ -64,7 +69,7 @@
                                   :disabled="editedIndex === -1 ? false : true"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="6" class="pb-0" v-if="editedIndex === -1">
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">
                               <v-text-field
                                   v-model="editedItem.password"
                                   :rules="passwordRules"
@@ -163,8 +168,14 @@ export default {
         {
           text: this.$t('client.phone'),
           align: "start",
-          sortable: false,
+          sortable: true,
           value: "phoneNumber"
+        },
+        {
+          text: this.$t('client.credits'),
+          align: "start",
+          sortable: true,
+          value: "credits"
         },
         { text: this.$t('general.actions'), value: "actions", sortable: false }
       ],
@@ -175,6 +186,7 @@ export default {
         firstName: "",
         lastName: "",
         email: "",
+        credits: null,
         phoneNumber: "",
         password: ""
       },
@@ -183,6 +195,7 @@ export default {
         firstName: "",
         lastName: "",
         email: "",
+        credits: null,
         phoneNumber: "",
         password: ""
       },
@@ -260,10 +273,8 @@ export default {
         }
       }).catch(error => {
         this.loading = false;
-        console.log(error);
         if(error.response.status == 401){
-          console.log(error.response.status);
-          this.$store.dispatch('refreshToken')
+          this.$store.dispatch('tryAutoSignIn')
         }
         else{
           alert(error.message)
@@ -294,9 +305,11 @@ export default {
             this.getData()
           }
         }).catch(error => {
-          console.log(error);
-          if(error.message == "Internal server error"){
-            console.log('d')
+          if(error.response.status == 401){
+            this.$store.dispatch('tryAutoSignIn')
+          }
+          else{
+            alert(error.message)
           }
         });
       }
@@ -319,7 +332,8 @@ export default {
             cognitoId: this.editedItem.cognitoId,
             parameters: {
               firstName: this.editedItem.firstName,
-              lastName: this.editedItem.lastName
+              lastName: this.editedItem.lastName,
+              credits: this.editedItem.credits
             }
           }
           let config = {
@@ -335,9 +349,11 @@ export default {
               this.getData();
             }
           }).catch(error => {
-            console.log(error);
-            if(error.message == "Internal server error"){
-              console.log('d')
+            if(error.response.status == 401){
+              this.$store.dispatch('tryAutoSignIn')
+            }
+            else{
+              alert(error.message)
             }
           });
 
@@ -386,16 +402,17 @@ export default {
                   }
                 }).catch(error => {
                   this.close();
-                  console.log(error);
-                  if(error.message == "Internal server error"){
-                    console.log('d')
+                  if(error.response.status == 401){
+                    this.$store.dispatch('tryAutoSignIn')
+                  }
+                  else{
+                    alert(error.message)
                   }
                 });
               }
             }
           })
         }
-        // this.close();
       }
     }
   }

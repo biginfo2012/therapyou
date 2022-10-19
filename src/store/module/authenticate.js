@@ -94,6 +94,7 @@ const mutations = {
             Pool: userPool,
         };
         state.cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+        console.log(state.cognitoUser)
     }
 }
 
@@ -159,6 +160,7 @@ const actions = {
         commit('setUserPool')
         let cognitoUser = state.userPool.getCurrentUser()
         if (cognitoUser != null) {
+            console.log("tryAutoSignIn")
             commit('setCognitoUser', cognitoUser)
             state.cognitoUser.getSession(function (err, session) {
                 if (err) {

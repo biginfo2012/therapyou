@@ -9,4 +9,14 @@ export default [
         icon: "book",
         to: "/user/appointment/list",
     },
+    {
+        title: "Invoices",
+        icon: "file-text",
+        to: "/user/invoice/list",
+    },
+    {
+        title: "Clients",
+        icon: "user",
+        to: "/user/client/list",
+    },
 ];

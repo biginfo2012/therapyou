@@ -85,6 +85,8 @@
     "first-name": "First Name",
     "last-name": "Last Name",
     "phone": "Phone Number",
+    "credits": "Credits",
+    "address": "Address",
     "delete-confirm": "Are you sure you want to delete this Client?"
   },
   "therapist": {

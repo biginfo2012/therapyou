@@ -1,64 +1,105 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <BaseCard heading="Appointments">
+    <BaseCard :heading="$t('client.clients')">
       <div>
         <v-list-item-subtitle class="text-wrap">
-
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="desserts" sort-by="calories" class="border">
+          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat color="white">
-                <v-toolbar-title>My Appointments</v-toolbar-title>
+                <v-toolbar-title>{{$t('client.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px">
+                <v-dialog v-model="dialog" max-width="1000px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on">Create Appointment</v-btn>
+                    <v-btn color="success" dark class="mb-2" v-on="on">{{$t('client.create')}}</v-btn>
                   </template>
                   <v-card>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
 
-                    <v-card-text>
+                    <v-card-text class="pb-0">
                       <v-container>
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-select :items="items" item-text="username"
-                                      item-value="cognitoId" label="User Name"
-                                      v-model="editedItem.username" class="mt-0 pt-0"></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-text-field
-                                v-model="editedItem.start_time"
-                                type="datetime-local"
-                                hide-details
-                                filled
-                                background-color="transparent"
-                                label="Start Time"
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
+                        <v-form ref="form">
+                          <v-alert outlined type="error" dismissible class="mb-4 mt-0" v-model="showerr">
+                            {{ errmsg }}
+                          </v-alert>
+                          <v-row>
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                              <v-text-field
+                                  v-model="editedItem.firstName"
+                                  :rules="firstRules"
+                                  required outlined
+                                  :label="$t('client.first-name')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                              <v-text-field
+                                  v-model="editedItem.lastName"
+                                  :rules="lastRules"
+                                  required outlined
+                                  :label="$t('client.last-name')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                              <v-text-field
+                                  v-model="editedItem.credits"
+                                  outlined
+                                  :label="$t('client.credits')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                              <v-text-field
+                                  v-model="editedItem.email"
+                                  :rules="emailRules"
+                                  required outlined
+                                  :label="$t('login.email')"
+                                  :disabled="editedIndex === -1 ? false : true"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                              <v-text-field
+                                  v-model="editedItem.phoneNumber"
+                                  :rules="phoneRules"
+                                  required outlined
+                                  :label="$t('client.phone')"
+                                  :disabled="editedIndex === -1 ? false : true"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">
+                              <v-text-field
+                                  v-model="editedItem.password"
+                                  :rules="passwordRules"
+                                  outlined required
+                                  :disabled="editedIndex === -1 ? false : true"
+                                  :label="$t('login.password')"
+                                  type="password"
+                              ></v-text-field>
+                            </v-col>
+                          </v-row>
+                        </v-form>
+
                       </v-container>
                     </v-card-text>
 
-                    <v-card-actions>
+                    <v-card-actions class="px-10 pb-3">
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <!--              <v-icon small class="mr-2" @click="cancelItem(item)">mdi-pencil</v-icon>-->
+              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize">Reset</v-btn>
+              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
         </div>
@@ -68,62 +109,139 @@
 </template>
 
 <script>
+import {getLoginInfo, getToken} from '@/utils'
 import axios from "axios";
-import {apiBaseUrl} from "@/constants/config";
-import {getAppointmentList, getUserList} from "@/api/appointment_master";
-import {getLoginInfo} from '@/utils'
+import {apiBaseUrl, poolData} from "@/constants/config";
+
+var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
+
+var userPool = []
+var attributeList = []
+var dataEmail = {
+  Name: 'email',
+  Value: ''
+}
+var dataPhone = {
+  Name: 'phone_number',
+  Value: ''
+}
 
 export default {
   name: "ClientList",
-  data: () => ({
-    page: {
-      title: "ClientList",
-    },
-    breadcrumbs: [
-      {
-        text: "ClientList",
-        disabled: false,
-        to: "#",
-      }
-    ],
-    dialog: false,
-    items: [
-      {username: 'ghost', cognitoId: '8cd644a8-0a60-46fe-a507-13b64a0fc25f'},
-      {username: 'big', cognitoId: '8cd644a8-0a60-46fe-a507-13b64a0fc25e'},
-    ],
-    headers: [
-      {
-        text: "User Name",
-        align: "start",
-        sortable: false,
-        value: "username"
+  data: function () {
+    return {
+      callback: false,
+      showerr: false,
+      errcode: '',
+      errmsg: '',
+      page: {
+        title: this.$t('client.list'),
       },
-      { text: "Start Time", value: "start_time" },
-      { text: "Created Time", value: "created_at" },
-      { text: "Actions", value: "actions", sortable: false }
-    ],
-    desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      username: "",
-      start_time: 0,
-      created_at: 0
-    },
-    defaultItem: {
-      username: "",
-      start_time: 0,
-      created_at: 0
+      breadcrumbs: [
+        {
+          text: this.$t('client.list'),
+          disabled: false,
+          to: "#",
+        }
+      ],
+      dialog: false,
+      loading: false,
+      headers: [
+        {
+          text: this.$t('client.first-name'),
+          align: "start",
+          sortable: true,
+          value: "firstName"
+        },
+        {
+          text: this.$t('client.last-name'),
+          align: "start",
+          sortable: true,
+          value: "lastName"
+        },
+        {
+          text: this.$t('login.email'),
+          align: "start",
+          sortable: true,
+          value: "email"
+        },
+        {
+          text: this.$t('client.phone'),
+          align: "start",
+          sortable: true,
+          value: "phoneNumber"
+        },
+        {
+          text: this.$t('client.credits'),
+          align: "start",
+          sortable: true,
+          value: "credits"
+        },
+        { text: this.$t('general.actions'), value: "actions", sortable: false }
+      ],
+      listData: [],
+      editedIndex: -1,
+      editedItem: {
+        cognitoId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        credits: null,
+        phoneNumber: "",
+        password: ""
+      },
+      defaultItem: {
+        cognitoId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        credits: null,
+        phoneNumber: "",
+        password: ""
+      },
+      emailRules: [
+        v => !!v || this.$t('error-messages.email-required'),
+        v => /.+@.+\..+/.test(v) || this.$t('error-messages.email-valid'),
+      ],
+      passwordRules: [
+        (v) => !!v || this.$t('error-messages.password-required'),
+        (v) => !v || v.length >= 8 || this.$t('error-messages.password-length'),
+        (v) => /^(?=.*[0-9])/.test(v) || this.$t('error-messages.password-number'),
+        (v) => /^(?=.*[a-z])/.test(v) || this.$t('error-messages.password-lower'),
+        (v) => /^(?=.*[A-Z])/.test(v) || this.$t('error-messages.password-upper'),
+        (v) => /^(?=.*[!@#$%^&*"])/.test(v) || this.$t('error-messages.password-special'),
+      ],
+      phoneRules:[
+        v => !!v || this.$t('error-messages.phone-required'),
+      ],
+      firstRules:[
+        v => !!v || this.$t('error-messages.first-required'),
+      ],
+      lastRules:[
+        v => !!v || this.$t('error-messages.last-required'),
+      ],
     }
-  }),
+  },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New" : "Edit";
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
     }
   },
 
   watch: {
     dialog(val) {
       val || this.close();
+    },
+    errcode () {
+      console.log('watched error code: ' + this.errcode)
+      if (this.errcode !== '') {
+        if (this.errcode === '"UsernameExistsException"') {
+          this.errmsg = this.$t('cognito-messages.UsernameExistsException')
+        } else {
+          this.errmsg = this.$t('error-messages.error')
+        }
+        this.showerr = true
+      }
     }
   },
 
@@ -133,138 +251,66 @@ export default {
 
   methods: {
     initialize() {
-      this.desserts = [
-        {
-          id: 1,
-          username: "Frozen Yogurt",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 2,
-          username: "Ice cream sandwich",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 3,
-          username: "Eclair",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 4,
-          username: "Cupcake",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 5,
-          username: "Gingerbread",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 6,
-          username: "Jelly bean",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 7,
-          username: "Lollipop",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 8,
-          username: "Honeycomb",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 9,
-          username: "Donut",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        },
-        {
-          id: 10,
-          username: "KitKat",
-          start_time: "2022/10/20 10:10",
-          created_at: "2022/10/10 10:10",
-        }
-      ];
       this.getData()
-      this.getUserData()
     },
     getData(){
-      let loginInfo = getLoginInfo();
-      let data = {
-        cognitoId: loginInfo.cognitoId,
-        offset: 0,
-        limit: 500
-      }
-      getAppointmentList(data).then(res => {
-        if(res.data.message == "success"){
-          console.log(res.data.data.appointments)
-        }
-      }).catch(error => {
-        alert(error)
-      });
-      // axios.post(apiBaseUrl + 'appointments/list', {
-      //   cognitoId: loginInfo.cognitoId,
-      //   offset: 0,
-      //   limit: 500
-      // }).then((response) => {
-      //   if(response.data.message == "success"){
-      //     console.log(response.data.data.appointments)
-      //   }
-      // }).catch(error => {
-      //   alert(error)
-      // });
-    },
-    getUserData(){
+      this.loading = true;
       let loginInfo = getLoginInfo();
       let data = {
         cognitoId: loginInfo.cognitoId,
       }
-      getUserList(data).then(res => {
-        if(res.data.message == "success"){
-          console.log(res.data.data)
+      let config = {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': getToken().idToken,
+          'Content-Type': 'application/json'
+        }
+      }
+      axios.post(apiBaseUrl + 'user/list', data, config).then((response) => {
+        if (response.data.msg == "success") {
+          this.listData = response.data.data.userList;
+          this.loading = false;
         }
       }).catch(error => {
-        alert(error)
+        this.loading = false;
+        if(error.response.status == 401){
+          this.$store.dispatch('tryAutoSignIn')
+        }
+        else{
+          alert(error.message)
+        }
       });
-      // axios.post(apiBaseUrl + 'appointments/list', {
-      //   cognitoId: loginInfo.cognitoId,
-      //   offset: 0,
-      //   limit: 500
-      // }).then((response) => {
-      //   if(response.data.message == "success"){
-      //     console.log(response.data.data.appointments)
-      //   }
-      // }).catch(error => {
-      //   alert(error)
-      // });
     },
 
-    cancelItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
+    editItem(item) {
+      this.editedIndex = this.listData.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
-      if(confirm("Are you sure you want to delete this appointment?")){
-        axios.get(apiBaseUrl + 'appointments/delete/' + item.id).then((response) => {
-          if(response.data.message == "success"){
-            const index = this.desserts.indexOf(item);
-            this.desserts.splice(index, 1);
-            this.getData();
+      if(confirm(this.$t('client.delete-confirm'))){
+        let data = {
+          cognitoId: item.cognitoId,
+        }
+        let config = {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': getToken().idToken,
+            'Content-Type': 'application/json'
+          }
+        }
+        axios.post(apiBaseUrl + 'user/delete', data, config).then((response) => {
+          if (response.data.msg == "success") {
+            this.getData()
           }
         }).catch(error => {
-          alert(error)
+          if(error.response.status == 401){
+            this.$store.dispatch('tryAutoSignIn')
+          }
+          else{
+            alert(error.message)
+          }
         });
       }
     },
@@ -278,29 +324,96 @@ export default {
     },
 
     save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        //this.desserts.push(this.editedItem);
-        if(this.editedItem.username == "" || this.editedItem.start_time == 0){
-          return
-        }
-        let loginInfo = getLoginInfo();
-        console.log(Date.parse(this.editedItem.start_time));
-        axios.post(apiBaseUrl + 'appointments/create', {
-          cognitoId: loginInfo.cognitoId,
-          userId: this.editedItem.username,
-          datetime: Date.parse(this.editedItem.start_time)
-        }).then((response) => {
-          console.log(response)
-          if(response.data.message == "success"){
-            this.getData();
+      this.$refs.form.validate();
+      if (this.$refs.form.validate(true)) {
+        if (this.editedIndex > -1) {
+          // Object.assign(this.listData[this.editedIndex], this.editedItem);
+          let data = {
+            cognitoId: this.editedItem.cognitoId,
+            parameters: {
+              firstName: this.editedItem.firstName,
+              lastName: this.editedItem.lastName,
+              credits: this.editedItem.credits
+            }
           }
-        }).catch(error => {
-          alert(error)
-        });
+          let config = {
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': getToken().idToken,
+              'Content-Type': 'application/json'
+            }
+          }
+          axios.post(apiBaseUrl + 'user/update', data, config).then((response) => {
+            if (response.data.msg == "success") {
+              this.close();
+              this.getData();
+            }
+          }).catch(error => {
+            if(error.response.status == 401){
+              this.$store.dispatch('tryAutoSignIn')
+            }
+            else{
+              alert(error.message)
+            }
+          });
+
+        } else {
+          dataEmail.Value = this.editedItem.email
+          dataPhone.Value = this.editedItem.phoneNumber
+          var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail)
+          var attributePhone = new AmazonCognitoIdentity.CognitoUserAttribute(dataPhone)
+          attributeList.push(attributeEmail)
+          attributeList.push(attributePhone)
+          console.log('attribute list: ' + attributeList)
+          userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
+          console.log('sign up with: ' + this.editedItem.email + ' ' + this.editedItem.password)
+          this.callback = false
+          this.errcode = ''
+
+          userPool.signUp(this.editedItem.email, this.editedItem.password, attributeList, null, (err, result) => {
+            if (!this.callback) {
+              this.callback = true
+              console.log('register callback')
+              if (err) {
+                console.error('registration error: ' + JSON.stringify(err))
+                this.errcode = JSON.stringify(err.code)
+              } else {
+                this.showerr = false;
+                this.errmsg = "";
+                this.editedItem.cognitoId = result.userSub
+                let data = {
+                  cognitoId: this.editedItem.cognitoId,
+                  userFirstname: this.editedItem.firstName,
+                  userLastname: this.editedItem.lastName,
+                  userEmail: this.editedItem.email,
+                  userPhone: this.editedItem.phoneNumber
+                }
+                let config = {
+                  headers: {
+                    'Accept': 'application/json',
+                    'Authorization': getToken().idToken,
+                    'Content-Type': 'application/json'
+                  }
+                }
+                axios.post(apiBaseUrl + 'user/init-user', data, config).then((response) => {
+                  if (response.data.msg == "success") {
+                    this.close();
+                    this.getData();
+                  }
+                }).catch(error => {
+                  this.close();
+                  if(error.response.status == 401){
+                    this.$store.dispatch('tryAutoSignIn')
+                  }
+                  else{
+                    alert(error.message)
+                  }
+                });
+              }
+            }
+          })
+        }
       }
-      this.close();
     }
   }
 }

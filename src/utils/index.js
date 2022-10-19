@@ -2,6 +2,7 @@ import {apiBaseUrl} from '@/constants/config'
 import axios from 'axios';
 import router from "@/router/router";
 import {AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY, AWS_REGION, AWS_BUCKET} from "@/constants/config";
+import store from '../store/store'
 
 const aws = require('aws-sdk')
 aws.config.update({
@@ -111,16 +112,22 @@ export const getToken = () => {
 export const getLoggedUserInfo = (cognitoId) => {
     axios.get(apiBaseUrl + 'therapist/get?cognitoId=' + cognitoId).then((response) => {
         let userData = response.data.data.therapist[0];
-        sessionStorage.setItem('userData', JSON.stringify(userData));
-        console.log(userData);
-        if(userData.role == 2){
-            router.push('/admin/dashboard')
+        if(userData){
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+            console.log(userData);
+            if(userData.role == 2){
+                router.push('/admin/dashboard')
+            }
+            else{
+                router.push('/user/dashboard')
+            }
         }
         else{
-            router.push('/user/dashboard')
+            store.commit('setError', 'Unknown')
         }
     }).catch(error => {
-        alert(error)
+        console.error(error)
+        store.commit('setError', 'Unknown')
     });
 };
 
