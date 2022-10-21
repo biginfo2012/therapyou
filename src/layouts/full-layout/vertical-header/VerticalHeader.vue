@@ -1,17 +1,17 @@
 <template>
   <v-app-bar
-    app
-    clipped-left
-    clipped-right
-    :color="navbarColor"
-    :dark="navbarColor !== '#fafafa'"
-    class="app-navbar">
+      app
+      clipped-left
+      clipped-right
+      :color="navbarColor"
+      :dark="navbarColor !== '#fafafa'"
+      class="app-navbar">
     <!-- ---------------------------------------------- -->
     <!---/Toggle sidebar part -->
     <!-- ---------------------------------------------- -->
     <div>
       <v-app-bar-nav-icon
-        @click="$vuetify.breakpoint.smAndDown
+          @click="$vuetify.breakpoint.smAndDown
             ? setSidebarDrawer(!Sidebar_drawer)
             : $emit('input', !value)"/>
     </div>
@@ -35,7 +35,7 @@
       <template v-slot:activator="{ on }">
         <v-btn icon v-on="on" class="mr-5">
           <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false" width="32"/>
-          <span class="name ml-2 mr-3">{{$i18n.locale.toUpperCase()}}</span>
+          <span class="name ml-2 mr-3">{{ $i18n.locale.toUpperCase() }}</span>
         </v-btn>
       </template>
 
@@ -63,33 +63,33 @@
     <!-- User Profile -->
     <!-- ---------------------------------------------- -->
     <v-menu
-      bottom
-      left
-      offset-y
-      origin="top right"
-      transition="scale-transition"
-      min-width="280">
+        bottom
+        left
+        offset-y
+        origin="top right"
+        transition="scale-transition"
+        min-width="280">
       <template v-slot:activator="{ on }">
         <v-btn
-          v-on="on"
-          class="pa-0 px-1"
-          elevation="0"
-          color="transparent"
-          plain
-          :ripple="false">
+            v-on="on"
+            class="pa-0 px-1"
+            elevation="0"
+            color="transparent"
+            plain
+            :ripple="false">
           <v-avatar size="35">
-            <img src="@/assets/images/users/user2.jpg" alt="Julia" />
+            <img :src="userInfo.profileImage" alt="Julia"/>
           </v-avatar>
         </v-btn>
       </template>
 
       <v-list class="pa-8">
-        <h4 class="font-weight-medium fs-18">User Profile</h4>
-        <div class="d-flex align-center my-4">
-          <img src="@/assets/images/users/user2.jpg"
-            alt="Julia" class="rounded-circle" width="90"/>
+        <h4 class="font-weight-medium fs-18">{{ $t('header.profile') }}</h4>
+        <div class="d-flex align-center my-4" @click="goPage" style="cursor: pointer">
+          <img :src="userInfo.profileImage"
+               alt="Julia" class="rounded-circle" width="90"/>
           <div class="ml-4">
-            <h4 class="font-weight-medium fs-18">{{ userInfo.name}}</h4>
+            <h4 class="font-weight-medium fs-18">{{ userInfo.name }}</h4>
             <span class="subtitle-2 font-weight-light">{{ userInfo.role }}</span>
           </div>
         </div>
@@ -100,9 +100,9 @@
 </template>
 <script>
 // Utilities
-import { mapState, mapMutations, mapActions } from "vuex";
-import {getLoginInfo, setLocale} from "@/utils";
-import {localeOptions} from "@/constants/config";
+import {mapState, mapMutations, mapActions} from "vuex"
+import {getLoginInfo, setLocale} from "@/utils"
+import {localeOptions} from "@/constants/config"
 
 export default {
   name: "VerticalHeader",
@@ -115,20 +115,20 @@ export default {
       default: false,
     },
   },
-  data: () => ({
-    showSearch: false,
-    drawer: false,
-    group: null,
-    localeOptions,
-    userInfo:{
-      id: 0,
-      name: "",
-      role: "",
-    },
-    href() {
-      return undefined;
-    },
-  }),
+  data: function () {
+    return {
+      showSearch: false,
+      drawer: false,
+      group: null,
+      localeOptions,
+      userInfo: {
+        id: 0,
+        name: "",
+        role: "",
+        profileImage: ""
+      },
+    }
+  },
 
   computed: {
     ...mapState(["navbarColor", "Sidebar_drawer"]),
@@ -140,27 +140,30 @@ export default {
     }),
     ...mapActions(['setLang']),
 
-    logout(){
-      this.$store.dispatch('signOut');
+    logout() {
+      this.$store.dispatch('signOut')
     },
     changeLocale(l) {
-      let locale = l.id;
-      this.setLang(locale);
+      let locale = l.id
+      this.setLang(locale)
     },
     getLocaleIcon() {
-      const locale = this.$i18n.locale;
+      const locale = this.$i18n.locale
       for (let l of localeOptions) {
-        if (l.id === locale) return l.icon;
+        if (l.id === locale) return l.icon
       }
-      return localeOptions[1].icon;
+      return localeOptions[1].icon
     },
-    setLanguageInfo(){
-      setLocale(this.$i18n.locale);
+    goPage() {
+      this.$router.push('/profile')
+    },
+    setLanguageInfo() {
+      setLocale(this.$i18n.locale)
     },
   },
   watch: {
     group() {
-      this.drawer = false;
+      this.drawer = false
     },
     '$i18n.locale'(to, from) {
       if (from !== to) {
@@ -169,19 +172,21 @@ export default {
     },
   },
   mounted() {
-    let loginInfo = getLoginInfo();
+    let loginInfo = getLoginInfo()
     this.userInfo.id = loginInfo.id
     this.userInfo.name = loginInfo.name
     this.userInfo.role = loginInfo.role == 2 ? "Admin" : "Therapist"
-    this.setLanguageInfo();
+    this.userInfo.profileImage = loginInfo.profileImage
+    this.setLanguageInfo()
   }
-};
+}
 </script>
 
 <style lang="scss">
 .hidelogo {
   display: none;
 }
+
 .searchinput {
   position: absolute;
   width: 100%;
@@ -190,6 +195,7 @@ export default {
   z-index: 10;
   padding: 0 15px;
 }
+
 .descpart {
   max-width: 220px;
 }

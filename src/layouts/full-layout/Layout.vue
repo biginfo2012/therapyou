@@ -6,33 +6,22 @@
         <!--- Vertical Header part -->
         <!-- ---------------------------------- -->
         <VerticalHeader
-          v-if="!setHorizontalLayout"
-          v-model="expandOnHover"
+            v-if="!setHorizontalLayout"
+            v-model="expandOnHover"
         ></VerticalHeader>
         <!-- ---------------------------------- -->
         <!--- Horizontal Header part -->
         <!-- ---------------------------------- -->
         <HorizontalHeader v-else></HorizontalHeader>
-        <router-view />
-<!--        <v-btn-->
-<!--          bottom-->
-<!--          color="primary"-->
-<!--          dark-->
-<!--          fab-->
-<!--          fixed-->
-<!--          right-->
-<!--          @click.stop="setCustomizerDrawer(!Customizer_drawer)"-->
-<!--        >-->
-<!--          <v-icon>mdi-cog</v-icon>-->
-<!--        </v-btn>-->
+        <router-view/>
       </v-container>
     </v-main>
     <!-- ---------------------------------- -->
     <!--- Vertical Sidebar  part -->
     <!-- ---------------------------------- -->
     <VerticalSidebar
-      v-if="!setHorizontalLayout"
-      :expand-on-hover.sync="expandOnHover"
+        v-if="!setHorizontalLayout"
+        :expand-on-hover.sync="expandOnHover"
     ></VerticalSidebar>
     <!-- ---------------------------------- -->
     <!--- Horizontal Sidebar part -->
@@ -43,32 +32,21 @@
     <!-- ---------------------------------- -->
     <Customizer v-model="expandOnHover"></Customizer>
     <!-- ---------------------------------- -->
-    <!--- Vertical Footer part -->
-    <!-- ---------------------------------- -->
-    <!-- <Footer v-if="!setHorizontalLayout"></Footer> -->
-    <!-- ---------------------------------- -->
-    <!--- Horizontal Footer part -->
-    <!-- ---------------------------------- -->
-    <!-- <HorizontalFooter v-else></HorizontalFooter> -->
   </v-app>
 </template>
 
 <script>
-import HorizontalHeader from "./horizontal-header/HorizontalHeader";
-import VerticalHeader from "./vertical-header/VerticalHeader";
-import HorizontalSidebar from "./horizontal-sidebar/HorizontalSidebar";
-import VerticalSidebar from "./vertical-sidebar/VerticalSidebar";
-// import Footer from "./footer/Footer";
-// import HorizontalFooter from "./horizontal-footer/HorizontalFooter";
-import Customizer from "./customizer/Customizer";
-import { mapState, mapMutations } from "vuex";
+
+import VerticalHeader from "./vertical-header/VerticalHeader"
+import VerticalSidebar from "./vertical-sidebar/VerticalSidebar"
+import Customizer from "./customizer/Customizer"
+import {mapState, mapMutations} from "vuex"
+
 export default {
   name: "Layout",
 
   components: {
-    HorizontalHeader,
     VerticalHeader,
-    HorizontalSidebar,
     VerticalSidebar,
     Customizer,
   },
@@ -88,7 +66,7 @@ export default {
       setCustomizerDrawer: "SET_CUSTOMIZER_DRAWER",
     }),
   },
-};
+}
 </script>
 
 <style></style>

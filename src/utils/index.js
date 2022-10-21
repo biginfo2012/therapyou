@@ -1,7 +1,7 @@
 import {apiBaseUrl} from '@/constants/config'
-import axios from 'axios';
-import router from "@/router/router";
-import {AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY, AWS_REGION, AWS_BUCKET} from "@/constants/config";
+import axios from 'axios'
+import router from "@/router/router"
+import {AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY, AWS_REGION, AWS_BUCKET} from "@/constants/config"
 import store from '../store/store'
 
 const aws = require('aws-sdk')
@@ -16,7 +16,7 @@ export const s3 = new aws.S3({
 
 export const singleUpload = (file, folder) => {
     const key = folder + '/' + Date.now() + '-' + file.name.replace(/\s/g, '-')
-    console.log(key);
+    console.log(key)
     const params = {
         Bucket: AWS_BUCKET,
         Key: key,
@@ -31,7 +31,7 @@ export const singleUpload = (file, folder) => {
             },
         })
         .then(result => {
-            console.log(result);
+            console.log(result)
             const bucketUrl = decodeURIComponent(result.request.responseURL).split(
                 key
             )[0]
@@ -56,34 +56,35 @@ export const deleteObjectByKey = key => {
 }
 
 export const isLoggedIn = () => {
-    let loginInfo = getLoginInfo();
+    let loginInfo = getLoginInfo()
     if (loginInfo) {
-        return true;
+        return true
     } else {
-        return false;
+        return false
     }
-};
+}
 export const isLoggedInAsAdmin = () => {
-    let loginInfo = getLoginInfo();
+    let loginInfo = getLoginInfo()
     if (loginInfo.role == 2) {
-        return true;
+        return true
     }
-    return false;
-};
+    return false
+}
 
 export const isLoggedInAsUser = () => {
-    let loginInfo = getLoginInfo();
+    let loginInfo = getLoginInfo()
 
     if (loginInfo.role != 2) {
-        return true;
+        return true
     }
-    return false;
-};
+    return false
+}
 
 export const getLoginInfo = () => {
-    let loginInfo = sessionStorage.getItem('userData');
+    console.log("called getLoginInfo")
+    let loginInfo = sessionStorage.getItem('userData')
     try {
-        loginInfo = JSON.parse(loginInfo);
+        loginInfo = JSON.parse(loginInfo)
         if (loginInfo) {
             return loginInfo
         }
@@ -91,13 +92,13 @@ export const getLoginInfo = () => {
     } catch (e) {
         return false
     }
-
-    return false;
-};
+    return false
+}
 export const getToken = () => {
-    let token = sessionStorage.getItem('token');
+    console.log("called getToken")
+    let token = sessionStorage.getItem('token')
     try {
-        token = JSON.parse(token);
+        token = JSON.parse(token)
         if (token) {
             return token
         }
@@ -106,41 +107,39 @@ export const getToken = () => {
         return false
     }
 
-    return false;
-};
+    return false
+}
 
 export const getLoggedUserInfo = (cognitoId) => {
     axios.get(apiBaseUrl + 'therapist/get?cognitoId=' + cognitoId).then((response) => {
-        let userData = response.data.data.therapist[0];
-        if(userData){
-            sessionStorage.setItem('userData', JSON.stringify(userData));
-            console.log(userData);
-            if(userData.role == 2){
+        let userData = response.data.data.therapist[0]
+        if (userData) {
+            sessionStorage.setItem('userData', JSON.stringify(userData))
+            console.log(userData)
+            if (userData.role == 2) {
                 router.push('/admin/dashboard')
-            }
-            else{
+            } else {
                 router.push('/user/dashboard')
             }
-        }
-        else{
+        } else {
             store.commit('setError', 'Unknown')
         }
     }).catch(error => {
         console.error(error)
         store.commit('setError', 'Unknown')
-    });
-};
+    })
+}
 
 export const setLocale = localValue => {
-    sessionStorage.setItem('currentLanguage', localValue);
-};
+    sessionStorage.setItem('currentLanguage', localValue)
+}
 export const convertToDate = milliseconds => {
-    let d = new Date(parseInt(milliseconds, 10));
+    let d = new Date(parseInt(milliseconds, 10))
     return formatDate(new Date(d))
-};
+}
 
 function padTo2Digits(num) {
-    return num.toString().padStart(2, '0');
+    return num.toString().padStart(2, '0')
 }
 
 function formatDate(date) {
@@ -155,5 +154,5 @@ function formatDate(date) {
             padTo2Digits(date.getHours()),
             padTo2Digits(date.getMinutes()),
         ].join(':')
-    );
+    )
 }

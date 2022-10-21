@@ -1,22 +1,22 @@
 export default [
     {
-        title: "Dashboard-User",
+        title: "menu.dashboard",
         icon: "pie-chart",
         to: "/user/dashboard",
     },
     {
-        title: "Appointments",
+        title: "menu.appointment",
         icon: "book",
         to: "/user/appointment/list",
     },
     {
-        title: "Invoices",
+        title: "menu.invoice",
         icon: "file-text",
         to: "/user/invoice/list",
     },
     {
-        title: "Clients",
+        title: "menu.client",
         icon: "user",
         to: "/user/client/list",
     },
-];
+]

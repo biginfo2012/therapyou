@@ -1,14 +1,14 @@
-import {isLoggedIn, isLoggedInAsAdmin} from "./index";
+import {isLoggedIn, isLoggedInAsAdmin} from "./index"
 
 export default (to, from, next) => {
     if (isLoggedIn()) {
         if(isLoggedInAsAdmin()){
-            next();
+            next()
         }
         else{
-            next('/error/403');
+            next('/error/403')
         }
     } else {
-        next('/login');
+        next('/login')
     }
-};
+}

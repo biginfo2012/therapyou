@@ -1,85 +1,42 @@
-import axios from 'axios'
-import app from '../main';
 import {getToken} from "@/utils";
+import axios from "axios";
+import {apiBaseUrl} from "@/constants/config";
 
-const getApiManager = function () {
-    console.log(getToken().accessToken);
-    const apiManager = axios.create({
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': getToken().accessToken,
-            'Content-Type': 'application/json'
-        },
-        validateStatus: function (status) {
-            return status >= 200 && status <= 503;
-        },
-    });
-    apiManager.interceptors.response.use((response) => {
-        // Any status code that lie within the range of 2xx cause this function to trigger
-        // Do something with response data
-        console.log("getApiManager")
-        console.log(response)
-        let message = response.data.message;
-        switch (message) {
-            case 'invalid-token':
-                break;
-            case 'token-expired':
-                break;
+let config = {
+    headers: {
+        'Accept': 'application/json',
+        'Authorization': getToken().idToken,
+        'Content-Type': 'application/json'
+    }
+}
 
-            case 'forbidden':
-                break;
-
-            default:
-
-        }
-
-        return response;
-    }, (error) => {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
-        app.$notify('error', app.$t(`api-call-error-messages.error-title`), app.$t(`api-call-error-messages.network-error`), {
-            duration: 3000,
-            permanent: false
-        });
-        return Promise.reject(error);
-    });
-
-    return apiManager;
-};
-
-const getApiManagerError = function () {
-
-    const apiManager = axios.create({
-        headers: {'X-AUTH-TOKEN': 'token'}
-    });
-    apiManager.interceptors.response.use((response) => {
-        // Any status code that lie within the range of 2xx cause this function to trigger
-        // Do something with response data
-
-        let message = response.data.message;
-
-
-        switch (message) {
-
-            case 'invalid-token':
-                break;
-            case 'token-expired':
-                break;
-
-            case 'forbidden':
-                break;
-
-            default:
-        }
-
-        return response;
-    }, (error) => {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
-        return Promise.reject(error);
-    });
-
-    return apiManager;
-};
-
-export {getApiManager, getApiManagerError};
+export function getAppointmentList(data) {
+    return axios.post(apiBaseUrl + 'appointments/list', data, config)
+}
+export function createAppointment(data) {
+    return axios.post(apiBaseUrl + 'appointments/create', data, config)
+}
+export function getTherapistList(data) {
+    return axios.post(apiBaseUrl + 'therapist/list', data, config)
+}
+export function getUserList(data) {
+    return axios.post(apiBaseUrl + 'user/list', data, config)
+}
+export function deleteUser(data) {
+    return axios.post(apiBaseUrl + 'user/delete', data, config)
+}
+export function updateUser(data) {
+    return axios.post(apiBaseUrl + 'user/update', data, config)
+}
+export function initUser(data) {
+    return axios.post(apiBaseUrl + 'user/init-user', data, config)
+}
+export function getInvoiceList(data) {
+    return axios.post(apiBaseUrl + 'invoice/list', data, config)
+}
+export function deleteInvoice(data) {
+    return axios.post(apiBaseUrl + 'invoice/delete', data, config)
+}
+export function uploadInvoice(data) {
+    return axios.post(apiBaseUrl + 'invoice/upload', data, config)
+}

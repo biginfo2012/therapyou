@@ -6,24 +6,30 @@
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading"
+                        loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat color="white">
                 <v-toolbar-title>{{ $t('appointment.my') }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px">
+                <v-dialog v-model="dialog" max-width="500px" persistent>
                   <template v-slot:activator="{ on }">
                     <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('appointment.create') }}</v-btn>
                   </template>
                   <v-card>
+                    <img src="@/assets/images/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
-
                     <v-card-text>
                       <v-container>
                         <v-row>
+                          <v-col cols="12" sm="12" md="12">
+                            <v-select :items="therapistItems" item-text="name"
+                                      item-value="cognitoId" :label="$t('appointment.therapist-name')"
+                                      v-model="editedItem.therapistCognitoId" class="mt-0 pt-0"></v-select>
+                          </v-col>
                           <v-col cols="12" sm="12" md="12">
                             <v-select :items="items" item-text="username"
                                       item-value="cognitoId" :label="$t('appointment.user-name')"
@@ -42,11 +48,10 @@
                         </v-row>
                       </v-container>
                     </v-card-text>
-
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -56,20 +61,20 @@
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
+              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
         </div>
       </div>
     </BaseCard>
   </v-container>
-
 </template>
 
 <script>
-import axios from "axios";
-import {apiBaseUrl} from "@/constants/config";
-import {getLoginInfo, getToken, convertToDate} from '@/utils'
+import axios from "axios"
+import {apiBaseUrl} from "@/constants/config"
+import {getLoginInfo, convertToDate} from '@/utils'
+import {createAppointment, getAppointmentList, getTherapistList, getUserList} from "@/api"
 
 export default {
   name: "AppointmentList",
@@ -87,8 +92,16 @@ export default {
       ],
       dialog: false,
       loading: false,
+      sending: false,
       items: [],
+      therapistItems: [],
       headers: [
+        {
+          text: this.$t('appointment.therapist-name'),
+          align: "start",
+          sortable: false,
+          value: "therapistname"
+        },
         {
           text: this.$t('appointment.user-name'),
           align: "start",
@@ -102,92 +115,103 @@ export default {
       datas: [],
       editedIndex: -1,
       editedItem: {
+        therapistCognitoId: "",
         cognitoId: "",
         start_time: 0,
       },
       defaultItem: {
+        therapistCognitoId: "",
         cognitoId: "",
         start_time: 0,
-      }
+      },
+      loginInfo: getLoginInfo()
     }
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit')
     }
   },
 
   watch: {
     dialog(val) {
-      val || this.close();
+      val || this.close()
     }
   },
 
   created() {
-    this.initialize();
+    this.initialize()
   },
 
   methods: {
     initialize() {
       this.getData()
       this.getUserData()
+      this.getTherapistData()
+    },
+    handle(error) {
+      console.log(error)
+      if (error.response.status == 401) {
+        this.$store.dispatch('tryAutoSignIn')
+      } else {
+        this.$dialog.notify.error(error.response.data.message)
+      }
     },
     getData() {
-      this.loading = true;
-      let loginInfo = getLoginInfo();
+      this.loading = true
       let data = {
-        cognitoId: loginInfo.cognitoId,
+        cognitoId: this.loginInfo.cognitoId,
         offset: 0,
         limit: 500
       }
-      let config = {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getToken().accessToken,
-          'Content-Type': 'application/json'
-        }
-      }
-      axios.post(apiBaseUrl + 'appointments/list', data, config).then((response) => {
+      getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
-          this.datas = [];
+          this.datas = []
           for (let i = 0; i < appointmens.length; i++) {
             let tmp = {}
-            tmp['id'] = appointmens[i]['id'];
+            tmp['id'] = appointmens[i]['id']
+            tmp['therapistname'] = appointmens[i]['name']
             tmp['username'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
             tmp['start_time'] = convertToDate(appointmens[i]['startTime'])
             tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
             this.datas.push(tmp)
           }
         }
-        this.loading = false;
+        this.loading = false
       }).catch(error => {
-        this.loading = false;
-        if(error.response.status == 401){
-          this.$store.dispatch('tryAutoSignIn')
-        }
-        else{
-          alert(error.message)
-        }
-      });
+        this.loading = false
+        this.handle(error)
+      })
 
     },
-    getUserData() {
-      let loginInfo = getLoginInfo();
+    getTherapistData() {
       let data = {
-        cognitoId: loginInfo.cognitoId,
+        cognitoId: this.loginInfo.cognitoId,
       }
-      let config = {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getToken().idToken,
-          'Content-Type': 'application/json'
+      getTherapistList(data).then((response) => {
+        if (response.data.msg == "success") {
+          let therapists = response.data.data.therapistList
+          this.therapistItems = []
+          for (let i = 0; i < therapists.length; i++) {
+            let tmp = {}
+            tmp['name'] = therapists[i]['name']
+            tmp['cognitoId'] = therapists[i]['cognitoId']
+            this.therapistItems.push(tmp)
+          }
         }
+      }).catch(error => {
+        this.handle(error)
+      })
+    },
+    getUserData() {
+      let data = {
+        cognitoId: this.loginInfo.cognitoId,
       }
-      axios.post(apiBaseUrl + 'user/list', data, config).then((response) => {
+      getUserList(data).then((response) => {
         if (response.data.msg == "success") {
           let users = response.data.data.userList
-          this.items = [];
+          this.items = []
           for (let i = 0; i < users.length; i++) {
             let tmp = {}
             tmp['username'] = users[i]['firstName'] + ' ' + users[i]['lastName']
@@ -196,81 +220,65 @@ export default {
           }
         }
       }).catch(error => {
-        if(error.response.status == 401){
-          this.$store.dispatch('tryAutoSignIn')
-        }
-        else{
-          alert(error.message)
-        }
-      });
+        this.handle(error)
+      })
     },
-
-    deleteItem(item) {
-      if (confirm(this.$t('appointment.delete-confirm'))) {
+    async deleteItem(item) {
+      let res = await this.$dialog["warning"]({
+        title: this.$t('general.confirm'),
+        text: this.$t('appointment.delete-confirm'),
+        persistent: false
+      })
+      if(res){
         axios.get(apiBaseUrl + 'appointments/delete/' + item.id).then((response) => {
           if (response.data.msg == "success") {
-            this.getData();
+            this.$dialog.notify.success(this.$t('message.delete-success'))
+            this.getData()
           }
         }).catch(error => {
-          console.log(error);
-          if(error.response.data.message == "The incoming token has expired"){
-            console.log('refresh_token')
-          }
-          else{
-            alert(error.response.data.message)
-          }
-        });
+          console.log(error)
+          this.$dialog.notify.error(error.response.data.message)
+        })
       }
     },
-
     close() {
-      this.dialog = false;
+      this.dialog = false
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      }, 300)
     },
 
     save() {
+      this.sending = true
       if (this.editedIndex > -1) {
-        Object.assign(this.datas[this.editedIndex], this.editedItem);
+        Object.assign(this.datas[this.editedIndex], this.editedItem)
+        this.sending = false
       } else {
-        //this.datas.push(this.editedItem);
-        if (this.editedItem.cognitoId == "" || this.editedItem.start_time == 0) {
+        if (this.editedItem.therapistCognitoId == "" || this.editedItem.cognitoId == "" || this.editedItem.start_time == 0) {
+          this.sending = false
           return
         }
-        let loginInfo = getLoginInfo();
         let data = {
-          cognitoId: loginInfo.cognitoId,
+          cognitoId: this.editedItem.therapistCognitoId,
           userId: this.editedItem.cognitoId,
           datetime: Date.parse(this.editedItem.start_time)
         }
-        let config = {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': getToken().idToken,
-            'Content-Type': 'application/json'
-          }
-        }
-        axios.post(apiBaseUrl + 'appointments/create', data, config).then((response) => {
+        createAppointment(data).then((response) => {
+          this.sending = false
           if (response.data.msg == "success") {
-            this.getData();
+            this.close()
+            this.getData()
           }
         }).catch(error => {
-          if(error.response.status == 401){
-            this.$store.dispatch('tryAutoSignIn')
-          }
-          else{
-            alert(error.message)
-          }
-        });
+          this.sending = false
+          this.close()
+          this.handle(error)
+        })
       }
-      this.close();
     }
   }
 }
 </script>
-
 <style scoped>
-
 </style>

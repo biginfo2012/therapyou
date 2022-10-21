@@ -1,4 +1,5 @@
-import AuthRequired from "@/utils/admin-auth-required";
+import AuthRequired from "@/utils/admin-auth-required"
+
 export const adminRoutes = {
     path: "/admin",
     redirect: "/admin/dashboard",
@@ -41,4 +42,4 @@ export const adminRoutes = {
                 import("@/views/admin/TherapistList.vue"),
         },
     ],
-};
+}

@@ -1,4 +1,5 @@
 import AuthRequired from "@/utils/auth-required";
+
 export const userRoutes = {
     path: '/user',
     redirect: "/user/dashboard",
@@ -34,4 +35,4 @@ export const userRoutes = {
                 import("@/views/user/ClientList.vue"),
         },
     ],
-};
+}

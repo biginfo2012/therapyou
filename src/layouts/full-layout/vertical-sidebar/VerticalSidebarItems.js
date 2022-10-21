@@ -1,28 +1,27 @@
 export default [
-  {
-    title: "Dashboard",
-    icon: "pie-chart",
-    to: "/admin/dashboard",
-  },
-  {
-    title: "Appointments",
-    icon: "book",
-    to: "/admin/appointment/list",
-  },
-  {
-    title: "Invoices",
-    icon: "file-text",
-    to: "/admin/invoice/list",
-  },
-  {
-    title: "Clients",
-    icon: "user",
-    to: "/admin/client/list",
-  },
-  {
-    title: "Therapists",
-    icon: "user-check",
-    to: "/admin/therapist/list",
-  },
-
-];
+    {
+        title: "menu.dashboard",
+        icon: "pie-chart",
+        to: "/admin/dashboard",
+    },
+    {
+        title: "menu.appointment",
+        icon: "book",
+        to: "/admin/appointment/list",
+    },
+    {
+        title: "menu.invoice",
+        icon: "file-text",
+        to: "/admin/invoice/list",
+    },
+    {
+        title: "menu.client",
+        icon: "user",
+        to: "/admin/client/list",
+    },
+    {
+        title: "menu.therapist",
+        icon: "user-check",
+        to: "/admin/therapist/list",
+    },
+]

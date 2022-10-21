@@ -105,7 +105,7 @@
                                   :label="$t('therapist.register-region')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0">
                               <v-text-field
                                   v-model="editedItem.registrationDate"
                                   type="date"
@@ -115,14 +115,30 @@
                                   :label="$t('therapist.register-date')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex === -1">
                               <v-file-input
                                   :label="$t('therapist.profile-image')"
                                   @change="uploadProfileFile"></v-file-input>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
+                              <img :src="editedItem.profileImage" style="width: 100%; height: 59px"/>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
+                              <v-file-input
+                                  :label="$t('therapist.profile-image')"
+                                  @change="uploadProfileFile"></v-file-input>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex === -1">
                               <v-file-input
                                   :label="$t('therapist.banner-image')"
+                                  @change="uploadBannerFile"></v-file-input>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
+                              <img :src="editedItem.bannerImage" style="width: 100%; height: 59px"/>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
+                              <v-file-input
+                                  :label="$t('therapist.profile-image')"
                                   @change="uploadBannerFile"></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0">
@@ -176,7 +192,7 @@
             </template>
             <template v-slot:item.actions="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+<!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
             </template>
             <template v-slot:no-data>
               <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
@@ -258,10 +274,22 @@ export default {
           value: "licenseNumber"
         },
         {
+          text: this.$t('therapist.vat-number'),
+          align: "start",
+          sortable: true,
+          value: "vatNumber"
+        },
+        {
           text: this.$t('therapist.register-region'),
           align: "start",
           sortable: true,
           value: "registrationRegion"
+        },
+        {
+          text: this.$t('therapist.register-date'),
+          align: "start",
+          sortable: true,
+          value: "registrationDate"
         },
         { text: this.$t('general.actions'), value: "actions", sortable: false }
       ],
@@ -285,7 +313,8 @@ export default {
         description: "",
         note: "",
         areasOfExpertise: "",
-        role: 1
+        role: 1,
+        isDefault: 0
       },
       defaultItem: {
         cognitoId: "",
@@ -305,7 +334,8 @@ export default {
         description: "",
         note: "",
         areasOfExpertise: "",
-        role: 1
+        role: 1,
+        isDefault: 0
       },
       emailRules: [
         v => !!v || this.$t('error-messages.email-required'),
@@ -373,6 +403,10 @@ export default {
       }
       axios.post(apiBaseUrl + 'therapist/list', data, config).then((response) => {
         if (response.data.msg == "success") {
+          let therapists = response.data.data.therapistList;
+          for (let i = 0; i < therapists.length; i++){
+            therapists[i]['registrationDate'] = therapists[i]['registrationDate'].substring(0, 10)
+          }
           this.datas = response.data.data.therapistList;
           this.loading = false;
         }
@@ -387,7 +421,7 @@ export default {
       });
     },
     editItem(item) {
-      this.editedIndex = this.listData.indexOf(item);
+      this.editedIndex = this.datas.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
@@ -429,8 +463,7 @@ export default {
     save() {
       this.$refs.form.validate();
       if (this.$refs.form.validate(true)) {
-        if (this.editedIndex > -1) {
-          // Object.assign(this.listData[this.editedIndex], this.editedItem);
+        if (this.editedIndex > -1) {  ``
           let data = {
             cognitoId: this.editedItem.cognitoId,
             parameters: {
@@ -446,10 +479,10 @@ export default {
               bannerImage: this.editedItem.bannerImage,
               description: this.editedItem.description,
               note: this.editedItem.note,
-              areasOfExpertise: this.editedItem.areasOfExpertise,
-              role: 1
+              areasOfExpertise: this.editedItem.areasOfExpertise
             }
           }
+          console.log(data)
           let config = {
             headers: {
               'Accept': 'application/json',
@@ -510,7 +543,8 @@ export default {
                   description: this.editedItem.description,
                   note: this.editedItem.note,
                   areasOfExpertise: this.editedItem.areasOfExpertise,
-                  role: 1
+                  role: 1,
+                  isDefault: 0
                 }
                 console.log(data)
                 let config = {

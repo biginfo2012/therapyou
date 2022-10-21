@@ -1,17 +1,17 @@
 <template>
   <v-navigation-drawer
-    v-model="Sidebar_drawer"
-    :dark="SidebarColor !== 'white'"
-    :color="SidebarColor"
-    mobile-breakpoint="960"
-    clipped
-    :right="$vuetify.rtl"
-    mini-variant-width="70"
-    :expand-on-hover="expandOnHover"
-    app
-    id="main-sidebar"
-    v-bar
-    width="265"
+      v-model="Sidebar_drawer"
+      :dark="SidebarColor !== 'white'"
+      :color="SidebarColor"
+      mobile-breakpoint="960"
+      clipped
+      :right="$vuetify.rtl"
+      mini-variant-width="70"
+      :expand-on-hover="expandOnHover"
+      app
+      id="main-sidebar"
+      v-bar
+      width="265"
   >
     <v-list expand nav>
       <!-- ---------------------------------------------- -->
@@ -20,8 +20,8 @@
 
       <!---Dark Logo part -->
       <v-toolbar-title
-        class="align-center d-flex mb-5"
-        v-if="SidebarColor == 'white' && !$vuetify.theme.dark"
+          class="align-center d-flex mb-5"
+          v-if="SidebarColor == 'white' && !$vuetify.theme.dark"
       >
         <img src="../../../assets/images/logo-icon.png" class="mt-2" width="64"/>
       </v-toolbar-title>
@@ -36,18 +36,19 @@
         <v-row v-if="item.header" :key="item.header" align="center">
           <v-col cols="12">
             <v-subheader v-if="item.header" class="d-block text-truncate">{{
-              item.header
-            }}</v-subheader>
+                item.header
+              }}
+            </v-subheader>
           </v-col>
         </v-row>
         <!---If Sidebar Caption -->
         <BaseItemGroup
-          v-else-if="item.children"
-          :key="`group-${i}`"
-          :item="item"
+            v-else-if="item.children"
+            :key="`group-${i}`"
+            :item="item"
         ></BaseItemGroup>
 
-        <BaseItem v-else :key="`item-${i}`" :item="item" />
+        <BaseItem v-else :key="`item-${i}`" :item="item"/>
       </template>
       <!---Sidebar Items -->
     </v-list>
@@ -56,10 +57,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import VerticalSidebarItems from "./VerticalSidebarItems";
-import VerticalSidebarItemsUser from "./VerticalSidebarItemsUser";
-import {isLoggedInAsAdmin} from "../../../utils/index";
+import {mapState} from "vuex"
+import VerticalSidebarItems from "./VerticalSidebarItems"
+import VerticalSidebarItemsUser from "./VerticalSidebarItemsUser"
+import {isLoggedInAsAdmin} from "../../../utils/index"
+
 export default {
   name: "Vertical-Sidebar",
   props: {
@@ -78,41 +80,45 @@ export default {
     ...mapState(["SidebarColor", "SidebarBg"]),
     Sidebar_drawer: {
       get() {
-        return this.$store.state.Sidebar_drawer;
+        return this.$store.state.Sidebar_drawer
       },
       set(val) {
-        this.$store.commit("SET_SIDEBAR_DRAWER", val);
+        this.$store.commit("SET_SIDEBAR_DRAWER", val)
       },
     },
   },
   watch: {
     "$vuetify.breakpoint.smAndDown"(val) {
-      this.$emit("update:expandOnHover", !val);
+      this.$emit("update:expandOnHover", !val)
     },
   },
 
   methods: {},
   mounted() {
-    if(!isLoggedInAsAdmin()){
+    if (!isLoggedInAsAdmin()) {
       this.items = VerticalSidebarItemsUser
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .hidelogo {
   display: none;
 }
+
 #main-sidebar {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
   box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
   -webkit-box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+
   .v-navigation-drawer__border {
     display: none;
   }
+
   .v-list {
     padding: 8px 15px;
   }
+
   .v-list-item {
     &__icon--text,
     &__icon:first-child {
@@ -121,15 +127,18 @@ export default {
       width: 20px;
     }
   }
+
   .sidebar-footer {
     position: relative;
     border-radius: 9px;
     padding: 20px 25px;
+
     .buy-now-img {
       position: absolute;
       right: 0;
       bottom: 0;
     }
+
     .sidebar-footer-text {
       position: relative;
     }

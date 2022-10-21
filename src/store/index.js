@@ -5,7 +5,7 @@ import auth from './module/authenticate'
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-  modules: {
-    auth
-  }
+    modules: {
+        auth
+    }
 })

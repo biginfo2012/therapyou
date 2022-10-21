@@ -12,13 +12,13 @@
     </v-list-item-icon>
 
     <v-list-item-content v-if="item.title">
-      <v-list-item-title v-text="item.title" />
+      <v-list-item-title v-text="$t(item.title)" />
     </v-list-item-content>
   </v-list-item>
 </template>
 
 <script>
-import Themeable from "vuetify/lib/mixins/themeable";
+import Themeable from "vuetify/lib/mixins/themeable"
 
 export default {
   name: "BaseItem",
@@ -43,8 +43,8 @@ export default {
 
   computed: {
     href() {
-      return this.item.href || (!this.item.to ? "#" : undefined);
+      return this.item.href || (!this.item.to ? "#" : undefined)
     },
   },
-};
+}
 </script>

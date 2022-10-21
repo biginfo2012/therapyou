@@ -17,10 +17,10 @@
                     <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('invoice.create') }}</v-btn>
                   </template>
                   <v-card>
+                    <img src="@/assets/images/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
-
                     <v-card-text>
                       <v-container>
                         <v-row>
@@ -40,8 +40,8 @@
 
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -51,7 +51,7 @@
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
+              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
         </div>
@@ -61,9 +61,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import {apiBaseUrl} from "@/constants/config";
-import {convertToDate, getLoginInfo, getToken, singleUpload} from '@/utils'
+import {convertToDate, getLoginInfo, singleUpload} from '@/utils'
+import {deleteInvoice, getAppointmentList, getInvoiceList, uploadInvoice} from "@/api"
 export default {
   name: "InvoiceList",
   data: function () {
@@ -80,6 +79,7 @@ export default {
       ],
       dialog: false,
       loading: false,
+      sending: false,
       items: [
       ],
       headers: [
@@ -100,23 +100,24 @@ export default {
       defaultItem: {
         id: 0,
         invoiceUrl: ""
-      }
+      },
+      loginInfo: getLoginInfo()
     }
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit')
     }
   },
 
   watch: {
     dialog(val) {
-      val || this.close();
+      val || this.close()
     }
   },
 
   created() {
-    this.initialize();
+    this.initialize()
   },
 
   methods: {
@@ -124,69 +125,51 @@ export default {
       this.getData()
       this.getAppointmentData()
     },
+    handle(error) {
+      console.log(error)
+      if (error.response.status == 401) {
+        this.$store.dispatch('tryAutoSignIn')
+      } else {
+        this.$dialog.notify.error(error.response.data.message)
+      }
+    },
     getData() {
-      this.loading = true;
-      let loginInfo = getLoginInfo();
+      this.loading = true
       let data = {
-        cognitoId: loginInfo.cognitoId,
+        cognitoId: this.loginInfo.cognitoId,
         isTherapist: true
       }
-      let config = {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getToken().idToken,
-          'Content-Type': 'application/json'
-        }
-      }
-      axios.post(apiBaseUrl + 'invoice/list', data, config).then((response) => {
+      getInvoiceList(data).then((response) => {
         if (response.data.msg == "Success") {
-          this.datas = response.data.data.invoices;
+          this.datas = response.data.data.invoices
         }
-        this.loading = false;
+        this.loading = false
       }).catch(error => {
-        this.loading = false;
-        if(error.response.status == 401){
-          this.$store.dispatch('tryAutoSignIn')
-        }
-        else{
-          alert(error.message)
-        }
-      });
+        this.loading = false
+        this.handle(error)
+      })
 
     },
     getAppointmentData(){
-      let loginInfo = getLoginInfo();
       let data = {
-        cognitoId: loginInfo.cognitoId,
+        cognitoId: this.loginInfo.cognitoId,
         offset: 0,
         limit: 500
       }
-      let config = {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getToken().accessToken,
-          'Content-Type': 'application/json'
-        }
-      }
-      axios.post(apiBaseUrl + 'appointments/list', data, config).then((response) => {
+      getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
-          this.items = [];
+          this.items = []
           for (let i = 0; i < appointmens.length; i++) {
             let tmp = {}
-            tmp['id'] = appointmens[i]['id'];
+            tmp['id'] = appointmens[i]['id']
             tmp['label'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName'] + ': ' + convertToDate(appointmens[i]['startTime'])
             this.items.push(tmp)
           }
         }
       }).catch(error => {
-        if(error.response.status == 401){
-          this.$store.dispatch('tryAutoSignIn')
-        }
-        else{
-          alert(error.message)
-        }
-      });
+        this.handle(error)
+      })
     },
 
     async uploadFile(file){
@@ -197,89 +180,76 @@ export default {
         )
         if (result.status === 200) {
           // Handle storing it to your database here
-          this.editedItem.invoiceUrl = result.fullPath;
+          this.editedItem.invoiceUrl = result.fullPath
           console.log(result)
         } else {
-          alert("File Upload to S3 failed")
+          this.$dialog.notify.error("File Upload to S3 failed")
         }
         return {
           abort: () => {
             // This function is entered if the user has tapped the cancel button
             // Let FilePond know the request has been cancelled
-            alert("File Upload to S3 aborted")
+            this.$dialog.notify.error("File Upload to S3 aborted")
           },
         }
       }
-
     },
 
-    deleteItem(item) {
-      if(confirm(this.$t('invoice.delete-confirm'))){
+    async deleteItem(item) {
+      let res = await this.$dialog["warning"]({
+        title: this.$t('general.confirm'),
+        text: this.$t('invoice.delete-confirm'),
+        persistent: false
+      })
+      if(res){
         let data = {
           invoiceUrl: item.invoiceUrl
         }
-        let config = {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': getToken().accessToken,
-            'Content-Type': 'application/json'
-          }
-        }
-        axios.post(apiBaseUrl + 'invoice/delete', data, config).then((response) => {
+        deleteInvoice(data).then((response) => {
           if (response.data.msg == "OK") {
-            this.getData();
+            this.$dialog.notify.success(this.$t('message.delete-success'))
+            this.getData()
           }
         }).catch(error => {
-          if(error.response.status == 401){
-            this.$store.dispatch('tryAutoSignIn')
-          }
-          else{
-            alert(error.message)
-          }
-        });
+          this.handle(error)
+        })
       }
     },
 
     close() {
-      this.dialog = false;
+      this.dialog = false
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      }, 300)
     },
 
     save() {
+      this.sending = true
       if (this.editedIndex > -1) {
-        Object.assign(this.datas[this.editedIndex], this.editedItem);
+        this.sending = false
+        Object.assign(this.datas[this.editedIndex], this.editedItem)
       } else {
         if(this.editedItem.id == 0 || this.editedItem.invoiceUrl == ""){
+          this.sending = false
           return
         }
         let data = {
           appointmentId: this.editedItem.id,
           invoiceUrl: this.editedItem.invoiceUrl
         }
-        let config = {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': getToken().idToken,
-            'Content-Type': 'application/json'
-          }
-        }
-        axios.post(apiBaseUrl + 'invoice/upload', data, config).then((response) => {
+        uploadInvoice(data).then((response) => {
           if (response.data.msg == "OK") {
-            this.getData();
+            this.sending = false
+            this.close()
+            this.getData()
           }
         }).catch(error => {
-          if(error.response.status == 401){
-            this.$store.dispatch('tryAutoSignIn')
-          }
-          else{
-            alert(error.message)
-          }
-        });
+          this.sending = false
+          this.close()
+          this.handle(error)
+        })
       }
-      this.close();
     }
   }
 }

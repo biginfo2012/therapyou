@@ -6,7 +6,19 @@
     "cancel": "Cancel",
     "save": "Save",
     "reset": "Reset",
-    "actions": "Actions"
+    "actions": "Actions",
+    "search": "Search",
+    "confirm": "Confirm"
+  },
+  "header": {
+    "profile": "Profile"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "appointment": "Appointments",
+    "invoice": "Invoices",
+    "client": "Clients",
+    "therapist": "Therapists"
   },
   "cognito-messages": {
     "NotAuthorizedException": "Incorrect username or password",
@@ -15,6 +27,9 @@
     "LimitExceededException": "Attempt limit exceeded, please try after some time",
     "CodeMismatchException": "Invalid verification code provided",
     "UsernameExistsException": "An account with the given email already exists!"
+  },
+  "message": {
+    "delete-success": "Deleted Successfully!"
   },
   "error-messages": {
     "password-required": "Password is required",
@@ -59,7 +74,8 @@
   "appointment": {
     "appointments": "Appointments",
     "list": "Appointment List",
-    "user-name": "User Name",
+    "therapist-name": "Therapist",
+    "user-name": "User",
     "start-time": "Start Time",
     "end-time": "End Time",
     "created-time": "Created Time",

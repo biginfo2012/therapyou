@@ -6,17 +6,64 @@
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
+          <v-container>
+            <v-form ref="search_form">
+              <v-row>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-text-field
+                      v-model="searchItem.firstName"
+                      outlined
+                      :label="$t('client.first-name')"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-text-field
+                      v-model="searchItem.lastName"
+                      outlined
+                      :label="$t('client.last-name')"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-text-field
+                      v-model="searchItem.credits"
+                      outlined
+                      :label="$t('client.credits')"
+                      type="number"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-text-field
+                      v-model="searchItem.email"
+                      outlined
+                      :label="$t('login.email')"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-text-field
+                      v-model="searchItem.phoneNumber"
+                      outlined
+                      :label="$t('client.phone')"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
+                  <v-btn color="success" class="mt-3" @click="getData">{{ $t('general.search') }}</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+
+          </v-container>
+          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading"
+                        loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat color="white">
-                <v-toolbar-title>{{$t('client.my')}}</v-toolbar-title>
+                <v-toolbar-title>{{ $t('client.my') }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="1000px">
-                  <template v-slot:activator="{ on }">
-                    <v-btn color="success" dark class="mb-2" v-on="on">{{$t('client.create')}}</v-btn>
-                  </template>
                   <v-card>
+                    <img src="@/assets/images/logo-icon.gif" width="80" v-show="sending"
+                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
@@ -50,6 +97,11 @@
                                   outlined
                                   :label="$t('client.credits')"
                               ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                              <v-select :items="therapistData" item-text="name"
+                                        item-value="cognitoId" :label="$t('appointment.therapist-name')"
+                                        v-model="editedItem.therapist_cognitoId" class="mt-0 pt-0"></v-select>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
@@ -87,8 +139,8 @@
 
                     <v-card-actions class="px-10 pb-3">
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save')}}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -99,7 +151,7 @@
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
+              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
         </div>
@@ -109,9 +161,9 @@
 </template>
 
 <script>
-import {getLoginInfo, getToken} from '@/utils'
-import axios from "axios";
-import {apiBaseUrl, poolData} from "@/constants/config";
+import {getLoginInfo} from '@/utils'
+import {poolData} from "@/constants/config"
+import {deleteUser, getTherapistList, getUserList, initUser, updateUser} from "@/api";
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -146,6 +198,7 @@ export default {
       ],
       dialog: false,
       loading: false,
+      sending: false,
       headers: [
         {
           text: this.$t('client.first-name'),
@@ -160,6 +213,12 @@ export default {
           value: "lastName"
         },
         {
+          text: this.$t('client.credits'),
+          align: "start",
+          sortable: true,
+          value: "credits"
+        },
+        {
           text: this.$t('login.email'),
           align: "start",
           sortable: true,
@@ -171,16 +230,18 @@ export default {
           sortable: true,
           value: "phoneNumber"
         },
-        {
-          text: this.$t('client.credits'),
-          align: "start",
-          sortable: true,
-          value: "credits"
-        },
-        { text: this.$t('general.actions'), value: "actions", sortable: false }
+        {text: this.$t('general.actions'), value: "actions", sortable: false}
       ],
       listData: [],
+      therapistData: [],
       editedIndex: -1,
+      searchItem: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        credits: null,
+        phoneNumber: ""
+      },
       editedItem: {
         cognitoId: "",
         firstName: "",
@@ -188,7 +249,8 @@ export default {
         email: "",
         credits: null,
         phoneNumber: "",
-        password: ""
+        password: "",
+        therapist_cognitoId: ""
       },
       defaultItem: {
         cognitoId: "",
@@ -197,7 +259,8 @@ export default {
         email: "",
         credits: null,
         phoneNumber: "",
-        password: ""
+        password: "",
+        therapist_cognitoId: ""
       },
       emailRules: [
         v => !!v || this.$t('error-messages.email-required'),
@@ -211,28 +274,29 @@ export default {
         (v) => /^(?=.*[A-Z])/.test(v) || this.$t('error-messages.password-upper'),
         (v) => /^(?=.*[!@#$%^&*"])/.test(v) || this.$t('error-messages.password-special'),
       ],
-      phoneRules:[
+      phoneRules: [
         v => !!v || this.$t('error-messages.phone-required'),
       ],
-      firstRules:[
+      firstRules: [
         v => !!v || this.$t('error-messages.first-required'),
       ],
-      lastRules:[
+      lastRules: [
         v => !!v || this.$t('error-messages.last-required'),
       ],
+      loginInfo: getLoginInfo()
     }
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit')
     }
   },
 
   watch: {
     dialog(val) {
-      val || this.close();
+      val || this.close()
     },
-    errcode () {
+    errcode() {
       console.log('watched error code: ' + this.errcode)
       if (this.errcode !== '') {
         if (this.errcode === '"UsernameExistsException"') {
@@ -246,117 +310,152 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.initialize()
   },
 
   methods: {
     initialize() {
       this.getData()
+      this.getTherapistData()
     },
-    getData(){
-      this.loading = true;
-      let loginInfo = getLoginInfo();
-      let data = {
-        cognitoId: loginInfo.cognitoId,
+    handle(error) {
+      console.log(error)
+      if (error.response.status == 401) {
+        this.$store.dispatch('tryAutoSignIn')
+      } else {
+        this.$dialog.notify.error(error.response.data.message)
       }
-      let config = {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getToken().idToken,
-          'Content-Type': 'application/json'
+    },
+    getData() {
+      this.loading = true
+      let filter = {}
+      if (this.searchItem.firstName != "") {
+        filter.firstName = this.searchItem.firstName
+      }
+      if (this.searchItem.lastName != "") {
+        filter.lastName = this.searchItem.lastName
+      }
+      if (this.searchItem.credits != null) {
+        filter.credits = this.searchItem.credits
+      }
+      if (this.searchItem.email != "") {
+        filter.email = this.searchItem.email
+      }
+      if (this.searchItem.phoneNumber != "") {
+        filter.phoneNumber = this.searchItem.phoneNumber
+      }
+      let data = {
+        cognitoId: this.loginInfo.cognitoId,
+      }
+      if (filter != {}) {
+        data = {
+          cognitoId: this.loginInfo.cognitoId,
+          filters: filter
         }
       }
-      axios.post(apiBaseUrl + 'user/list', data, config).then((response) => {
+
+      getUserList(data).then((response) => {
         if (response.data.msg == "success") {
-          this.listData = response.data.data.userList;
-          this.loading = false;
+          this.listData = response.data.data.userList
+        }
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        if (error.response.status == 401) {
+          this.$store.dispatch('tryAutoSignIn')
+        } else if (error.response.status == 500) {
+          if (error.response.data.msg == "No users found for this therapist") {
+            this.listData = []
+          } else {
+            this.$dialog.notify.error(error.message)
+          }
+        } else {
+          this.$dialog.notify.error(error.message)
+        }
+      })
+    },
+    getTherapistData() {
+      let data = {
+        cognitoId: this.loginInfo.cognitoId,
+      }
+      getTherapistList(data).then((response) => {
+        if (response.data.msg == "success") {
+          let therapists = response.data.data.therapistList
+          this.therapistData = []
+          for (let i = 0; i < therapists.length; i++) {
+            let tmp = {}
+            tmp['name'] = therapists[i]['name']
+            tmp['cognitoId'] = therapists[i]['cognitoId']
+            this.therapistData.push(tmp)
+          }
         }
       }).catch(error => {
-        this.loading = false;
-        if(error.response.status == 401){
-          this.$store.dispatch('tryAutoSignIn')
-        }
-        else{
-          alert(error.message)
-        }
-      });
+        this.handle(error)
+      })
     },
 
     editItem(item) {
-      this.editedIndex = this.listData.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.editedIndex = this.listData.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
     },
 
-    deleteItem(item) {
-      if(confirm(this.$t('client.delete-confirm'))){
+    async deleteItem(item) {
+      let res = await this.$dialog["warning"]({
+        title: this.$t('general.confirm'),
+        text: this.$t('client.delete-confirm'),
+        persistent: false
+      })
+      if (res) {
         let data = {
           cognitoId: item.cognitoId,
         }
-        let config = {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': getToken().idToken,
-            'Content-Type': 'application/json'
-          }
-        }
-        axios.post(apiBaseUrl + 'user/delete', data, config).then((response) => {
+        deleteUser(data).then((response) => {
           if (response.data.msg == "success") {
             this.getData()
           }
         }).catch(error => {
-          if(error.response.status == 401){
-            this.$store.dispatch('tryAutoSignIn')
-          }
-          else{
-            alert(error.message)
-          }
-        });
+          this.handle(error)
+        })
       }
     },
 
     close() {
-      this.dialog = false;
+      this.dialog = false
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      }, 300)
     },
 
     save() {
-      this.$refs.form.validate();
+      this.$refs.form.validate()
       if (this.$refs.form.validate(true)) {
+        this.sending = true
         if (this.editedIndex > -1) {
-          // Object.assign(this.listData[this.editedIndex], this.editedItem);
+          if (this.editedItem.therapist_cognitoId == "") {
+            this.sending = false
+            return
+          }
           let data = {
             cognitoId: this.editedItem.cognitoId,
             parameters: {
               firstName: this.editedItem.firstName,
               lastName: this.editedItem.lastName,
-              credits: this.editedItem.credits
+              credits: this.editedItem.credits,
+              therapist_cognitoId: this.editedItem.therapist_cognitoId
             }
           }
-          let config = {
-            headers: {
-              'Accept': 'application/json',
-              'Authorization': getToken().idToken,
-              'Content-Type': 'application/json'
-            }
-          }
-          axios.post(apiBaseUrl + 'user/update', data, config).then((response) => {
+          updateUser(data).then((response) => {
+            this.sending = false
             if (response.data.msg == "success") {
-              this.close();
-              this.getData();
+              this.close()
+              this.getData()
             }
           }).catch(error => {
-            if(error.response.status == 401){
-              this.$store.dispatch('tryAutoSignIn')
-            }
-            else{
-              alert(error.message)
-            }
-          });
-
+            this.sending = false
+            this.handle(error)
+          })
         } else {
           dataEmail.Value = this.editedItem.email
           dataPhone.Value = this.editedItem.phoneNumber
@@ -377,9 +476,10 @@ export default {
               if (err) {
                 console.error('registration error: ' + JSON.stringify(err))
                 this.errcode = JSON.stringify(err.code)
+                this.sending = false
               } else {
-                this.showerr = false;
-                this.errmsg = "";
+                this.showerr = false
+                this.errmsg = ""
                 this.editedItem.cognitoId = result.userSub
                 let data = {
                   cognitoId: this.editedItem.cognitoId,
@@ -388,37 +488,30 @@ export default {
                   userEmail: this.editedItem.email,
                   userPhone: this.editedItem.phoneNumber
                 }
-                let config = {
-                  headers: {
-                    'Accept': 'application/json',
-                    'Authorization': getToken().idToken,
-                    'Content-Type': 'application/json'
-                  }
-                }
-                axios.post(apiBaseUrl + 'user/init-user', data, config).then((response) => {
+                initUser(data).then((response) => {
+                  this.sending = false
                   if (response.data.msg == "success") {
-                    this.close();
-                    this.getData();
+                    this.close()
+                    this.getData()
                   }
                 }).catch(error => {
-                  this.close();
-                  if(error.response.status == 401){
-                    this.$store.dispatch('tryAutoSignIn')
-                  }
-                  else{
-                    alert(error.message)
-                  }
-                });
+                  this.sending = false
+                  this.close()
+                  this.handle(error)
+                })
               }
             }
           })
         }
       }
+    },
+
+    reset() {
+      this.searchItem = Object.assign({}, this.defaultItem)
     }
   }
 }
 </script>
 
 <style scoped>
-
 </style>

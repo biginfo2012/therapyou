@@ -1,8 +1,7 @@
 import {AWS_REGION, poolData} from "@/constants/config"
 import router from '@/router/router'
 import {getLoggedUserInfo} from "../../utils/index"
-import {getToken} from "../../utils/index";
-import * as AWS from "aws-sdk";
+import * as AWS from "aws-sdk"
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -31,7 +30,7 @@ const getters = {
 
 const mutations = {
     signOut(state) {
-        if(state.cognitoUser != null){
+        if (state.cognitoUser != null) {
             state.cognitoUser.signOut()
         }
         state.sessionToken = null
@@ -39,16 +38,16 @@ const mutations = {
         state.username = ''
         state.cognitoId = ''
         state.userPool = []
-        sessionStorage.removeItem('userData');
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('username');
+        sessionStorage.removeItem('userData')
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('username')
     },
     setAttributes(state, attributes) {
         state.attributes = attributes
         state.username = state.attributes.filter(function (Obj) {
             return Obj.Name === 'email'
         })[0].Value
-        sessionStorage.setItem('username', state.username);
+        sessionStorage.setItem('username', state.username)
         state.cognitoId = state.attributes.filter(function (Obj) {
             return Obj.Name === 'sub'
         })[0].Value
@@ -70,7 +69,7 @@ const mutations = {
         state.tokens.accessToken = payload.getAccessToken().getJwtToken()
         state.tokens.idToken = payload.getIdToken().getJwtToken()
         state.tokens.refreshToken = payload.getRefreshToken().getToken()
-        sessionStorage.setItem('token', JSON.stringify(state.tokens));
+        sessionStorage.setItem('token', JSON.stringify(state.tokens))
     },
     setCognitoUser(state, payload) {
         state.cognitoUser = payload
@@ -87,13 +86,13 @@ const mutations = {
         state.errcode = ''
     },
     getCognitoUser(state) {
-        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-        let username = sessionStorage.getItem('username');
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
+        let username = sessionStorage.getItem('username')
         var userData = {
             Username: username,
             Pool: userPool,
-        };
-        state.cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+        }
+        state.cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
         console.log(state.cognitoUser)
     }
 }
@@ -111,7 +110,7 @@ const actions = {
                 dispatch('getUserAttributes')
                 dispatch('setLogoutTimer', 3600)
                 //POTENTIAL: Region needs to be set if not already set previously elsewhere.
-                AWS.config.region = AWS_REGION;
+                AWS.config.region = AWS_REGION
 
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
                     IdentityPoolId: poolData.UserPoolId, // your identity pool id here
@@ -121,40 +120,13 @@ const actions = {
                             .getIdToken()
                             .getJwtToken(),
                     },
-                });
+                })
             },
             onFailure: (err) => {
                 console.log('sign in failure')
                 commit('setError', JSON.stringify(err.code))
             }
         })
-    },
-    refreshToken({state, commit}) {
-        let refresh_token = getToken().refreshToken
-        console.log(AWS.config.credentials.needsRefresh())
-        if(state.cognitoUser == null){
-            commit('getCognitoUser')
-        }
-        state.cognitoUser.refreshSession(refresh_token, (err, session) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(session)
-                AWS.config.credentials.params.Logins[
-                    'cognito-idp.eu-west-1.amazonaws.com/eu-west-1_OgyIuUdr9'
-                    ] = session.getIdToken().getJwtToken();
-                AWS.config.credentials.refresh(err => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log('TOKEN SUCCESSFULLY UPDATED');
-                    }
-                });
-            }
-        });
-        // if (AWS.config.credentials.needsRefresh()) {
-        //
-        // }
     },
     tryAutoSignIn({state, commit, dispatch}) {
         commit('setUserPool')
@@ -168,7 +140,7 @@ const actions = {
                 } else {
                     commit('setTokens', session)
                     commit('signIn')
-                    dispatch('getUserAttributes')
+                    //dispatch('getUserAttributes')
                     dispatch('setLogoutTimer', 3600)
                 }
             })
@@ -191,7 +163,7 @@ const actions = {
         }, expirationTime * 1000)
     },
     signOut({commit}) {
-        if(state.cognitoUser == null){
+        if (state.cognitoUser == null) {
             commit('getCognitoUser')
         }
         commit('signOut')
