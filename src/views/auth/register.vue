@@ -25,7 +25,7 @@
         <div class="pa-7 pa-sm-12">
           <v-row>
             <v-col cols="12" lg="12" xl="8">
-              <img src="@/assets/images/logo-icon.png" />
+              <img src="@/assets/images/icons/logo-icon.png" />
               <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">Sign Up</h2>
               <h6 class="subtitle-1">
                 Do you have an account?
@@ -127,7 +127,7 @@ export default {
   }),
   methods: {
     submit() {
-      this.$refs.form.validate();
+      this.$refs.form.validate()
       if (this.$refs.form.validate(true)) {
         dataEmail.Value = this.email
         dataPhone.Value = this.phone
@@ -176,5 +176,5 @@ export default {
       }
     }
   }
-};
+}
 </script>

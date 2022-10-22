@@ -63,7 +63,7 @@
 
                 <v-dialog v-model="dialog" max-width="1000px">
                   <v-card>
-                    <img src="@/assets/images/logo-icon.gif" width="80" v-show="sending"
+                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
                          style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
@@ -157,7 +157,7 @@
 <script>
 import {getLoginInfo} from '@/utils'
 import {poolData} from "@/constants/config"
-import {deleteUser, getUserList, initUser, updateUser} from "@/api";
+import {deleteUser, getUserList, initUser, updateUser} from "@/api"
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -313,7 +313,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.message)
+        this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {

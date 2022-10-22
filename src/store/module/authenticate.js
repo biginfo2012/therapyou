@@ -1,6 +1,6 @@
 import {AWS_REGION, poolData} from "@/constants/config"
 import router from '@/router/router'
-import {getLoggedUserInfo} from "../../utils/index"
+import {getLoggedUserInfo} from "@/utils"
 import * as AWS from "aws-sdk"
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')

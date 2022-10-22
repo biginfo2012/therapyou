@@ -17,7 +17,7 @@
                     <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('invoice.create') }}</v-btn>
                   </template>
                   <v-card>
-                    <img src="@/assets/images/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
@@ -25,13 +25,13 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12" sm="12" md="12">
-                            <v-select :items="items" item-text="label"
+                            <v-select :items="items" item-text="label" outlined
                                       item-value="id" :label="$t('appointment.list')"
                                       v-model="editedItem.id" class="mt-0 pt-0"></v-select>
                           </v-col>
                           <v-col cols="12" sm="12" md="12">
                             <v-file-input
-                            :label="$t('invoice.file')"
+                            :label="$t('invoice.file')" outlined
                             @change="uploadFile"></v-file-input>
                           </v-col>
                         </v-row>
@@ -130,7 +130,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.message)
+        this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {

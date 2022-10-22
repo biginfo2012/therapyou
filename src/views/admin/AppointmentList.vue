@@ -6,64 +6,105 @@
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading"
-                        loading-text="Loading...">
-            <template v-slot:top>
-              <v-toolbar flat color="white">
-                <v-toolbar-title>{{ $t('appointment.my') }}</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>
-                <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px" persistent>
-                  <template v-slot:activator="{ on }">
-                    <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('appointment.create') }}</v-btn>
-                  </template>
-                  <v-card>
-                    <img src="@/assets/images/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
-                    <v-card-title>
-                      <span class="headline">{{ formTitle }}</span>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-select :items="therapistItems" item-text="name"
-                                      item-value="cognitoId" :label="$t('appointment.therapist-name')"
-                                      v-model="editedItem.therapistCognitoId" class="mt-0 pt-0"></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-select :items="items" item-text="username"
-                                      item-value="cognitoId" :label="$t('appointment.user-name')"
-                                      v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-text-field
-                                v-model="editedItem.start_time"
-                                type="datetime-local"
-                                hide-details
-                                filled
-                                background-color="transparent"
-                                :label="$t('appointment.start-time')"
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save') }}</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-toolbar>
-            </template>
-            <template v-slot:item.actions="{ item }">
-              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-            </template>
-            <template v-slot:no-data>
-              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
-            </template>
-          </v-data-table>
+          <v-container>
+            <v-form ref="search_form">
+              <v-row>
+                <v-col cols="12" sm="12" md="3" class="py-0">
+                  <v-select :items="therapistItems" item-text="name" outlined
+                            item-value="cognitoId" :label="$t('appointment.therapist-name')"
+                            v-model="searchItem.therapistCognitoId" class="mt-0 pt-0"></v-select>
+                </v-col>
+                <v-col cols="12" sm="12" md="3" class="py-0">
+                  <v-select :items="items" item-text="username" outlined
+                            item-value="cognitoId" :label="$t('appointment.user-name')"
+                            v-model="searchItem.cognitoId" class="mt-0 pt-0"></v-select>
+                </v-col>
+                <v-col cols="12" sm="12" md="3" class="py-0">
+                  <v-text-field
+                      v-model="searchItem.start_time"
+                      type="date"
+                      hide-details outlined
+                      background-color="transparent"
+                      :label="$t('appointment.date')"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="3" class="py-0">
+                  <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
+                  <v-btn color="success" class="mt-3" @click="getData">{{ $t('general.search') }}</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-container>
+          <v-tabs background-color="success" color="white" grow v-model="tab">
+            <v-tab key="table"> {{$t('appointment.table-view')}} </v-tab>
+            <v-tab key="calendar"> {{$t('appointment.calendar-view')}} </v-tab>
+          </v-tabs>
+
+          <v-tabs-items v-model="tab">
+            <v-tab-item key="table">
+              <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading"
+                            loading-text="Loading...">
+                <template v-slot:top>
+                  <v-toolbar flat color="white">
+                    <v-toolbar-title>{{ $t('appointment.my') }}</v-toolbar-title>
+                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-spacer></v-spacer>
+                    <v-dialog v-model="dialog" max-width="500px" persistent>
+                      <template v-slot:activator="{ on }">
+                        <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('appointment.create') }}</v-btn>
+                      </template>
+                      <v-card>
+                        <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                        <v-card-title>
+                          <span class="headline">{{ formTitle }}</span>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-container>
+                            <v-row>
+                              <v-col cols="12" sm="12" md="12">
+                                <v-select :items="therapistItems" item-text="name" outlined
+                                          item-value="cognitoId" :label="$t('appointment.therapist-name')"
+                                          v-model="editedItem.therapistCognitoId" class="mt-0 pt-0"></v-select>
+                              </v-col>
+                              <v-col cols="12" sm="12" md="12">
+                                <v-select :items="items" item-text="username" outlined
+                                          item-value="cognitoId" :label="$t('appointment.user-name')"
+                                          v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-select>
+                              </v-col>
+                              <v-col cols="12" sm="12" md="12">
+                                <v-text-field
+                                    v-model="editedItem.start_time"
+                                    type="datetime-local"
+                                    hide-details outlined
+                                    background-color="transparent"
+                                    :label="$t('appointment.start-time')"
+                                ></v-text-field>
+                              </v-col>
+                            </v-row>
+                          </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
+                          <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save') }}</v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-toolbar>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+                </template>
+                <template v-slot:no-data>
+                  <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
+                </template>
+              </v-data-table>
+            </v-tab-item>
+            <v-tab-item key="calendar">
+              <vue-cal active-view="month" class="vuecal--blue-theme"
+                       :selected-date="selectedDate" :events="events"></vue-cal>
+            </v-tab-item>
+          </v-tabs-items>
         </div>
       </div>
     </BaseCard>
@@ -73,11 +114,14 @@
 <script>
 import axios from "axios"
 import {apiBaseUrl} from "@/constants/config"
-import {getLoginInfo, convertToDate} from '@/utils'
+import {getLoginInfo, convertToDate, convertEToDate, getCurrentDate} from '@/utils'
 import {createAppointment, getAppointmentList, getTherapistList, getUserList} from "@/api"
+import VueCal from 'vue-cal'
+import 'vue-cal/dist/vuecal.css'
 
 export default {
   name: "AppointmentList",
+  components: { VueCal },
   data: function () {
     return {
       page: {
@@ -90,22 +134,25 @@ export default {
           to: "#",
         }
       ],
+      selectedDate: getCurrentDate(),
+      events: [],
       dialog: false,
       loading: false,
       sending: false,
       items: [],
+      tab: null,
       therapistItems: [],
       headers: [
         {
           text: this.$t('appointment.therapist-name'),
           align: "start",
-          sortable: false,
+          sortable: true,
           value: "therapistname"
         },
         {
           text: this.$t('appointment.user-name'),
           align: "start",
-          sortable: false,
+          sortable: true,
           value: "username"
         },
         {text: this.$t('appointment.start-time'), value: "start_time"},
@@ -123,6 +170,11 @@ export default {
         therapistCognitoId: "",
         cognitoId: "",
         start_time: 0,
+      },
+      searchItem: {
+        therapistCognitoId: "",
+        cognitoId: "",
+        start_time: ""
       },
       loginInfo: getLoginInfo()
     }
@@ -154,7 +206,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.message)
+        this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -168,14 +220,20 @@ export default {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
           this.datas = []
+          this.events = []
           for (let i = 0; i < appointmens.length; i++) {
             let tmp = {}
+            let event = {}
             tmp['id'] = appointmens[i]['id']
             tmp['therapistname'] = appointmens[i]['name']
             tmp['username'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
             tmp['start_time'] = convertToDate(appointmens[i]['startTime'])
             tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
+            event['start'] = convertEToDate(appointmens[i]['startTime'])
+            event['end'] = convertEToDate(appointmens[i]['endTime'])
+            event['title'] = appointmens[i]['name'] + ': ' + appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
             this.datas.push(tmp)
+            this.events.push(event)
           }
         }
         this.loading = false
@@ -248,7 +306,6 @@ export default {
         this.editedIndex = -1
       }, 300)
     },
-
     save() {
       this.sending = true
       if (this.editedIndex > -1) {
@@ -276,6 +333,9 @@ export default {
           this.handle(error)
         })
       }
+    },
+    reset() {
+      this.searchItem = Object.assign({}, this.defaultItem)
     }
   }
 }

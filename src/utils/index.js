@@ -138,6 +138,20 @@ export const convertToDate = milliseconds => {
     return formatDate(new Date(d))
 }
 
+export const convertEToDate = milliseconds => {
+    let d = new Date(parseInt(milliseconds, 10))
+    return formatEDate(new Date(d))
+}
+
+export const getCurrentDate = () => {
+    var today = new Date()
+    var dd = String(today.getDate()).padStart(2, '0')
+    var mm = String(today.getMonth() + 1).padStart(2, '0')//January is 0!
+    var yyyy = today.getFullYear()
+
+    return yyyy + '-' + mm + '-' + dd
+}
+
 function padTo2Digits(num) {
     return num.toString().padStart(2, '0')
 }
@@ -149,6 +163,20 @@ function formatDate(date) {
             padTo2Digits(date.getDate()),
             date.getFullYear(),
         ].join('/') +
+        ' ' +
+        [
+            padTo2Digits(date.getHours()),
+            padTo2Digits(date.getMinutes()),
+        ].join(':')
+    )
+}
+function formatEDate(date) {
+    return (
+        [
+            date.getFullYear(),
+            padTo2Digits(date.getMonth() + 1),
+            padTo2Digits(date.getDate()),
+        ].join('-') +
         ' ' +
         [
             padTo2Digits(date.getHours()),

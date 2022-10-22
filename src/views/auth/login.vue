@@ -6,7 +6,7 @@
           <v-row>
             <v-col lg="12">
               <div class="pa-7 pa-sm-12">
-                <img src="@/assets/images/logo-icon.png" width="64"/>
+                <img src="@/assets/images/icons/logo-icon.png" width="64"/>
                 <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">{{ $t('login.login')}}</h2>
                 <v-alert outlined type="error" dismissible class="mb-4 mt-0" v-model="showerr">
                   {{ errmsg }}
@@ -45,7 +45,7 @@
             </v-col>
           </v-row>
         </v-card>
-        <img src="@/assets/images/logo-icon.gif" width="80" class="middle" v-show="loading"/>
+        <img src="@/assets/images/icons/logo-icon.gif" width="80" class="middle" v-show="loading"/>
       </v-col>
     </v-row>
   </v-container>
@@ -83,8 +83,8 @@ export default {
   },
   methods: {
     submit() {
-      this.loading = true;
-      this.$refs.form.validate();
+      this.loading = true
+      this.$refs.form.validate()
       if (this.$refs.form.validate(true)) {
         var authData = {
           Username: this.email,
@@ -93,7 +93,7 @@ export default {
         this.$store.dispatch('signIn', authData)
       }
       else{
-        this.loading = false;
+        this.loading = false
       }
     }
   },
@@ -101,7 +101,7 @@ export default {
     errcode () {
       console.log('watched error code: ' + this.errcode)
       if (this.errcode !== '') {
-        this.loading = false;
+        this.loading = false
         if (this.errcode === '"NotAuthorizedException"') {
           this.errmsg = this.$t('cognito-messages.NotAuthorizedException')
         } else if (this.errcode === '"UserNotFoundException"') {

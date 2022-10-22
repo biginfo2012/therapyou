@@ -9,10 +9,6 @@
             v-if="!setHorizontalLayout"
             v-model="expandOnHover"
         ></VerticalHeader>
-        <!-- ---------------------------------- -->
-        <!--- Horizontal Header part -->
-        <!-- ---------------------------------- -->
-        <HorizontalHeader v-else></HorizontalHeader>
         <router-view/>
       </v-container>
     </v-main>
@@ -24,14 +20,7 @@
         :expand-on-hover.sync="expandOnHover"
     ></VerticalSidebar>
     <!-- ---------------------------------- -->
-    <!--- Horizontal Sidebar part -->
-    <!-- ---------------------------------- -->
-    <HorizontalSidebar v-else></HorizontalSidebar>
-    <!-- ---------------------------------- -->
-    <!--- Customizer part -->
-    <!-- ---------------------------------- -->
-    <Customizer v-model="expandOnHover"></Customizer>
-    <!-- ---------------------------------- -->
+    <Footer v-if="!setHorizontalLayout"></Footer>
   </v-app>
 </template>
 
@@ -39,7 +28,7 @@
 
 import VerticalHeader from "./vertical-header/VerticalHeader"
 import VerticalSidebar from "./vertical-sidebar/VerticalSidebar"
-import Customizer from "./customizer/Customizer"
+import Footer from "./footer/Footer"
 import {mapState, mapMutations} from "vuex"
 
 export default {
@@ -48,7 +37,7 @@ export default {
   components: {
     VerticalHeader,
     VerticalSidebar,
-    Customizer,
+    Footer
   },
 
   props: {

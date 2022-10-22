@@ -109,15 +109,14 @@
                               <v-text-field
                                   v-model="editedItem.registrationDate"
                                   type="date"
-                                  hide-details
-                                  filled
+                                  hide-details outlined
                                   background-color="transparent"
                                   :label="$t('therapist.register-date')"
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex === -1">
                               <v-file-input
-                                  :label="$t('therapist.profile-image')"
+                                  :label="$t('therapist.profile-image')" outlined
                                   @change="uploadProfileFile"></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
@@ -125,12 +124,12 @@
                             </v-col>
                             <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-file-input
-                                  :label="$t('therapist.profile-image')"
+                                  :label="$t('therapist.profile-image')" outlined
                                   @change="uploadProfileFile"></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex === -1">
                               <v-file-input
-                                  :label="$t('therapist.banner-image')"
+                                  :label="$t('therapist.banner-image')" outlined
                                   @change="uploadBannerFile"></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
@@ -138,7 +137,7 @@
                             </v-col>
                             <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-file-input
-                                  :label="$t('therapist.profile-image')"
+                                  :label="$t('therapist.profile-image')" outlined
                                   @change="uploadBannerFile"></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0">
@@ -205,8 +204,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import {apiBaseUrl, poolData} from "@/constants/config";
+import axios from "axios"
+import {apiBaseUrl, poolData} from "@/constants/config"
 import {getLoginInfo, getToken, singleUpload} from '@/utils'
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -240,8 +239,7 @@ export default {
       ],
       dialog: false,
       loading: false,
-      items: [
-      ],
+      items: [],
       headers: [
         {
           text: this.$t('therapist.suffix'),
@@ -359,13 +357,13 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit');
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit')
     }
   },
 
   watch: {
     dialog(val) {
-      val || this.close();
+      val || this.close()
     },
     errcode () {
       console.log('watched error code: ' + this.errcode)
@@ -381,7 +379,7 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.initialize()
   },
 
   methods: {
@@ -389,8 +387,8 @@ export default {
       this.getData()
     },
     getData(){
-      this.loading = true;
-      let loginInfo = getLoginInfo();
+      this.loading = true
+      let loginInfo = getLoginInfo()
       let data = {
         cognitoId: loginInfo.cognitoId,
       }
@@ -403,27 +401,27 @@ export default {
       }
       axios.post(apiBaseUrl + 'therapist/list', data, config).then((response) => {
         if (response.data.msg == "success") {
-          let therapists = response.data.data.therapistList;
+          let therapists = response.data.data.therapistList
           for (let i = 0; i < therapists.length; i++){
             therapists[i]['registrationDate'] = therapists[i]['registrationDate'].substring(0, 10)
           }
-          this.datas = response.data.data.therapistList;
-          this.loading = false;
+          this.datas = response.data.data.therapistList
+          this.loading = false
         }
       }).catch(error => {
-        this.loading = false;
+        this.loading = false
         if(error.response.status == 401){
           this.$store.dispatch('tryAutoSignIn')
         }
         else{
           alert(error.message)
         }
-      });
+      })
     },
     editItem(item) {
-      this.editedIndex = this.datas.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.editedIndex = this.datas.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
     },
     deleteItem(item) {
       if(confirm(this.$t('therapist.delete-confirm'))){
@@ -448,20 +446,20 @@ export default {
           else{
             alert(error.message)
           }
-        });
+        })
       }
     },
 
     close() {
-      this.dialog = false;
+      this.dialog = false
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      }, 300)
     },
 
     save() {
-      this.$refs.form.validate();
+      this.$refs.form.validate()
       if (this.$refs.form.validate(true)) {
         if (this.editedIndex > -1) {  ``
           let data = {
@@ -492,8 +490,8 @@ export default {
           }
           axios.post(apiBaseUrl + 'therapist/update', data, config).then((response) => {
             if (response.data.msg == "success") {
-              this.close();
-              this.getData();
+              this.close()
+              this.getData()
             }
           }).catch(error => {
             if(error.response.status == 401){
@@ -502,7 +500,7 @@ export default {
             else{
               alert(error.message)
             }
-          });
+          })
 
         } else {
           dataEmail.Value = this.editedItem.email
@@ -525,8 +523,8 @@ export default {
                 console.error('registration error: ' + JSON.stringify(err))
                 this.errcode = JSON.stringify(err.code)
               } else {
-                this.showerr = false;
-                this.errmsg = "";
+                this.showerr = false
+                this.errmsg = ""
                 this.editedItem.cognitoId = result.userSub
                 let data = {
                   cognitoId: this.editedItem.cognitoId,
@@ -556,23 +554,23 @@ export default {
                 }
                 axios.post(apiBaseUrl + 'therapist/save', data, config).then((response) => {
                   if (response.data.msg == "success") {
-                    this.close();
-                    this.getData();
+                    this.close()
+                    this.getData()
                   }
                 }).catch(error => {
-                  this.close();
+                  this.close()
                   if(error.response.status == 401){
                     this.$store.dispatch('tryAutoSignIn')
                   }
                   else{
                     alert(error.message)
                   }
-                });
+                })
               }
             }
           })
         }
-        // this.close();
+        // this.close()
       }
     },
 
@@ -584,7 +582,7 @@ export default {
         )
         if (result.status === 200) {
           // Handle storing it to your database here
-          this.editedItem.bannerImage = result.fullPath;
+          this.editedItem.bannerImage = result.fullPath
           console.log(result)
         } else {
           alert("File Upload to S3 failed")
@@ -607,7 +605,7 @@ export default {
         )
         if (result.status === 200) {
           // Handle storing it to your database here
-          this.editedItem.profileImage = result.fullPath;
+          this.editedItem.profileImage = result.fullPath
           console.log(result)
         } else {
           alert("File Upload to S3 failed")

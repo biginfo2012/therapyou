@@ -23,7 +23,28 @@
     <!-- ---------------------------------------------- -->
 
     <!-- ---------------------------------------------- -->
-    <!-- Notification -->
+    <!-- Dark Mode -->
+    <!-- ---------------------------------------------- -->
+    <v-menu
+        bottom
+        left
+        offset-y
+        origin="top right"
+        transition="scale-transition"
+        min-width="150">
+      <template v-slot:activator="{ on }">
+        <v-switch v-on="on"
+            v-model="$vuetify.theme.dark"
+            class="mr-5"
+            hide-details
+            primary
+            label="Dark"
+        />
+      </template>
+    </v-menu>
+
+    <!-- ---------------------------------------------- -->
+    <!-- Languages -->
     <!-- ---------------------------------------------- -->
     <v-menu
         bottom
@@ -34,7 +55,7 @@
         min-width="150">
       <template v-slot:activator="{ on }">
         <v-btn icon v-on="on" class="mr-5">
-          <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false" width="32"/>
+          <img class="locale" :alt="$i18n.locale.toUpperCase()" src="@/assets/images/icons/language.png" draggable="false" width="32"/>
           <span class="name ml-2 mr-3">{{ $i18n.locale.toUpperCase() }}</span>
         </v-btn>
       </template>
@@ -45,11 +66,6 @@
             v-for="(l,index) in localeOptions" :key="index" @click="changeLocale(l)">
           <v-list-item-title>
             <div class="d-flex align-center py-2 pl-3">
-              <div class>
-                <v-btn fab small elevation="0" class="mr-3">
-                  <img class="locale" :alt="l.name.toUpperCase()" :src="l.icon" draggable="false"/>
-                </v-btn>
-              </div>
               <div class="ml-2">
                 <h4 class="font-weight-medium">{{ l.name }}</h4>
               </div>

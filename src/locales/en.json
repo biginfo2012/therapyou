@@ -82,7 +82,10 @@
     "action": "Actions",
     "my": "My Appointments",
     "create": "Create Appointment",
-    "delete-confirm": "Are you sure you want to delete this appointment?"
+    "delete-confirm": "Are you sure you want to delete this appointment?",
+    "table-view": "Table View",
+    "calendar-view": "Calendar View",
+    "date": "Date"
   },
   "invoice": {
     "invoices": "Invoices",
