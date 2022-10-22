@@ -1,38 +1,61 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <BaseCard :heading="$t('invoice.invoices')">
+    <BaseCard :heading="$t('mail.messages')">
       <div>
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
+          <v-container>
+            <v-form ref="search_form">
+              <v-row>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-select :items="items" item-text="username" outlined
+                            item-value="cognitoId" :label="$t('appointment.user-name')"
+                            v-model="searchItem.cognitoId" class="mt-0 pt-0"></v-select>
+                </v-col>
+                <v-col cols="12" sm="12" md="4" class="py-0">
+                  <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
+                  <v-btn color="success" class="mt-3" @click="getData">{{ $t('general.search') }}</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-container>
           <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat>
-                <v-toolbar-title>{{ $t('invoice.my')}}</v-toolbar-title>
+                <v-toolbar-title>{{ $t('mail.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
-                  <template v-slot:activator="{ on }">
-                    <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('invoice.create') }}</v-btn>
-                  </template>
                   <v-card>
                     <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
+
                     <v-card-text>
                       <v-container>
                         <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-select :items="items" item-text="label" outlined
-                                      item-value="id" :label="$t('appointment.list')"
-                                      v-model="editedItem.id" class="mt-0 pt-0"></v-select>
+                          <v-col cols="12" sm="12" md="12" class="pb-0">
+                            <v-select :items="items" item-text="username" outlined
+                                      item-value="cognitoId" :label="$t('appointment.user-name')"
+                                      v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-select>
                           </v-col>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-file-input
-                            :label="$t('invoice.file')" outlined
-                            @change="uploadFile"></v-file-input>
+                          <v-col cols="12" sm="12" md="12" class="pb-0">
+                            <v-textarea
+                                v-model="editedItem.content"
+                                outlined required auto-grow disabled
+                                :label="$t('mail.content')"
+                            ></v-textarea>
+                          </v-col>
+                          <v-col cols="12" sm="12" md="12" class="pb-0">
+                            <v-textarea
+                                v-model="editedItem.answer"
+                                :rules="fieldRules"
+                                outlined required auto-grow
+                                :label="$t('mail.answer')"
+                            ></v-textarea>
                           </v-col>
                         </v-row>
                       </v-container>
@@ -41,13 +64,14 @@
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.reply') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
+              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
@@ -61,18 +85,18 @@
 </template>
 
 <script>
-import {convertToDate, getLoginInfo, singleUpload} from '@/utils'
-import {deleteInvoice, getAppointmentList, getInvoiceList, uploadInvoice} from "@/api"
+import { getLoginInfo } from '@/utils'
+import {deleteMessage, getMessageList, getUserList, replyMessage} from "@/api"
 export default {
-  name: "InvoiceList",
+  name: "MessageList",
   data: function () {
     return {
       page: {
-        title: this.$t('invoice.list'),
+        title: this.$t('mail.list'),
       },
       breadcrumbs: [
         {
-          text: this.$t('invoice.list'),
+          text: this.$t('mail.list'),
           disabled: false,
           to: "#",
         }
@@ -84,10 +108,16 @@ export default {
       ],
       headers: [
         {
-          text: this.$t('invoice.url'),
+          text: this.$t('appointment.user-name'),
           align: "start",
-          sortable: false,
-          value: "invoiceUrl"
+          sortable: true,
+          value: "username"
+        },
+        {
+          text: this.$t('mail.content'),
+          align: "start",
+          sortable: true,
+          value: "username"
         },
         { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],
@@ -95,18 +125,28 @@ export default {
       editedIndex: -1,
       editedItem: {
         id: 0,
-        invoiceUrl: ""
+        cognitoId: "",
+        content: "",
+        answer: ""
       },
-      defaultItem: {
+      defaultItem:{
         id: 0,
-        invoiceUrl: ""
+        cognitoId: "",
+        content: "",
+        answer: ""
       },
+      searchItem:{
+        cognitoId: ""
+      },
+      fieldRules:[
+        v => !!v || this.$t('error-messages.field-required'),
+      ],
       loginInfo: getLoginInfo()
     }
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.edit')
+      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.reply')
     }
   },
 
@@ -123,7 +163,7 @@ export default {
   methods: {
     initialize() {
       this.getData()
-      this.getAppointmentData()
+      this.getUserData()
     },
     handle(error) {
       console.log(error)
@@ -135,35 +175,42 @@ export default {
     },
     getData() {
       this.loading = true
-      let data = {
-        cognitoId: this.loginInfo.cognitoId,
-        isTherapist: true
+      let filter = {}
+      if (this.searchItem.firstName != "") {
+        filter.firstName = this.searchItem.firstName
       }
-      getInvoiceList(data).then((response) => {
-        if (response.data.msg == "Success") {
-          this.datas = response.data.data.invoices
+      let data = {
+        cognitoId: this.loginInfo.cognitoId
+      }
+      if (filter != {}) {
+        data = {
+          cognitoId: this.loginInfo.cognitoId,
+          filters: filter
+        }
+      }
+
+      getMessageList(data).then((response) => {
+        if (response.data.msg == "success") {
+          this.datas = response.data.data.messageList
         }
         this.loading = false
       }).catch(error => {
         this.loading = false
         this.handle(error)
       })
-
     },
-    getAppointmentData(){
+    getUserData() {
       let data = {
         cognitoId: this.loginInfo.cognitoId,
-        offset: 0,
-        limit: 500
       }
-      getAppointmentList(data).then((response) => {
+      getUserList(data).then((response) => {
         if (response.data.msg == "success") {
-          let appointmens = response.data.data.appointments
+          let users = response.data.data.userList
           this.items = []
-          for (let i = 0; i < appointmens.length; i++) {
+          for (let i = 0; i < users.length; i++) {
             let tmp = {}
-            tmp['id'] = appointmens[i]['id']
-            tmp['label'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName'] + ': ' + convertToDate(appointmens[i]['startTime'])
+            tmp['username'] = users[i]['firstName'] + ' ' + users[i]['lastName']
+            tmp['cognitoId'] = users[i]['cognitoId']
             this.items.push(tmp)
           }
         }
@@ -172,27 +219,10 @@ export default {
       })
     },
 
-    async uploadFile(file){
-      if(file != undefined){
-        const result = await singleUpload(
-            file,
-            'invoices' // folder of the file, you should change it to your variable or a string
-        )
-        if (result.status === 200) {
-          // Handle storing it to your database here
-          this.editedItem.invoiceUrl = result.fullPath
-          console.log(result)
-        } else {
-          this.$dialog.notify.error("File Upload to S3 failed")
-        }
-        return {
-          abort: () => {
-            // This function is entered if the user has tapped the cancel button
-            // Let FilePond know the request has been cancelled
-            this.$dialog.notify.error("File Upload to S3 aborted")
-          },
-        }
-      }
+    editItem(item) {
+      this.editedIndex = this.datas.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
     },
 
     async deleteItem(item) {
@@ -205,7 +235,7 @@ export default {
         let data = {
           invoiceUrl: item.invoiceUrl
         }
-        deleteInvoice(data).then((response) => {
+        deleteMessage(data).then((response) => {
           if (response.data.msg == "OK") {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
@@ -228,28 +258,27 @@ export default {
       this.sending = true
       if (this.editedIndex > -1) {
         this.sending = false
-        Object.assign(this.datas[this.editedIndex], this.editedItem)
-      } else {
-        if(this.editedItem.id == 0 || this.editedItem.invoiceUrl == ""){
-          this.sending = false
-          return
-        }
         let data = {
-          appointmentId: this.editedItem.id,
-          invoiceUrl: this.editedItem.invoiceUrl
+          id: this.editItem.id,
+          cognitoId: this.editedItem.cognitoId,
+          parameters: {
+            answer: this.editedItem.answer
+          }
         }
-        uploadInvoice(data).then((response) => {
+        replyMessage(data).then((response) => {
           this.sending = false
-          if (response.data.msg == "OK") {
+          if (response.data.msg == "success") {
             this.close()
             this.getData()
           }
         }).catch(error => {
           this.sending = false
-          this.close()
           this.handle(error)
         })
       }
+    },
+    reset() {
+      this.searchItem = Object.assign({}, this.defaultItem)
     }
   }
 }

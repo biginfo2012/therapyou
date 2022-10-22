@@ -8,7 +8,7 @@
         <div class="mt-4">
           <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
-              <v-toolbar flat color="white">
+              <v-toolbar flat>
                 <v-toolbar-title>{{$t('therapist.list')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
@@ -17,10 +17,11 @@
                     <v-btn color="success" dark class="mb-2" v-on="on">{{$t('therapist.create')}}</v-btn>
                   </template>
                   <v-card>
+                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
+                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
-
                     <v-card-text>
                       <v-container>
                         <v-form ref="form">
@@ -173,17 +174,14 @@
                                   :label="$t('therapist.note')"
                               ></v-textarea>
                             </v-col>
-
                           </v-row>
                         </v-form>
-
                       </v-container>
                     </v-card-text>
-
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save">{{ $t('general.save') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save') }}</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -194,7 +192,7 @@
 <!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="initialize">{{ $t('general.reset') }}</v-btn>
+              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
             </template>
           </v-data-table>
         </div>
@@ -204,9 +202,10 @@
 </template>
 
 <script>
-import axios from "axios"
-import {apiBaseUrl, poolData} from "@/constants/config"
-import {getLoginInfo, getToken, singleUpload} from '@/utils'
+
+import {poolData} from "@/constants/config"
+import {getLoginInfo, singleUpload} from '@/utils'
+import {deleteTherapist, getTherapistList, saveTherapist, updateTherapist} from "@/api";
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
 var userPool = []
@@ -239,6 +238,7 @@ export default {
       ],
       dialog: false,
       loading: false,
+      sending: false,
       items: [],
       headers: [
         {
@@ -353,6 +353,7 @@ export default {
       fieldRules:[
         v => !!v || this.$t('error-messages.field-required'),
       ],
+      loginInfo: getLoginInfo()
     }
   },
   computed: {
@@ -386,20 +387,20 @@ export default {
     initialize() {
       this.getData()
     },
+    handle(error) {
+      console.log(error)
+      if (error.response.status == 401) {
+        this.$store.dispatch('tryAutoSignIn')
+      } else {
+        this.$dialog.notify.error(error.response.data.msg)
+      }
+    },
     getData(){
       this.loading = true
-      let loginInfo = getLoginInfo()
       let data = {
-        cognitoId: loginInfo.cognitoId,
+        cognitoId: this.loginInfo.cognitoId,
       }
-      let config = {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getToken().idToken,
-          'Content-Type': 'application/json'
-        }
-      }
-      axios.post(apiBaseUrl + 'therapist/list', data, config).then((response) => {
+      getTherapistList(data).then((response) => {
         if (response.data.msg == "success") {
           let therapists = response.data.data.therapistList
           for (let i = 0; i < therapists.length; i++){
@@ -410,12 +411,7 @@ export default {
         }
       }).catch(error => {
         this.loading = false
-        if(error.response.status == 401){
-          this.$store.dispatch('tryAutoSignIn')
-        }
-        else{
-          alert(error.message)
-        }
+        this.handle(error)
       })
     },
     editItem(item) {
@@ -423,29 +419,23 @@ export default {
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
-    deleteItem(item) {
-      if(confirm(this.$t('therapist.delete-confirm'))){
+    async deleteItem(item) {
+      let res = await this.$dialog["warning"]({
+        title: this.$t('general.confirm'),
+        text: this.$t('therapist.delete-confirm'),
+        persistent: false
+      })
+      if(res){
         let data = {
           cognitoId: item.cognitoId,
         }
-        let config = {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': getToken().idToken,
-            'Content-Type': 'application/json'
-          }
-        }
-        axios.post(apiBaseUrl + 'therapist/delete', data, config).then((response) => {
+        deleteTherapist(data).then((response) => {
           if (response.data.msg == "success") {
+            this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
           }
         }).catch(error => {
-          if(error.response.status == 401){
-            this.$store.dispatch('tryAutoSignIn')
-          }
-          else{
-            alert(error.message)
-          }
+          this.handle(error)
         })
       }
     },
@@ -459,9 +449,10 @@ export default {
     },
 
     save() {
+      this.sending = true
       this.$refs.form.validate()
       if (this.$refs.form.validate(true)) {
-        if (this.editedIndex > -1) {  ``
+        if (this.editedIndex > -1) {
           let data = {
             cognitoId: this.editedItem.cognitoId,
             parameters: {
@@ -480,28 +471,16 @@ export default {
               areasOfExpertise: this.editedItem.areasOfExpertise
             }
           }
-          console.log(data)
-          let config = {
-            headers: {
-              'Accept': 'application/json',
-              'Authorization': getToken().idToken,
-              'Content-Type': 'application/json'
-            }
-          }
-          axios.post(apiBaseUrl + 'therapist/update', data, config).then((response) => {
+          updateTherapist(data).then((response) => {
+            this.sending = false
             if (response.data.msg == "success") {
               this.close()
               this.getData()
             }
           }).catch(error => {
-            if(error.response.status == 401){
-              this.$store.dispatch('tryAutoSignIn')
-            }
-            else{
-              alert(error.message)
-            }
+            this.sending = false
+            this.handle(error)
           })
-
         } else {
           dataEmail.Value = this.editedItem.email
           dataPhone.Value = this.editedItem.phoneNumber
@@ -522,6 +501,7 @@ export default {
               if (err) {
                 console.error('registration error: ' + JSON.stringify(err))
                 this.errcode = JSON.stringify(err.code)
+                this.sending = false
               } else {
                 this.showerr = false
                 this.errmsg = ""
@@ -544,33 +524,22 @@ export default {
                   role: 1,
                   isDefault: 0
                 }
-                console.log(data)
-                let config = {
-                  headers: {
-                    'Accept': 'application/json',
-                    'Authorization': getToken().idToken,
-                    'Content-Type': 'application/json'
-                  }
-                }
-                axios.post(apiBaseUrl + 'therapist/save', data, config).then((response) => {
+
+                saveTherapist(data).then((response) => {
+                  this.sending = false
                   if (response.data.msg == "success") {
                     this.close()
                     this.getData()
                   }
                 }).catch(error => {
+                  this.sending = false
                   this.close()
-                  if(error.response.status == 401){
-                    this.$store.dispatch('tryAutoSignIn')
-                  }
-                  else{
-                    alert(error.message)
-                  }
+                  this.handle(error)
                 })
               }
             }
           })
         }
-        // this.close()
       }
     },
 
@@ -585,13 +554,13 @@ export default {
           this.editedItem.bannerImage = result.fullPath
           console.log(result)
         } else {
-          alert("File Upload to S3 failed")
+          this.$dialog.notify.error("File Upload to S3 failed")
         }
         return {
           abort: () => {
             // This function is entered if the user has tapped the cancel button
             // Let FilePond know the request has been cancelled
-            alert("File Upload to S3 aborted")
+            this.$dialog.notify.error("File Upload to S3 aborted")
           },
         }
       }
@@ -608,13 +577,13 @@ export default {
           this.editedItem.profileImage = result.fullPath
           console.log(result)
         } else {
-          alert("File Upload to S3 failed")
+          this.$dialog.notify.error("File Upload to S3 failed")
         }
         return {
           abort: () => {
             // This function is entered if the user has tapped the cancel button
             // Let FilePond know the request has been cancelled
-            alert("File Upload to S3 aborted")
+            this.$dialog.notify.error("File Upload to S3 aborted")
           },
         }
       }

@@ -8,7 +8,7 @@
         <div class="mt-4">
           <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
-              <v-toolbar flat color="white">
+              <v-toolbar flat>
                 <v-toolbar-title>{{ $t('invoice.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
@@ -241,8 +241,8 @@ export default {
           invoiceUrl: this.editedItem.invoiceUrl
         }
         uploadInvoice(data).then((response) => {
+          this.sending = false
           if (response.data.msg == "OK") {
-            this.sending = false
             this.close()
             this.getData()
           }

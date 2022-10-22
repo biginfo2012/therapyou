@@ -23,10 +23,10 @@
           class="align-center d-flex mb-5"
           v-if="SidebarColor == 'white' && !$vuetify.theme.dark"
       >
-        <img src="@/assets/images/icons/logo-icon.png" class="mt-2" width="45"/>
+        <img src="@/assets/images/icons/logo-icon.png" class="mt-2" width="40"/>
       </v-toolbar-title>
       <v-toolbar-title class="align-center d-flex mb-5" v-else>
-        <img src="@/assets/images/icons/logo-icon.png" class="mt-2" width="45"/>
+        <img src="@/assets/images/icons/logo-icon.png" class="mt-2" width="40"/>
       </v-toolbar-title>
       <!-- ---------------------------------------------- -->
       <!---Logo part -->

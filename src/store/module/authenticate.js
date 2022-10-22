@@ -16,6 +16,7 @@ const state = {
         refreshToken: ''
     },
     username: '',
+    phoneNumber: '',
     cognitoId: '',
     errcode: '',
     attributes: [],
@@ -36,11 +37,13 @@ const mutations = {
         state.sessionToken = null
         state.authenticated = false
         state.username = ''
+        state.phoneNumber = ''
         state.cognitoId = ''
         state.userPool = []
         sessionStorage.removeItem('userData')
         sessionStorage.removeItem('token')
         sessionStorage.removeItem('username')
+        sessionStorage.removeItem('attributes')
     },
     setAttributes(state, attributes) {
         state.attributes = attributes
@@ -51,6 +54,10 @@ const mutations = {
         state.cognitoId = state.attributes.filter(function (Obj) {
             return Obj.Name === 'sub'
         })[0].Value
+        state.phoneNumber = state.attributes.filter(function (Obj) {
+            return Obj.Name === 'phone_number'
+        })[0].Value
+        sessionStorage.setItem('phoneNumber', state.phoneNumber)
         getLoggedUserInfo(state.cognitoId)
     },
     setUsername(state, payload) {

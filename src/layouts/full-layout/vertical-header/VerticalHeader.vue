@@ -35,7 +35,7 @@
       <template v-slot:activator="{ on }">
         <v-switch v-on="on"
             v-model="$vuetify.theme.dark"
-            class="mr-5"
+            class="mr-8"
             hide-details
             primary
             label="Dark"
@@ -72,6 +72,50 @@
             </div>
           </v-list-item-title>
         </v-list-item>
+      </v-list>
+    </v-menu>
+
+    <!-- ---------------------------------------------- -->
+    <!-- Notification -->
+    <!-- ---------------------------------------------- -->
+    <v-menu
+        bottom left offset-y
+        origin="top right"
+        transition="scale-transition"
+        min-width="300"
+        v-if="showNoti"
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn icon v-on="on">
+          <v-badge color="primary" dot offset-x="5" offset-y="5">
+            <feather type="bell" class="feather-sm"></feather>
+          </v-badge>
+        </v-btn>
+      </template>
+
+      <v-list class="pa-3">
+        <h4 class="font-weight-medium fs-18">
+          {{$t('menu.noti')}}
+          <v-chip class="ma-2" label small color="warning"> 5 {{ $t('general.new') }} </v-chip>
+        </h4>
+        <v-list-item
+            class="px-0"
+            v-for="(item, i) in notifications"
+            :key="i"
+        >
+          <v-list-item-title>
+            <div class="d-flex align-center py-4 px-3 border-bottom">
+              <div class="ml-2">
+                <h4 class="font-weight-medium">{{ item.title }}</h4>
+                <span
+                    class="grey--text subtitle-2 descpart d-block text-truncate font-weight-regular"
+                >{{ item.desc }}</span>
+              </div>
+            </div>
+          </v-list-item-title>
+        </v-list-item>
+        <v-btn block depressed color="secondary" class="mt-4 py-4"  @click="goNoti"
+        >{{$t('noti.all')}}</v-btn>
       </v-list>
     </v-menu>
 
@@ -117,8 +161,9 @@
 <script>
 // Utilities
 import {mapState, mapMutations, mapActions} from "vuex"
-import {getLoginInfo, setLocale} from "@/utils"
+import {getLoginInfo, setLocale, isLoggedInAsUser} from "@/utils"
 import {localeOptions} from "@/constants/config"
+import {getNotiList} from "@/api";
 
 export default {
   name: "VerticalHeader",
@@ -137,12 +182,39 @@ export default {
       drawer: false,
       group: null,
       localeOptions,
+      showNoti: false,
       userInfo: {
         id: 0,
         name: "",
         role: "",
         profileImage: ""
       },
+      notifications: [
+        {
+          color: "error",
+          icon: "home",
+          title: "Luanch Admin",
+          desc: "Just see the my new admin!",
+        },
+        {
+          color: "primary",
+          icon: "calendar",
+          title: "Event today",
+          desc: "Just a reminder that you have event",
+        },
+        {
+          color: "success",
+          icon: "settings",
+          title: "Settings",
+          desc: "You can customize this template as you want",
+        },
+        {
+          color: "secondary",
+          icon: "users",
+          title: "Johny John",
+          desc: "Assign her new tasks",
+        },
+      ],
     }
   },
 
@@ -173,9 +245,24 @@ export default {
     goPage() {
       this.$router.push('/profile')
     },
+    goNoti() {
+      this.$router.push('/user/notification/list')
+    },
     setLanguageInfo() {
       setLocale(this.$i18n.locale)
     },
+    getNotiData(){
+      let data = {
+        cognitoId:  getLoginInfo().cognitoId,
+      }
+      getNotiList(data).then((response) => {
+        if (response.data.msg == "success") {
+          this.datas = response.data.data.notificationList
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    }
   },
   watch: {
     group() {
@@ -194,6 +281,8 @@ export default {
     this.userInfo.role = loginInfo.role == 2 ? "Admin" : "Therapist"
     this.userInfo.profileImage = loginInfo.profileImage
     this.setLanguageInfo()
+    this.showNoti = isLoggedInAsUser()
+    this.getNotiData()
   }
 }
 </script>

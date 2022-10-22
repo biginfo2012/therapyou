@@ -34,5 +34,19 @@ export const userRoutes = {
             component: () =>
                 import("@/views/user/ClientList.vue"),
         },
+        {
+            name: "Notifications",
+            path: "notification/list",
+            beforeEnter: AuthRequired,
+            component: () =>
+                import("@/views/user/NotificationList.vue"),
+        },
+        {
+            name: "Messages",
+            path: "message/list",
+            beforeEnter: AuthRequired,
+            component: () =>
+                import("@/views/user/MessageList.vue"),
+        },
     ],
 }

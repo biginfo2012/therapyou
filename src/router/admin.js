@@ -41,5 +41,12 @@ export const adminRoutes = {
             component: () =>
                 import("@/views/admin/TherapistList.vue"),
         },
+        {
+            name: "Messages",
+            path: "message/list",
+            beforeEnter: AuthRequired,
+            component: () =>
+                import("@/views/admin/MessageList.vue"),
+        },
     ],
 }

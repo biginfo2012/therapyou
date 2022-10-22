@@ -8,7 +8,9 @@
     "reset": "Reset",
     "actions": "Actions",
     "search": "Search",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "change-password": "Change Password",
+    "reply": "Reply"
   },
   "header": {
     "profile": "Profile"
@@ -18,7 +20,9 @@
     "appointment": "Appointments",
     "invoice": "Invoices",
     "client": "Clients",
-    "therapist": "Therapists"
+    "therapist": "Therapists",
+    "noti": "Notifications",
+    "message": "Messages"
   },
   "cognito-messages": {
     "NotAuthorizedException": "Incorrect username or password",
@@ -29,7 +33,8 @@
     "UsernameExistsException": "An account with the given email already exists!"
   },
   "message": {
-    "delete-success": "Deleted Successfully!"
+    "delete-success": "Deleted Successfully!",
+    "save-success": "Saved Successfully!"
   },
   "error-messages": {
     "password-required": "Password is required",
@@ -58,7 +63,8 @@
   },
   "forgot": {
     "reset": "RESET PASSWORD",
-    "show-sent": "A confirmation was code sent to your phone.",
+    "show-sent": "A confirmation code sent to your phone.",
+    "code-send": "A confirmation code will send to your phone.",
     "find-account": "Find your account",
     "find": "Find",
     "verify-account": "Verifying account...",
@@ -66,7 +72,8 @@
     "confirm-code": "Confirmation Code",
     "new-pwd": "New Password",
     "confirm": "Confirm",
-    "update-pwd": "Updating password..."
+    "update-pwd": "Updating password...",
+    "send-code": "Sending Code..."
   },
   "changed": {
     "update-pwd": "You have updated your password."
@@ -126,5 +133,24 @@
     "note": "Note",
     "area-exp": "AreasOfExpertise",
     "delete-confirm": "Are you sure you want to delete this Therapist?"
+  },
+  "profile": {
+    "profile": "Profile",
+    "personal-info": "Personal Info",
+    "contact-info": "Contact Info"
+  },
+  "noti": {
+    "all": "See All",
+    "notis": "Notifications",
+    "list": "Notification List",
+    "title": "Title",
+    "desc": "Desc"
+  },
+  "mail": {
+    "list": "Message List",
+    "mails": "Messages",
+    "my": "My Messages",
+    "content": "Message Content",
+    "answer": "Answer"
   }
 }

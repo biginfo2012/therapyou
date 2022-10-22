@@ -86,6 +86,7 @@ export const getLoginInfo = () => {
     try {
         loginInfo = JSON.parse(loginInfo)
         if (loginInfo) {
+            console.log(loginInfo)
             return loginInfo
         }
         // eslint-disable-next-line no-empty

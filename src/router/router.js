@@ -4,6 +4,7 @@ import goTo from "vuetify/es5/services/goto"
 import {authRoutes} from "./auth"
 import {adminRoutes} from "./admin"
 import {userRoutes} from "./user"
+import loginRequired from "@/utils/login-required"
 
 Vue.use(Router)
 
@@ -30,6 +31,20 @@ const router = new Router({
         },
         adminRoutes,
         userRoutes,
+        {
+            path: "/profile",
+            beforeEnter: loginRequired,
+            component: () => import("@/layouts/full-layout/Layout"),
+            children: [
+                {
+                    name: "Profile",
+                    path: "/",
+                    beforeEnter: loginRequired,
+                    component: () =>
+                        import("@/views/Profile"),
+                },
+            ]
+        },
         {
             path: "/room",
             component: () => import( '../views/SessionRoom')

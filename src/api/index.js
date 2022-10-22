@@ -19,6 +19,15 @@ export function createAppointment(data) {
 export function getTherapistList(data) {
     return axios.post(apiBaseUrl + 'therapist/list', data, config)
 }
+export function deleteTherapist(data) {
+    return axios.post(apiBaseUrl + 'therapist/delete', data, config)
+}
+export function saveTherapist(data) {
+    return axios.post(apiBaseUrl + 'therapist/save', data, config)
+}
+export function updateTherapist(data) {
+    return axios.post(apiBaseUrl + 'therapist/update', data, config)
+}
 export function getUserList(data) {
     return axios.post(apiBaseUrl + 'user/list', data, config)
 }
@@ -39,4 +48,16 @@ export function deleteInvoice(data) {
 }
 export function uploadInvoice(data) {
     return axios.post(apiBaseUrl + 'invoice/upload', data, config)
+}
+export function getNotiList(data) {
+    return axios.post(apiBaseUrl + 'notification/list', data, config)
+}
+export function getMessageList(data) {
+    return axios.post(apiBaseUrl + 'message/list', data, config)
+}
+export function deleteMessage(data) {
+    return axios.post(apiBaseUrl + 'message/delete', data, config)
+}
+export function replyMessage(data) {
+    return axios.post(apiBaseUrl + 'message/reply', data, config)
 }

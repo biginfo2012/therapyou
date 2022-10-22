@@ -38,12 +38,12 @@
                   <span slot="loader"> {{ $t('forgot.verify-account') }}</span>
                 </v-btn>
                 <div class="accent--text">
-                  {{ $t('forgot.show-sent') }}
+                  {{ $t('forgot.send-code') }}
                 </div>
               </div>
               <div v-show="codesent">
                 <h4 class="subheading mb-2 accent--text"> {{ $t('forgot.confirm-pwd') }}</h4>
-                <v-form  v-model="validcode" ref="form">
+                <v-form v-model="validcode" ref="form">
                   <v-text-field
                       :label="$t('forgot.confirm-code')"
                       v-model="code"
