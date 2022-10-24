@@ -118,9 +118,9 @@ export const getLoggedUserInfo = (cognitoId) => {
             sessionStorage.setItem('userData', JSON.stringify(userData))
             console.log(userData)
             if (userData.role == 2) {
-                router.push('/admin/dashboard')
+                router.push('/admin')
             } else {
-                router.push('/user/dashboard')
+                router.push('/user')
             }
         } else {
             store.commit('setError', 'Unknown')

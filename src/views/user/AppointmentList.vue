@@ -12,7 +12,7 @@
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-select :items="items" item-text="username" outlined
                             item-value="cognitoId" :label="$t('appointment.user-name')"
-                            v-model="searchItem.cognitoId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.userId" class="mt-0 pt-0"></v-select>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-text-field
@@ -22,6 +22,11 @@
                       background-color="transparent"
                       :label="$t('appointment.date')"
                   ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="3" class="py-0">
+                  <v-select :items="payItems" item-text="label" outlined
+                            item-value="paid" :label="$t('appointment.pay-status')"
+                            v-model="searchItem.paid" class="mt-0 pt-0"></v-select>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
@@ -60,7 +65,7 @@
                               <v-col cols="12" sm="12" md="12">
                                 <v-select :items="items" item-text="username" outlined
                                           item-value="cognitoId" :label="$t('appointment.user-name')"
-                                          v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-select>
+                                          v-model="editedItem.userId" class="mt-0 pt-0"></v-select>
                               </v-col>
                               <v-col cols="12" sm="12" md="12">
                                 <v-text-field
@@ -140,6 +145,10 @@ export default {
       loading: false,
       sending: false,
       items: [],
+      payItems: [
+        {label: this.$t('appointment.paid'), paid: true},
+        {label: this.$t('appointment.no-paid'), paid: false}
+      ],
       tab: null,
       headers: [
         {
@@ -155,17 +164,18 @@ export default {
       datas: [],
       editedIndex: -1,
       editedItem: {
-        cognitoId: "",
+        userId: "",
         start_time: 0,
       },
       defaultItem: {
-        cognitoId: "",
+        userId: "",
         start_time: 0,
+        paid: null
       },
       searchItem: {
-        therapistCognitoId: "",
-        cognitoId: "",
-        start_time: ""
+        userId: "",
+        start_time: "",
+        paid: null
       },
       loginInfo: getLoginInfo()
     }
@@ -205,6 +215,25 @@ export default {
         cognitoId: this.loginInfo.cognitoId,
         offset: 0,
         limit: 500
+      }
+      let filter = {}
+      if (this.searchItem.userId != "") {
+        filter.userId = this.searchItem.userId
+      }
+      if (this.searchItem.start_time != "") {
+        filter.start_time = this.searchItem.start_time
+      }
+      if (this.searchItem.paid != null) {
+        filter.paid = this.searchItem.paid
+      }
+
+      if (filter != {}) {
+        data = {
+          cognitoId: this.loginInfo.cognitoId,
+          offset: 0,
+          limit: 500,
+          filters: filter
+        }
       }
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
@@ -284,13 +313,13 @@ export default {
         Object.assign(this.datas[this.editedIndex], this.editedItem)
         this.sending = false
       } else {
-        if (this.editedItem.cognitoId == "" || this.editedItem.start_time == 0) {
+        if (this.editedItem.userId == "" || this.editedItem.start_time == 0) {
           this.sending = false
           return
         }
         let data = {
-          cognitoId: this.editedItem.therapistCognitoId,
-          userId: this.editedItem.cognitoId,
+          cognitoId: this.loginInfo.cognitoId,
+          userId: this.editedItem.userId,
           datetime: Date.parse(this.editedItem.start_time)
         }
         createAppointment(data).then((response) => {

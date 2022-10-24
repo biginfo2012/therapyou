@@ -1,10 +1,5 @@
 export default [
     {
-        title: "menu.dashboard",
-        icon: "pie-chart",
-        to: "/user/dashboard",
-    },
-    {
         title: "menu.appointment",
         icon: "book",
         to: "/user/appointment/list",

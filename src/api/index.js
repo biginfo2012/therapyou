@@ -13,6 +13,9 @@ let config = {
 export function getAppointmentList(data) {
     return axios.post(apiBaseUrl + 'appointments/list', data, config)
 }
+export function getPaidAppointmentList(data) {
+    return axios.post(apiBaseUrl + 'appointments/list-paid', data, config)
+}
 export function createAppointment(data) {
     return axios.post(apiBaseUrl + 'appointments/create', data, config)
 }

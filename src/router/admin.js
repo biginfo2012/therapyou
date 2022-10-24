@@ -2,17 +2,10 @@ import AuthRequired from "@/utils/admin-auth-required"
 
 export const adminRoutes = {
     path: "/admin",
-    redirect: "/admin/dashboard",
+    redirect: "/admin/appointment/list",
     component: () => import("@/layouts/full-layout/Layout"),
     beforeEnter: AuthRequired,
     children: [
-        {
-            name: "Dashboard",
-            path: "dashboard",
-            beforeEnter: AuthRequired,
-            component: () =>
-                import("@/views/dashboards/Dashboard.vue"),
-        },
         {
             name: "Appointments",
             path: "appointment/list",

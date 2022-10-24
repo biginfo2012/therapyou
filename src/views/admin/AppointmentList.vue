@@ -12,12 +12,12 @@
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-select :items="therapistItems" item-text="name" outlined
                             item-value="cognitoId" :label="$t('appointment.therapist-name')"
-                            v-model="searchItem.therapistCognitoId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.therapistId" class="mt-0 pt-0"></v-select>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-select :items="items" item-text="username" outlined
                             item-value="cognitoId" :label="$t('appointment.user-name')"
-                            v-model="searchItem.cognitoId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.userId" class="mt-0 pt-0"></v-select>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-text-field
@@ -29,8 +29,13 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
-                  <v-btn color="success" class="mt-3" @click="getData">{{ $t('general.search') }}</v-btn>
+                  <v-select :items="payItems" item-text="label" outlined
+                            item-value="paid" :label="$t('appointment.pay-status')"
+                            v-model="searchItem.paid" class="mt-0 pt-0"></v-select>
+                </v-col>
+                <v-col cols="12" sm="12" md="3" class="py-0 mb-3">
+                  <v-btn color="success" class="mt-0 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
+                  <v-btn color="success" class="mt-0" @click="getData">{{ $t('general.search') }}</v-btn>
                 </v-col>
               </v-row>
             </v-form>
@@ -64,12 +69,12 @@
                               <v-col cols="12" sm="12" md="12">
                                 <v-select :items="therapistItems" item-text="name" outlined
                                           item-value="cognitoId" :label="$t('appointment.therapist-name')"
-                                          v-model="editedItem.therapistCognitoId" class="mt-0 pt-0"></v-select>
+                                          v-model="editedItem.therapistId" class="mt-0 pt-0"></v-select>
                               </v-col>
                               <v-col cols="12" sm="12" md="12">
                                 <v-select :items="items" item-text="username" outlined
                                           item-value="cognitoId" :label="$t('appointment.user-name')"
-                                          v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-select>
+                                          v-model="editedItem.userId" class="mt-0 pt-0"></v-select>
                               </v-col>
                               <v-col cols="12" sm="12" md="12">
                                 <v-text-field
@@ -140,6 +145,10 @@ export default {
       loading: false,
       sending: false,
       items: [],
+      payItems: [
+        {label: this.$t('appointment.paid'), paid: true},
+        {label: this.$t('appointment.no-paid'), paid: false}
+      ],
       tab: null,
       therapistItems: [],
       headers: [
@@ -162,19 +171,21 @@ export default {
       datas: [],
       editedIndex: -1,
       editedItem: {
-        therapistCognitoId: "",
-        cognitoId: "",
+        therapistId: "",
+        userId: "",
         start_time: 0,
       },
       defaultItem: {
-        therapistCognitoId: "",
-        cognitoId: "",
         start_time: 0,
+        therapistId: "",
+        userId: "",
+        paid: null
       },
       searchItem: {
-        therapistCognitoId: "",
-        cognitoId: "",
-        start_time: ""
+        userId: "",
+        start_time: "",
+        therapistId: "",
+        paid: null
       },
       loginInfo: getLoginInfo()
     }
@@ -216,6 +227,28 @@ export default {
         offset: 0,
         limit: 500
       }
+      let filter = {}
+      if (this.searchItem.therapistId != "") {
+        filter.therapistId = this.searchItem.therapistId
+      }
+      if (this.searchItem.userId != "") {
+        filter.userId = this.searchItem.userId
+      }
+      if (this.searchItem.start_time != "") {
+        filter.start_time = this.searchItem.start_time
+      }
+      if (this.searchItem.paid != null) {
+        filter.paid = this.searchItem.paid
+      }
+      if (filter != {}) {
+        data = {
+          cognitoId: this.loginInfo.cognitoId,
+          offset: 0,
+          limit: 500,
+          filters: filter
+        }
+      }
+
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
@@ -312,13 +345,13 @@ export default {
         Object.assign(this.datas[this.editedIndex], this.editedItem)
         this.sending = false
       } else {
-        if (this.editedItem.therapistCognitoId == "" || this.editedItem.cognitoId == "" || this.editedItem.start_time == 0) {
+        if (this.editedItem.therapistId == "" || this.editedItem.userId == "" || this.editedItem.start_time == 0) {
           this.sending = false
           return
         }
         let data = {
-          cognitoId: this.editedItem.therapistCognitoId,
-          userId: this.editedItem.cognitoId,
+          cognitoId: this.editedItem.therapistId,
+          userId: this.editedItem.userId,
           datetime: Date.parse(this.editedItem.start_time)
         }
         createAppointment(data).then((response) => {
