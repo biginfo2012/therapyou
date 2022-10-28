@@ -25,10 +25,10 @@ const router = new Router({
     },
     // This is for the scroll top when click on any router link
     routes: [
-        {
-            path: '/',
-            redirect: '/admin/dashboard'
-        },
+        // {
+        //     path: '/',
+        //     redirect: '/login'
+        // },
         adminRoutes,
         userRoutes,
         {
@@ -46,7 +46,7 @@ const router = new Router({
             ]
         },
         {
-            path: "/room",
+            path: '/meeting-room',
             component: () => import( '../views/SessionRoom')
         },
         {

@@ -9,20 +9,20 @@
     "actions": "Azioni",
     "search": "Cerca",
     "confirm": "Conferma",
-    "change-password": "Change Password",
-    "reply": "Reply"
+    "change-password": "Cambia la password",
+    "reply": "Rispondere"
   },
   "header": {
     "profile": "Profilo"
   },
   "menu": {
-    "dashboard": "Dashboard",
+    "dashboard": "Pannello di controllo",
     "appointment": "Appuntamenti",
     "invoice": "Fatture",
     "client": "Clienti",
     "therapist": "Terapisti",
-    "noti": "Notifications",
-    "message": "Messages"
+    "noti": "Notifiche",
+    "message": "Messaggi"
   },
   "cognito-messages": {
     "NotAuthorizedException": "Nome utente o password errati",
@@ -33,8 +33,8 @@
     "UsernameExistsException": "Esiste già un account con l'email specificata!"
   },
   "message": {
-    "delete-success": "Deleted Successfully!",
-    "delete-success": "Eliminato con successo!"
+    "delete-success": "Eliminato con successo!",
+    "save-success": "Salvato con successo!"
   },
   "error-messages": {
     "password-required": "La password è richiesta",
@@ -58,13 +58,13 @@
     "login": "Accedi",
     "resend": "Invia nuovamente la conferma",
     "email": "E-mail",
-    "password": "Password",
+    "password": "Parola d'ordine",
     "forgot": "Dimenticato password?"
   },
   "forgot": {
-    "reset": "RESET PASSWORD",
+    "reset": "RESETTA LA PASSWORD",
     "show-sent": "È stato inviato un codice di conferma al tuo telefono.",
-    "code-send": "A confirmation code will send to your phone.",
+    "code-send": "Un codice di conferma verrà inviato al tuo telefono.",
     "find-account": "Trova il tuo account",
     "find": "Trova",
     "verify-account": "Verifica account...",
@@ -73,7 +73,7 @@
     "new-pwd": "Nuova password",
     "confirm": "Conferma",
     "update-pwd": "Aggiornamento password...",
-    "send-code": "Sending Code..."
+    "send-code": "Codice di invio..."
   },
   "changed": {
     "update-pwd": "Hai aggiornato la tua password."
@@ -135,22 +135,22 @@
     "delete-confirm": "Sei sicuro di voler eliminare questo terapista?"
   },
   "profile": {
-    "profile": "Profile",
-    "personal-info": "Personal Info",
-    "contact-info": "Contact Info"
+    "profile": "Profilo",
+    "personal-info": "Informazioni personali",
+    "contact-info": "Informazioni di contatto"
   },
   "noti": {
-    "all": "See All",
-    "notis": "Notifications",
-    "list": "Notification List",
-    "title": "Title",
-    "desc": "Desc"
+    "all": "Vedi tutto",
+    "notis": "Notifiche",
+    "list": "Elenco notifiche",
+    "title": "Titolo",
+    "desc": "Descrizione"
   },
   "mail": {
-    "list": "Message List",
-    "mails": "Messages",
-    "my": "My Messages",
-    "content": "Message Content",
-    "answer": "Answer"
+    "list": "Elenco messaggi",
+    "mails": "Messaggi",
+    "my": "I miei messaggi",
+    "content": "Contenuto del messaggio",
+    "answer": "Risposta"
   }
 }

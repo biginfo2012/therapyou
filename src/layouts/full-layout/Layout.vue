@@ -19,8 +19,7 @@
         v-if="!setHorizontalLayout"
         :expand-on-hover.sync="expandOnHover"
     ></VerticalSidebar>
-    <!-- ---------------------------------- -->
-    <Footer v-if="!setHorizontalLayout"></Footer>
+    <!-- ---------------------------------- -->    <Footer v-if="!setHorizontalLayout"></Footer>
   </v-app>
 </template>
 

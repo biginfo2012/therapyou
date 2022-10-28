@@ -55,6 +55,9 @@ export function uploadInvoice(data) {
 export function getNotiList(data) {
     return axios.post(apiBaseUrl + 'notification/list', data, config)
 }
+export function confirmNoti(data) {
+    return axios.post(apiBaseUrl + 'notification/set-notified', data, config)
+}
 export function getMessageList(data) {
     return axios.post(apiBaseUrl + 'message/list', data, config)
 }

@@ -31,7 +31,7 @@
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-select :items="payItems" item-text="label" outlined
                             item-value="paid" :label="$t('appointment.pay-status')"
-                            v-model="searchItem.paid" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.decreasedCredits" class="mt-0 pt-0"></v-select>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0 mb-3">
                   <v-btn color="success" class="mt-0 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
@@ -179,13 +179,13 @@ export default {
         start_time: 0,
         therapistId: "",
         userId: "",
-        paid: null
+        decreasedCredits: null
       },
       searchItem: {
         userId: "",
         start_time: "",
         therapistId: "",
-        paid: null
+        decreasedCredits: null
       },
       loginInfo: getLoginInfo()
     }
@@ -237,8 +237,8 @@ export default {
       if (this.searchItem.start_time != "") {
         filter.start_time = this.searchItem.start_time
       }
-      if (this.searchItem.paid != null) {
-        filter.paid = this.searchItem.paid
+      if (this.searchItem.decreasedCredits != null) {
+        filter.decreasedCredits = this.searchItem.decreasedCredits
       }
       if (filter != {}) {
         data = {

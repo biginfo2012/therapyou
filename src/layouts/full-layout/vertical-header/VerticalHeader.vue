@@ -87,35 +87,39 @@
     >
       <template v-slot:activator="{ on }">
         <v-btn icon v-on="on">
-          <v-badge color="primary" dot offset-x="5" offset-y="5">
+          <div v-if="notiCnt != 0">
+            <v-badge color="success" dot offset-x="5" offset-y="5">
+              <feather type="bell" class="feather-sm"></feather>
+            </v-badge>
+          </div>
+          <div class="mt-2" v-else>
             <feather type="bell" class="feather-sm"></feather>
-          </v-badge>
+          </div>
+
+
         </v-btn>
       </template>
 
       <v-list class="pa-3">
         <h4 class="font-weight-medium fs-18">
           {{$t('menu.noti')}}
-          <v-chip class="ma-2" label small color="warning"> 5 {{ $t('general.new') }} </v-chip>
+          <v-chip class="ma-2" label small color="warning"> {{notiCnt}} {{ $t('general.new') }} </v-chip>
         </h4>
         <v-list-item
             class="px-0"
             v-for="(item, i) in notifications"
-            :key="i"
-        >
+            :key="i">
           <v-list-item-title>
             <div class="d-flex align-center py-4 px-3 border-bottom">
               <div class="ml-2">
-                <h4 class="font-weight-medium">{{ item.title }}</h4>
+                <h4 class="font-weight-medium">{{ item.therapistId }}</h4>
                 <span
-                    class="grey--text subtitle-2 descpart d-block text-truncate font-weight-regular"
-                >{{ item.desc }}</span>
+                    class="grey--text subtitle-2 descpart d-block text-truncate font-weight-regular">{{ item.text }}</span>
               </div>
             </div>
           </v-list-item-title>
         </v-list-item>
-        <v-btn block depressed color="secondary" class="mt-4 py-4"  @click="goNoti"
-        >{{$t('noti.all')}}</v-btn>
+        <v-btn block depressed color="secondary" class="mt-4 py-4"  @click="goNoti">{{$t('noti.all')}}</v-btn>
       </v-list>
     </v-menu>
 
@@ -183,38 +187,14 @@ export default {
       group: null,
       localeOptions,
       showNoti: false,
+      notiCnt: 0,
       userInfo: {
         id: 0,
         name: "",
         role: "",
         profileImage: ""
       },
-      notifications: [
-        {
-          color: "error",
-          icon: "home",
-          title: "Luanch Admin",
-          desc: "Just see the my new admin!",
-        },
-        {
-          color: "primary",
-          icon: "calendar",
-          title: "Event today",
-          desc: "Just a reminder that you have event",
-        },
-        {
-          color: "success",
-          icon: "settings",
-          title: "Settings",
-          desc: "You can customize this template as you want",
-        },
-        {
-          color: "secondary",
-          icon: "users",
-          title: "Johny John",
-          desc: "Assign her new tasks",
-        },
-      ],
+      notifications: [],
     }
   },
 
@@ -253,11 +233,13 @@ export default {
     },
     getNotiData(){
       let data = {
-        cognitoId:  getLoginInfo().cognitoId,
+        therapistId:  getLoginInfo().cognitoId,
+        alreadyNotified: false
       }
       getNotiList(data).then((response) => {
         if (response.data.msg == "success") {
-          this.datas = response.data.data.notificationList
+          this.notifications = response.data.data.notifications
+          this.notiCnt = this.notifications.length
         }
       }).catch(error => {
         console.log(error)
@@ -282,7 +264,9 @@ export default {
     this.userInfo.profileImage = loginInfo.profileImage
     this.setLanguageInfo()
     this.showNoti = isLoggedInAsUser()
-    this.getNotiData()
+    if(this.showNoti){
+      this.getNotiData()
+    }
   }
 }
 </script>

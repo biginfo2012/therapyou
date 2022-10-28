@@ -95,7 +95,6 @@
                                   :rules="fieldRules"
                                   outlined required
                                   :label="$t('therapist.license-number')"
-                                  type="number"
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0">
@@ -138,7 +137,7 @@
                             </v-col>
                             <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-file-input
-                                  :label="$t('therapist.profile-image')" outlined
+                                  :label="$t('therapist.banner-image')" outlined
                                   @change="uploadBannerFile"></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0">
@@ -147,16 +146,17 @@
                                   :rules="fieldRules"
                                   outlined required
                                   :label="$t('therapist.vat-number')"
-                                  type="number"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
-                              <v-text-field
+                            <v-col cols="12" sm="12" md="8" class="pb-0">
+                              <v-select
                                   v-model="editedItem.areasOfExpertise"
-                                  :rules="fieldRules"
-                                  outlined required
+                                  :items="areas"
+                                  :menu-props="{ maxHeight: '400' }"
                                   :label="$t('therapist.area-exp')"
-                              ></v-text-field>
+                                  multiple outlined required
+                                  persistent-hint
+                              ></v-select>
                             </v-col>
                             <v-col cols="12" sm="12" md="6" class="pb-0">
                               <v-textarea
@@ -240,6 +240,7 @@ export default {
       loading: false,
       sending: false,
       items: [],
+      areas: ["Stress", "Ansia", "Attacchi di panico", "Crisi esistenziale", "Depressione post partum", "Dipendenza sessuale", "Disturbi alimentari", "Disturbi di personalita", "Disturbo bipolare", "Disturbo post traumatico da stress", "Lutto", "Burn out", "Fobie", "Impotenza", "Insonnia", "Ipocondria", "Problemi adolescenziali", "Problemi relazionali", "Somatizzazione", "Tricotillomania", "Tic", "Stalking", "Problemi di coppia", "Nevrosi", "Paranoia", "Mobbing", "Ludopatia", "Frigidita", "Esaurimento nervoso", "Divorzio o separazione", "Disturbo ossessivo compulsivo", "Disturbo da alimentazione incontrollata", "Dipendenze comportamentali", "Dipendenza affettiva", "Depressione", "Bulimia", "Anoressia", "Aggressivita", "Balbuzie", "Anorgasmia"],
       headers: [
         {
           text: this.$t('therapist.suffix'),
@@ -310,7 +311,7 @@ export default {
         bannerImage: "",
         description: "",
         note: "",
-        areasOfExpertise: "",
+        areasOfExpertise: [],
         role: 1,
         isDefault: 0
       },
@@ -331,7 +332,7 @@ export default {
         bannerImage: "",
         description: "",
         note: "",
-        areasOfExpertise: "",
+        areasOfExpertise: [],
         role: 1,
         isDefault: 0
       },
@@ -405,6 +406,7 @@ export default {
           let therapists = response.data.data.therapistList
           for (let i = 0; i < therapists.length; i++){
             therapists[i]['registrationDate'] = therapists[i]['registrationDate'].substring(0, 10)
+            therapists[i]['areasOfExpertise'] = JSON.parse(therapists[i]['areasOfExpertise'])
           }
           this.datas = response.data.data.therapistList
           this.loading = false
@@ -468,7 +470,7 @@ export default {
               bannerImage: this.editedItem.bannerImage,
               description: this.editedItem.description,
               note: this.editedItem.note,
-              areasOfExpertise: this.editedItem.areasOfExpertise
+              areasOfExpertise: JSON.stringify(this.editedItem.areasOfExpertise)
             }
           }
           updateTherapist(data).then((response) => {
@@ -520,7 +522,7 @@ export default {
                   bannerImage: this.editedItem.bannerImage,
                   description: this.editedItem.description,
                   note: this.editedItem.note,
-                  areasOfExpertise: this.editedItem.areasOfExpertise,
+                  areasOfExpertise: JSON.stringify(this.editedItem.areasOfExpertise),
                   role: 1,
                   isDefault: 0
                 }
