@@ -112,7 +112,7 @@
           <v-list-item-title>
             <div class="d-flex align-center py-4 px-3 border-bottom">
               <div class="ml-2">
-                <h4 class="font-weight-medium">{{ item.therapistId }}</h4>
+<!--                <h4 class="font-weight-medium">{{ item.therapistId }}</h4>-->
                 <span
                     class="grey--text subtitle-2 descpart d-block text-truncate font-weight-regular">{{ item.text }}</span>
               </div>
@@ -188,6 +188,7 @@ export default {
       localeOptions,
       showNoti: false,
       notiCnt: 0,
+      timer: null,
       userInfo: {
         id: 0,
         name: "",
@@ -266,7 +267,13 @@ export default {
     this.showNoti = isLoggedInAsUser()
     if(this.showNoti){
       this.getNotiData()
+      this.timer = setInterval(() => {
+        this.getNotiData()
+      }, 60 *1000)
     }
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
   }
 }
 </script>

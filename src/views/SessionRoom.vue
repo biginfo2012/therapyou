@@ -71,7 +71,7 @@ export default {
     };
   },
   created() {
-    console.log("created() called");
+    console.log(this.$route.query.page);
     // redirect to home if "create" or "meetingTitle" id is missing
     if (!this.$route.query.create && !this.$route.params.meetingTitle) {
 

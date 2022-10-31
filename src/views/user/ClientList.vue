@@ -383,6 +383,7 @@ export default {
         }
         deleteUser(data).then((response) => {
           if (response.data.msg == "success") {
+            this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
           }
         }).catch(error => {

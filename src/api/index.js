@@ -19,6 +19,12 @@ export function getPaidAppointmentList(data) {
 export function createAppointment(data) {
     return axios.post(apiBaseUrl + 'appointments/create', data, config)
 }
+export function deleteAppointment(id) {
+    return axios.get(apiBaseUrl + 'appointments/delete/' + id)
+}
+export function singleAppointment(appointmentId) {
+    return axios.get(apiBaseUrl + 'appointments/single?appointmentId=' + appointmentId)
+}
 export function getTherapistList(data) {
     return axios.post(apiBaseUrl + 'therapist/list', data, config)
 }
@@ -59,7 +65,10 @@ export function confirmNoti(data) {
     return axios.post(apiBaseUrl + 'notification/set-notified', data, config)
 }
 export function getMessageList(data) {
-    return axios.post(apiBaseUrl + 'message/list', data, config)
+    return axios.post(apiBaseUrl + 'message/list-all', data, config)
+}
+export function getMessageListByUser(data) {
+    return axios.post(apiBaseUrl + 'message/list-by-user', data, config)
 }
 export function deleteMessage(data) {
     return axios.post(apiBaseUrl + 'message/delete', data, config)

@@ -25,13 +25,13 @@
                       <v-container>
                         <v-form ref="form">
                           <v-row>
-                            <v-col cols="12" sm="12" md="12" class="pb-0">
-                              <v-text-field
-                                  v-model="editedItem.therapistId"
-                                  required outlined
-                                  :label="$t('noti.title')"
-                              ></v-text-field>
-                            </v-col>
+<!--                            <v-col cols="12" sm="12" md="12" class="pb-0">-->
+<!--                              <v-text-field-->
+<!--                                  v-model="editedItem.therapistId"-->
+<!--                                  required outlined-->
+<!--                                  :label="$t('noti.title')"-->
+<!--                              ></v-text-field>-->
+<!--                            </v-col>-->
                             <v-col cols="12" sm="12" md="12" class="pb-0">
                               <v-textarea
                                   v-model="editedItem.text"
@@ -53,7 +53,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+              <v-icon v-if="item.notified != 1" small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
             </template>
             <template v-slot:no-data>
               <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
@@ -88,12 +88,12 @@ export default {
       sending: false,
       items: [],
       headers: [
-        {
-          text: this.$t('noti.title'),
-          align: "start",
-          sortable: true,
-          value: "therapistId"
-        },
+        // {
+        //   text: this.$t('noti.title'),
+        //   align: "start",
+        //   sortable: true,
+        //   value: "therapistId"
+        // },
         {
           text: this.$t('noti.desc'),
           align: "start",
@@ -170,10 +170,10 @@ export default {
       this.dialog = true
     },
     confirm() {
-      if(this.editedItem.notified == 1){
-        this.close()
-        return
-      }
+      // if(this.editedItem.notified == 1){
+      //   this.close()
+      //   return
+      // }
       this.sending = true
       let data = {
         notificationId: this.editedItem.id,

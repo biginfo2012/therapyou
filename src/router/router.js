@@ -25,10 +25,10 @@ const router = new Router({
     },
     // This is for the scroll top when click on any router link
     routes: [
-        // {
-        //     path: '/',
-        //     redirect: '/login'
-        // },
+        {
+            path: '/',
+            redirect: '/login'
+        },
         adminRoutes,
         userRoutes,
         {

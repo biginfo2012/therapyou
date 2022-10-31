@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <BaseCard :heading="$t('mail.messages')">
+    <BaseCard :heading="$t('mail.mails')">
       <div>
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
@@ -12,7 +12,7 @@
                 <v-col cols="12" sm="12" md="4" class="py-0">
                   <v-select :items="items" item-text="username" outlined
                             item-value="cognitoId" :label="$t('appointment.user-name')"
-                            v-model="searchItem.cognitoId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.userId" class="mt-0 pt-0"></v-select>
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="py-0">
                   <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
@@ -29,7 +29,7 @@
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <v-card>
-                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);" alt="Sending"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
@@ -44,14 +44,14 @@
                           </v-col>
                           <v-col cols="12" sm="12" md="12" class="pb-0">
                             <v-textarea
-                                v-model="editedItem.content"
+                                v-model="editedItem.text"
                                 outlined required auto-grow disabled
                                 :label="$t('mail.content')"
                             ></v-textarea>
                           </v-col>
                           <v-col cols="12" sm="12" md="12" class="pb-0">
                             <v-textarea
-                                v-model="editedItem.answer"
+                                v-model="editedItem.content"
                                 :rules="fieldRules"
                                 outlined required auto-grow
                                 :label="$t('mail.answer')"
@@ -71,8 +71,8 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+              <v-icon v-if="item.isRead != 1" small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+<!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
             </template>
             <template v-slot:no-data>
               <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
@@ -86,7 +86,7 @@
 
 <script>
 import { getLoginInfo } from '@/utils'
-import {deleteMessage, getMessageList, getUserList, replyMessage} from "@/api"
+import {deleteMessage, getMessageList, getMessageListByUser, getUserList, replyMessage} from "@/api"
 export default {
   name: "MessageList",
   data: function () {
@@ -111,13 +111,13 @@ export default {
           text: this.$t('appointment.user-name'),
           align: "start",
           sortable: true,
-          value: "username"
+          value: "fromUser"
         },
         {
           text: this.$t('mail.content'),
           align: "start",
           sortable: true,
-          value: "username"
+          value: "text"
         },
         { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],
@@ -125,18 +125,20 @@ export default {
       editedIndex: -1,
       editedItem: {
         id: 0,
-        cognitoId: "",
+        therapistId: "",
+        userId: "",
         content: "",
-        answer: ""
+        text: ""
       },
       defaultItem:{
         id: 0,
-        cognitoId: "",
+        therapistId: "",
+        userId: "",
         content: "",
-        answer: ""
+        text: ""
       },
       searchItem:{
-        cognitoId: ""
+        userId: ""
       },
       fieldRules:[
         v => !!v || this.$t('error-messages.field-required'),
@@ -162,8 +164,8 @@ export default {
 
   methods: {
     initialize() {
-      this.getData()
       this.getUserData()
+      this.getData()
     },
     handle(error) {
       console.log(error)
@@ -175,29 +177,38 @@ export default {
     },
     getData() {
       this.loading = true
-      let filter = {}
-      if (this.searchItem.firstName != "") {
-        filter.firstName = this.searchItem.firstName
-      }
       let data = {
-        cognitoId: this.loginInfo.cognitoId
+        therapistId: this.loginInfo.cognitoId,
+        alreadyRead: true
       }
-      if (filter != {}) {
+      this.datas = []
+      if (this.searchItem.userId != "") {
         data = {
-          cognitoId: this.loginInfo.cognitoId,
-          filters: filter
+          therapistId: this.loginInfo.cognitoId,
+          userId: this.searchItem.userId,
+          alreadyRead: true
         }
+        getMessageListByUser(data).then((response) => {
+          if (response.data.msg == "success") {
+            this.datas = response.data.data.messages
+          }
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          this.handle(error)
+        })
       }
-
-      getMessageList(data).then((response) => {
-        if (response.data.msg == "success") {
-          this.datas = response.data.data.messageList
-        }
-        this.loading = false
-      }).catch(error => {
-        this.loading = false
-        this.handle(error)
-      })
+      else{
+        getMessageList(data).then((response) => {
+          if (response.data.msg == "success") {
+            this.datas = response.data.data.messages
+          }
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          this.handle(error)
+        })
+      }
     },
     getUserData() {
       let data = {
@@ -257,13 +268,10 @@ export default {
     save() {
       this.sending = true
       if (this.editedIndex > -1) {
-        this.sending = false
         let data = {
-          id: this.editItem.id,
-          cognitoId: this.editedItem.cognitoId,
-          parameters: {
-            answer: this.editedItem.answer
-          }
+          therapistId: this.loginInfo.cognitoId,
+          userId: this.editedItem.userId,
+          content: this.editedItem.content
         }
         replyMessage(data).then((response) => {
           this.sending = false

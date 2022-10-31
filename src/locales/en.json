@@ -95,7 +95,8 @@
     "date": "Date",
     "pay-status": "Pay Status",
     "paid": "Paid",
-    "no-paid": "No Paid"
+    "no-paid": "No Paid",
+    "go-meeting": "Go Meeting"
   },
   "invoice": {
     "invoices": "Invoices",
