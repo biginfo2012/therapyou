@@ -5,6 +5,7 @@ export const AWS_ACCESS_KEY = "AKIAVHIAZNTO5XHGEATV"
 export const AWS_REGION = "eu-west-1"
 export const AWS_BUCKET = "storage-bkt"
 export const defaultLocale = 'it'
+export const meetingUrl = 'https://d2qtcov1lh58xd.cloudfront.net/meetingV2.html?'
 
 export const localeOptions = [
     {id: 'en', name: 'English', icon: require('../assets/images/flags/en.svg')},

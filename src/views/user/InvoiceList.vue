@@ -25,9 +25,9 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12" sm="12" md="12">
-                            <v-select :items="items" item-text="label" outlined
+                            <v-autocomplete :items="items" item-text="label" outlined
                                       item-value="id" :label="$t('appointment.list')"
-                                      v-model="editedItem.id" class="mt-0 pt-0"></v-select>
+                                      v-model="editedItem.id" class="mt-0 pt-0"></v-autocomplete>
                           </v-col>
                           <v-col cols="12" sm="12" md="12">
                             <v-file-input
@@ -47,9 +47,9 @@
                 </v-dialog>
               </v-toolbar>
             </template>
-            <template v-slot:item.actions="{ item }">
-              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-            </template>
+<!--            <template v-slot:item.actions="{ item }">-->
+<!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
+<!--            </template>-->
             <template v-slot:no-data>
               <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
             </template>
@@ -89,7 +89,6 @@ export default {
           sortable: false,
           value: "invoiceUrl"
         },
-        { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],
       datas: [],
       editedIndex: -1,

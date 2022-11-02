@@ -52,10 +52,9 @@
                 <v-col cols="12" sm="12" md="4" class="pb-0">
                   <v-text-field
                       v-model="editedItem.licenseNumber"
-                      :rules="fieldRules"
+                      :rules="numberRules"
                       outlined required
                       :label="$t('therapist.license-number')"
-                      type="number"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="pb-0">
@@ -70,13 +69,13 @@
                   <v-text-field
                       v-model="editedItem.registrationDate"
                       type="date"
-                      hide-details outlined
+                      hide-details outlined disabled
                       background-color="transparent"
                       :label="$t('therapist.register-date')"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0">
-                  <img :src="editedItem.profileImage" style="width: 100%; height: 59px"/>
+                  <img :src="editedItem.profileImage" style="width: auto; height: 59px"/>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="pb-0 pt-0">
                   <v-file-input
@@ -84,31 +83,30 @@
                       @change="uploadProfileFile"></v-file-input>
                 </v-col>
                 <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0">
-                  <img :src="editedItem.bannerImage" style="width: 100%; height: 59px"/>
+                  <img :src="editedItem.bannerImage" style="width: auto; height: 59px"/>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="pb-0 pt-0">
                   <v-file-input
-                      :label="$t('therapist.profile-image')" outlined
+                      :label="$t('therapist.banner-image')" outlined
                       @change="uploadBannerFile"></v-file-input>
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="pb-0">
                   <v-text-field
                       v-model="editedItem.vatNumber"
-                      :rules="fieldRules"
+                      :rules="numberRules"
                       outlined required
                       :label="$t('therapist.vat-number')"
-                      type="number"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="8" class="pb-0">
-                  <v-select
+                  <v-autocomplete
                       v-model="editedItem.areasOfExpertise"
                       :items="areas"
                       :menu-props="{ maxHeight: '400' }"
                       :label="$t('therapist.area-exp')"
                       multiple outlined required
                       persistent-hint
-                  ></v-select>
+                  ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="6" class="pb-0">
                   <v-textarea
@@ -267,6 +265,10 @@ export default {
         v => !!v || this.$t('error-messages.email-required'),
         v => /.+@.+\..+/.test(v) || this.$t('error-messages.email-valid'),
       ],
+      numberRules: [
+        v => !!v || this.$t('error-messages.field-required'),
+        v => /^\d+$/.test(v) || this.$t('error-messages.number'),
+      ],
       password: "",
       passwordRules: [
         (v) => !!v || this.$t('error-messages.password-required'),
@@ -374,9 +376,9 @@ export default {
 
     },
     profileChange() {
-      this.sending = true
       this.$refs.profileForm.validate()
       if (this.$refs.profileForm.validate(true)) {
+        this.sending = true
         let data = {
           cognitoId: this.editedItem.cognitoId,
           parameters: {

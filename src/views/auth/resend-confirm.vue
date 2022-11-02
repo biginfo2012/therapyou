@@ -18,7 +18,7 @@
               <v-form v-model="valid" ref="form">
                 <v-text-field
                     label="E-mail"
-                    v-model="email"
+                    v-model="email" outlined
                     :rules="[emailrules.required, emailrules.email]"
                     required clearable>
                 </v-text-field>

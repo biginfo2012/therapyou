@@ -10,13 +10,13 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-select :items="items" item-text="username" outlined
+                  <v-autocomplete :items="items" item-text="username" outlined dense
                             item-value="cognitoId" :label="$t('appointment.user-name')"
-                            v-model="searchItem.userId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.userId" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
-                  <v-btn color="success" class="mt-3" @click="getData">{{ $t('general.search') }}</v-btn>
+                  <v-btn color="success" class="mt-0 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
+                  <v-btn color="success" class="mt-0" @click="getData">{{ $t('general.search') }}</v-btn>
                 </v-col>
               </v-row>
             </v-form>
@@ -38,7 +38,7 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-select :items="items" item-text="username" outlined
+                            <v-select :items="items" item-text="username" outlined disabled
                                       item-value="cognitoId" :label="$t('appointment.user-name')"
                                       v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-select>
                           </v-col>

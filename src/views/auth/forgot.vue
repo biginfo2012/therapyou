@@ -23,7 +23,7 @@
                       autocomplete="username"
                       :label="$t('login.email')"
                       v-model="username"
-                      :rules="emailRules"
+                      :rules="emailRules" outlined
                       required clearable>
                   </v-text-field>
                 </v-form>
@@ -47,13 +47,13 @@
                   <v-text-field
                       :label="$t('forgot.confirm-code')"
                       v-model="code"
-                      :rules="codeRules"
+                      :rules="codeRules" outlined
                       required clearable>
                   </v-text-field>
                   <v-text-field
                       autocomplete="new-password"
                       :label="$t('forgot.new-pwd')"
-                      v-model="password"
+                      v-model="password" outlined
                       :rules="passRules"
                       :append-icon="hidepw ? 'mdi-eye' : 'mdi-eye-off'"
                       :type="hidepw ? 'password' : 'text'"

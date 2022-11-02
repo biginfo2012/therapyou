@@ -81,12 +81,10 @@ export const isLoggedInAsUser = () => {
 }
 
 export const getLoginInfo = () => {
-    console.log("called getLoginInfo")
     let loginInfo = sessionStorage.getItem('userData')
     try {
         loginInfo = JSON.parse(loginInfo)
         if (loginInfo) {
-            console.log(loginInfo)
             return loginInfo
         }
         // eslint-disable-next-line no-empty
@@ -96,7 +94,6 @@ export const getLoginInfo = () => {
     return false
 }
 export const getToken = () => {
-    console.log("called getToken")
     let token = sessionStorage.getItem('token')
     try {
         token = JSON.parse(token)
@@ -116,7 +113,6 @@ export const getLoggedUserInfo = (cognitoId) => {
         let userData = response.data.data.therapist[0]
         if (userData) {
             sessionStorage.setItem('userData', JSON.stringify(userData))
-            console.log(userData)
             if (userData.role == 2) {
                 router.push('/admin')
             } else {

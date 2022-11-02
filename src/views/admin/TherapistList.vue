@@ -59,14 +59,6 @@
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
-                                  v-model="editedItem.suffix"
-                                  :rules="fieldRules"
-                                  outlined required
-                                  :label="$t('therapist.suffix')"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
-                              <v-text-field
                                   v-model="editedItem.name"
                                   :rules="fieldRules"
                                   outlined required
@@ -81,7 +73,7 @@
                                   :label="$t('therapist.surname')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.specialization"
                                   :rules="fieldRules"
@@ -89,7 +81,7 @@
                                   :label="$t('therapist.specialization')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.licenseNumber"
                                   :rules="fieldRules"
@@ -97,7 +89,7 @@
                                   :label="$t('therapist.license-number')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.registrationRegion"
                                   :rules="fieldRules"
@@ -105,7 +97,7 @@
                                   :label="$t('therapist.register-region')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.registrationDate"
                                   type="date"
@@ -113,11 +105,6 @@
                                   background-color="transparent"
                                   :label="$t('therapist.register-date')"
                               ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex === -1">
-                              <v-file-input
-                                  :label="$t('therapist.profile-image')" outlined
-                                  @change="uploadProfileFile"></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
                               <img :src="editedItem.profileImage" style="width: 100%; height: 59px"/>
@@ -127,11 +114,6 @@
                                   :label="$t('therapist.profile-image')" outlined
                                   @change="uploadProfileFile"></v-file-input>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex === -1">
-                              <v-file-input
-                                  :label="$t('therapist.banner-image')" outlined
-                                  @change="uploadBannerFile"></v-file-input>
-                            </v-col>
                             <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
                               <img :src="editedItem.bannerImage" style="width: 100%; height: 59px"/>
                             </v-col>
@@ -140,7 +122,7 @@
                                   :label="$t('therapist.banner-image')" outlined
                                   @change="uploadBannerFile"></v-file-input>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.vatNumber"
                                   :rules="fieldRules"
@@ -148,17 +130,17 @@
                                   :label="$t('therapist.vat-number')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="8" class="pb-0">
-                              <v-select
+                            <v-col cols="12" sm="12" md="8" class="pb-0" v-if="editedIndex !== -1">
+                              <v-autocomplete
                                   v-model="editedItem.areasOfExpertise"
                                   :items="areas"
                                   :menu-props="{ maxHeight: '400' }"
                                   :label="$t('therapist.area-exp')"
                                   multiple outlined required
                                   persistent-hint
-                              ></v-select>
+                              ></v-autocomplete>
                             </v-col>
-                            <v-col cols="12" sm="12" md="6" class="pb-0">
+                            <v-col cols="12" sm="12" md="6" class="pb-0" v-if="editedIndex !== -1">
                               <v-textarea
                                   v-model="editedItem.description"
                                   :rules="fieldRules"
@@ -166,7 +148,7 @@
                                   :label="$t('therapist.desc')"
                               ></v-textarea>
                             </v-col>
-                            <v-col cols="12" sm="12" md="6" class="pb-0">
+                            <v-col cols="12" sm="12" md="6" class="pb-0" v-if="editedIndex !== -1">
                               <v-textarea
                                   v-model="editedItem.note"
                                   :rules="fieldRules"
@@ -242,12 +224,12 @@ export default {
       items: [],
       areas: ["Stress", "Ansia", "Attacchi di panico", "Crisi esistenziale", "Depressione post partum", "Dipendenza sessuale", "Disturbi alimentari", "Disturbi di personalita", "Disturbo bipolare", "Disturbo post traumatico da stress", "Lutto", "Burn out", "Fobie", "Impotenza", "Insonnia", "Ipocondria", "Problemi adolescenziali", "Problemi relazionali", "Somatizzazione", "Tricotillomania", "Tic", "Stalking", "Problemi di coppia", "Nevrosi", "Paranoia", "Mobbing", "Ludopatia", "Frigidita", "Esaurimento nervoso", "Divorzio o separazione", "Disturbo ossessivo compulsivo", "Disturbo da alimentazione incontrollata", "Dipendenze comportamentali", "Dipendenza affettiva", "Depressione", "Bulimia", "Anoressia", "Aggressivita", "Balbuzie", "Anorgasmia"],
       headers: [
-        {
-          text: this.$t('therapist.suffix'),
-          align: "start",
-          sortable: true,
-          value: "suffix"
-        },
+        // {
+        //   text: this.$t('therapist.suffix'),
+        //   align: "start",
+        //   sortable: true,
+        //   value: "suffix"
+        // },
         {
           text: this.$t('therapist.name'),
           align: "start",

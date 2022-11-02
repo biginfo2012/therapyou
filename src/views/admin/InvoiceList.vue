@@ -9,7 +9,7 @@
           <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat>
-                <v-toolbar-title>{{ $t('invoice.my')}}</v-toolbar-title>
+                <v-toolbar-title>{{ $t('invoice.therapist')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
@@ -26,9 +26,9 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12" sm="12" md="12">
-                            <v-select :items="items" item-text="label" outlined
+                            <v-autocomplete :items="items" item-text="label" outlined
                                       item-value="id" :label="$t('appointment.list')"
-                                      v-model="editedItem.id" class="mt-0 pt-0"></v-select>
+                                      v-model="editedItem.id" class="mt-0 pt-0"></v-autocomplete>
                           </v-col>
                           <v-col cols="12" sm="12" md="12">
                             <v-file-input

@@ -41,6 +41,7 @@
     "password-length": "Password must be at least 8 characters",
     "email-required": "E-mail is required",
     "email-valid": "E-mail must be valid",
+    "number": "This field must be a number",
     "error": "An error has occurred!",
     "password-number": "Password must contain at least 1 number",
     "password-lower": "Password must contain at least 1 lower case letter",
@@ -101,6 +102,7 @@
   "invoice": {
     "invoices": "Invoices",
     "list": "Invoice List",
+    "therapist": "Therapists Invoices",
     "my": "My Invoices",
     "create": "Create Invoice",
     "file": "Invoice File",

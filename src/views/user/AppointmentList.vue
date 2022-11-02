@@ -10,9 +10,9 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-select :items="items" item-text="username" outlined
+                  <v-autocomplete :items="items" item-text="username" outlined
                             item-value="cognitoId" :label="$t('appointment.user-name')"
-                            v-model="searchItem.userId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.userId" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-text-field
@@ -24,9 +24,9 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-select :items="payItems" item-text="label" outlined
+                  <v-autocomplete :items="payItems" item-text="label" outlined
                             item-value="paid" :label="$t('appointment.pay-status')"
-                            v-model="searchItem.paid" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.paid" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
@@ -63,9 +63,9 @@
                           <v-container>
                             <v-row>
                               <v-col cols="12" sm="12" md="12">
-                                <v-select :items="items" item-text="username" outlined
+                                <v-autocomplete :items="items" item-text="username" outlined
                                           item-value="cognitoId" :label="$t('appointment.user-name')"
-                                          v-model="editedItem.userId" class="mt-0 pt-0"></v-select>
+                                          v-model="editedItem.userId" class="mt-0 pt-0"></v-autocomplete>
                               </v-col>
                               <v-col cols="12" sm="12" md="12">
                                 <v-text-field
@@ -96,6 +96,9 @@
                   </v-toolbar>
                 </template>
                 <template v-slot:item.actions="{ item }">
+                  <a v-if="item.status == 1" class="mr-2" target="_blank"
+                     :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">
+                    {{$t('appointment.go-meeting')}}</a>
                   <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
                 <template v-slot:no-data>
@@ -117,10 +120,10 @@
 </template>
 
 <script>
-import axios from "axios"
-import {apiBaseUrl} from "@/constants/config"
-import {convertEToDate, convertToDate, getCurrentDate, getLoginInfo} from '@/utils'
-import {createAppointment, getAppointmentList, getUserList} from "@/api"
+
+import {convertEToDate, convertToDate, getCurrentDate, getLoginInfo, getToken} from '@/utils'
+import {createAppointment, deleteAppointment, getAppointmentList, getUserList, singleAppointment} from "@/api"
+import {meetingUrl} from "@/constants/config"
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 
@@ -177,7 +180,11 @@ export default {
         start_time: "",
         paid: null
       },
-      loginInfo: getLoginInfo()
+      loginInfo: getLoginInfo(),
+      timer: null,
+      email: sessionStorage.getItem('username'),
+      token: getToken().idToken,
+      meetingUrl : meetingUrl
     }
   },
   computed: {
@@ -194,6 +201,11 @@ export default {
 
   created() {
     this.initialize()
+  },
+  mounted() {
+    this.timer = setInterval(() => {
+      this.getSingleData()
+    }, 60 *1000)
   },
 
   methods: {
@@ -247,6 +259,26 @@ export default {
             tmp['username'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
             tmp['start_time'] = convertToDate(appointmens[i]['startTime'])
             tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
+            tmp['startTime'] = appointmens[i]['startTime']
+            tmp['endTime'] = appointmens[i]['endTime']
+            tmp['meetingLink'] = appointmens[i]['meetingLink']
+            let meetingLink = JSON.parse(tmp['meetingLink'])
+            console.log(meetingLink)
+            tmp['meetingId'] = meetingLink.Meeting.MeetingId
+            tmp['JoinToken'] = meetingLink.Attendees[0].JoinToken
+            let now = new Date()
+            let beforeStart = new Date(parseInt(appointmens[i]['startTime'], 10) - 300000)
+            let endTime = new Date(parseInt(appointmens[i]['endTime'], 10))
+            if(now>endTime){
+              tmp['status'] = 2
+            }
+            else if(now > beforeStart) {
+              tmp['status'] = 1
+            }
+            else if(now < beforeStart) {
+              tmp['status'] = 0
+            }
+
             event['start'] = convertEToDate(appointmens[i]['startTime'])
             event['end'] = convertEToDate(appointmens[i]['endTime'])
             event['title'] = appointmens[i]['name'] + ': ' + appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
@@ -276,11 +308,34 @@ export default {
             this.items.push(tmp)
           }
         }
+        console.log(response)
       }).catch(error => {
         this.handle(error)
       })
     },
-
+    getSingleData(){
+      for (let i = 0; i < this.datas.length; i++) {
+        if(this.datas[i]['status'] != 2){
+          let now = new Date()
+          let beforeStart = new Date(parseInt(this.datas[i]['startTime'], 10) - 300000)
+          if(now > beforeStart) {
+            this.datas['status'] = 1
+            singleAppointment(this.datas[i]['id']).then((response) => {
+              console.log(response)
+              if(response.data.msg == "success"){
+                this.datas['meetingLink'] = response.data.data.appointment.meetingLink
+                let meetingLink = JSON.parse(this.datas['meetingLink'])
+                console.log(meetingLink.Meeting.MeetingId)
+                this.datas['meetingId'] = meetingLink.Meeting.MeetingId
+              }
+            })
+          }
+          else if(now < beforeStart) {
+            this.datas['status'] = 0
+          }
+        }
+      }
+    },
     async deleteItem(item) {
       let res = await this.$dialog["warning"]({
         title: this.$t('general.confirm'),
@@ -288,8 +343,9 @@ export default {
         persistent: false
       })
       if (res) {
-        axios.get(apiBaseUrl + 'appointments/delete/' + item.id).then((response) => {
+        deleteAppointment(item.id).then((response) => {
           if (response.data.msg == "success") {
+            this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
           }
         }).catch(error => {
@@ -298,7 +354,6 @@ export default {
         })
       }
     },
-
     close() {
       this.dialog = false
       setTimeout(() => {
@@ -306,7 +361,6 @@ export default {
         this.editedIndex = -1
       }, 300)
     },
-
     save() {
       this.sending = true
       if (this.editedIndex > -1) {
@@ -327,6 +381,9 @@ export default {
           if (response.data.msg == "success") {
             this.close()
             this.getData()
+          }
+          else{
+            this.$dialog.notify.error(response.data.msg)
           }
         }).catch(error => {
           this.sending = false

@@ -1,21 +1,22 @@
 <template>
   <div class="meeting-room w-full flex justifty-center items-center">
-    <template v-if="!meetingSession && !error">
-      <p class="mx-auto">Joining a meeting...</p>
-    </template>
-    <template v-else-if="meetingSession && !error">
-      <div class="flex flex-col py-10">
-        <p>Meeting room</p>
-        <audio ref="audioElement"></audio>
-        <div class="flex flex-col w-1/2">
-          <video class="block" ref="defaultVideoElement"></video>
-          <video class="block" ref="attendeeVideoElement"></video>
-        </div>
-      </div>
-    </template>
-    <template v-else-if="error">
-      <p class="mx-auto text-red-500">Oops, there was an error connecting you to this room.</p>
-    </template>
+    <iframe :src="iframeSrc" frameborder="0" allowfullscreen></iframe>
+<!--    <template v-if="!meetingSession && !error">-->
+<!--      <p class="mx-auto">Joining a meeting...</p>-->
+<!--    </template>-->
+<!--    <template v-else-if="meetingSession && !error">-->
+<!--      <div class="flex flex-col py-10">-->
+<!--        <p>Meeting room</p>-->
+<!--        <audio ref="audioElement"></audio>-->
+<!--        <div class="flex flex-col w-1/2">-->
+<!--          <video class="block" ref="defaultVideoElement"></video>-->
+<!--          <video class="block" ref="attendeeVideoElement"></video>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--    <template v-else-if="error">-->
+<!--      <p class="mx-auto text-red-500">Oops, there was an error connecting you to this room.</p>-->
+<!--    </template>-->
   </div>
 </template>
 <script>
@@ -59,6 +60,8 @@
 // )
 // const audioVideo = meetingSession.audioVideo
 
+import {meetingUrl} from "@/constants/config";
+
 export default {
   name: "SessionRoom",
   data() {
@@ -67,25 +70,30 @@ export default {
       audioVideo: null, // type of AudioVideoFacade object
       joinInfo: null,
       error: null,
-      enableWebAudio: true
+      enableWebAudio: true,
+      meetingId: null,
+      appointmentId: null,
+      token: null,
+      email: null,
+      iframeSrc: null
     };
   },
   created() {
-    console.log(this.$route.query.page);
-    // redirect to home if "create" or "meetingTitle" id is missing
-    if (!this.$route.query.create && !this.$route.params.meetingTitle) {
+    let urlInfo = this.$route.query
+    this.iframeSrc = meetingUrl + 'a=' + urlInfo.a + '&t=' + urlInfo.t + '&id=' + urlInfo.id + '&email=' + urlInfo.email
+    console.log(this.iframeSrc)
 
-      console.log(this.$route.query)
-      this.fetchOrCreateMeetingAndAttendee();
-      //this.$router.push("/");
-    } else {
-      console.log(this.$route.query)
-      //this.fetchOrCreateMeetingAndAttendee();
-    }
+    // redirect to home if "create" or "meetingTitle" id is missing
+    // if (!this.$route.query.create && !this.$route.params.meetingTitle) {
+    //   this.fetchOrCreateMeetingAndAttendee();
+    //   //this.$router.push("/");
+    // } else {
+    //   //this.fetchOrCreateMeetingAndAttendee();
+    // }
   },
   methods: {
-    fetchOrCreateMeetingAndAttendee() {
-      console.log(this.$router.query)
+    // fetchOrCreateMeetingAndAttendee() {
+    //   console.log(this.$router.query)
       // const path = this.$route.query.create ? "/join" : `/join/${this.$route.params.meetingTitle}`;
       // this.$http
       //     ._post(path, null, true)
@@ -108,9 +116,9 @@ export default {
       //     .catch(err => {
       //       this.error = err;
       //     });
-    },
+    //},
     // eslint-disable-next-line no-unused-vars
-    initMeetingSession(joinInfo) {
+    //initMeetingSession(joinInfo) {
       // initialize meeting session configuration object with results
       // from CreateMeeting and CreateAttendee API calls
       // const meetingSessionConfiguration = new MeetingSessionConfiguration(
@@ -127,8 +135,8 @@ export default {
       // );
       // this.audioVideo = this.meetingSession.audioVideo;
       // this.setUpDevicesAndStart();
-    },
-    setUpDevicesAndStart() {
+    //},
+    //setUpDevicesAndStart() {
       // observe audio-video lifecycle
       // const observer = {
       //   videoTileDidUpdate: tileState => {
@@ -217,10 +225,14 @@ export default {
       //         message: "There was an error setting up your audio inputs"
       //       };
       //     });
-    }
+    //}
   }
 };
 </script>
 
 <style scoped>
+iframe{
+  width: 100vw !important;
+  height: 100vh !important;
+}
 </style>

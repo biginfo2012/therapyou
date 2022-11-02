@@ -54,7 +54,7 @@
 
           </v-container>
           <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading"
-                        loading-text="Loading...">
+                        :item-class="itemClass" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>{{ $t('client.my') }}</v-toolbar-title>
@@ -392,6 +392,10 @@ export default {
       }
     },
 
+    itemClass(item){
+      return item.credits == 0 ? 'yellow-background' : ''
+    },
+
     close() {
       this.dialog = false
       setTimeout(() => {
@@ -480,5 +484,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+.yellow-background {
+  background: yellow !important;
+}
 </style>

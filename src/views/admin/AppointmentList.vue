@@ -10,30 +10,31 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-select :items="therapistItems" item-text="name" outlined
+                  <v-autocomplete :items="therapistItems" item-text="name" outlined dense
                             item-value="cognitoId" :label="$t('appointment.therapist-name')"
-                            v-model="searchItem.therapistId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.therapistId" class="mt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-select :items="items" item-text="username" outlined
+                  <v-autocomplete :items="items" item-text="username" outlined dense
                             item-value="cognitoId" :label="$t('appointment.user-name')"
-                            v-model="searchItem.userId" class="mt-0 pt-0"></v-select>
+                            v-model="searchItem.userId" class="mt-0"></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="3" class="py-0">
+                  <v-autocomplete :items="payItems" item-text="label" outlined dense
+                            item-value="paid" :label="$t('appointment.pay-status')"
+                            v-model="searchItem.decreasedCredits" class="p-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-text-field
                       v-model="searchItem.start_time"
                       type="date"
-                      hide-details outlined
+                      hide-details outlined dense
                       background-color="transparent"
                       :label="$t('appointment.date')"
+                      class="p-0"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-select :items="payItems" item-text="label" outlined
-                            item-value="paid" :label="$t('appointment.pay-status')"
-                            v-model="searchItem.decreasedCredits" class="mt-0 pt-0"></v-select>
-                </v-col>
-                <v-col cols="12" sm="12" md="3" class="py-0 mb-3">
+                <v-col cols="12" sm="12" md="4" class="py-0 mt-2">
                   <v-btn color="success" class="mt-0 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
                   <v-btn color="success" class="mt-0" @click="getData">{{ $t('general.search') }}</v-btn>
                 </v-col>
@@ -67,14 +68,14 @@
                           <v-container>
                             <v-row>
                               <v-col cols="12" sm="12" md="12">
-                                <v-select :items="therapistItems" item-text="name" outlined
+                                <v-autocomplete :items="therapistItems" item-text="name" outlined
                                           item-value="cognitoId" :label="$t('appointment.therapist-name')"
-                                          v-model="editedItem.therapistId" class="mt-0 pt-0"></v-select>
+                                          v-model="editedItem.therapistId" class="mt-0 pt-0"></v-autocomplete>
                               </v-col>
                               <v-col cols="12" sm="12" md="12">
-                                <v-select :items="items" item-text="username" outlined
+                                <v-autocomplete :items="items" item-text="username" outlined
                                           item-value="cognitoId" :label="$t('appointment.user-name')"
-                                          v-model="editedItem.userId" class="mt-0 pt-0"></v-select>
+                                          v-model="editedItem.userId" class="mt-0 pt-0"></v-autocomplete>
                               </v-col>
                               <v-col cols="12" sm="12" md="12">
                                 <v-text-field
@@ -98,6 +99,9 @@
                   </v-toolbar>
                 </template>
                 <template v-slot:item.actions="{ item }">
+                  <a v-if="item.meetingLink != null" class="mr-2" target="_blank"
+                     :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">
+                    {{$t('appointment.go-meeting')}}</a>
                   <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
                 <template v-slot:no-data>
@@ -117,10 +121,10 @@
 </template>
 
 <script>
-import axios from "axios"
-import {apiBaseUrl} from "@/constants/config"
-import {getLoginInfo, convertToDate, convertEToDate, getCurrentDate} from '@/utils'
-import {createAppointment, getAppointmentList, getTherapistList, getUserList} from "@/api"
+
+import {getLoginInfo, convertToDate, convertEToDate, getCurrentDate, getToken} from '@/utils'
+import {createAppointment, deleteAppointment, getAppointmentList, getTherapistList, getUserList} from "@/api"
+import {meetingUrl} from "@/constants/config"
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 
@@ -187,7 +191,10 @@ export default {
         therapistId: "",
         decreasedCredits: null
       },
-      loginInfo: getLoginInfo()
+      loginInfo: getLoginInfo(),
+      email: sessionStorage.getItem('username'),
+      token: getToken().idToken,
+      meetingUrl : meetingUrl
     }
   },
   computed: {
@@ -262,6 +269,7 @@ export default {
             tmp['username'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
             tmp['start_time'] = convertToDate(appointmens[i]['startTime'])
             tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
+            tmp['meetingLink'] = appointmens[i]['meetingLink']
             event['start'] = convertEToDate(appointmens[i]['startTime'])
             event['end'] = convertEToDate(appointmens[i]['endTime'])
             event['title'] = appointmens[i]['name'] + ': ' + appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
@@ -321,7 +329,7 @@ export default {
         persistent: false
       })
       if(res){
-        axios.get(apiBaseUrl + 'appointments/delete/' + item.id).then((response) => {
+        deleteAppointment(item.id).then((response) => {
           if (response.data.msg == "success") {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
@@ -359,6 +367,9 @@ export default {
           if (response.data.msg == "success") {
             this.close()
             this.getData()
+          }
+          else{
+            this.$dialog.notify.error(response.data.msg)
           }
         }).catch(error => {
           this.sending = false
