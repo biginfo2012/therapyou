@@ -269,8 +269,7 @@ export default {
       this.sending = true
       if (this.editedIndex > -1) {
         let data = {
-          therapistId: this.loginInfo.cognitoId,
-          userId: this.editedItem.userId,
+          messageId: this.editedItem.id,
           content: this.editedItem.content
         }
         replyMessage(data).then((response) => {
