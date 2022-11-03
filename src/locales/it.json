@@ -1,156 +1,162 @@
 {
   "general": {
-    "copyright": "TherapYou 2022 Tutti i diritti riservati.",
+    "copyright": "TherapYou  2018 All Rights Reserved.",
     "new": "Nuovo",
     "edit": "Modifica",
-    "cancel": "Annulla",
+    "cancel": "Cancella",
     "save": "Salva",
     "reset": "Reset",
     "actions": "Azioni",
     "search": "Cerca",
     "confirm": "Conferma",
-    "change-password": "Cambia la password",
-    "reply": "Rispondere"
+    "change-password": "Cambio Password",
+    "reply": "Rispondi"
   },
   "header": {
     "profile": "Profilo"
   },
   "menu": {
-    "dashboard": "Pannello di controllo",
+    "dashboard": "Dashboard",
     "appointment": "Appuntamenti",
-    "invoice": "Fatture",
+    "invoice": "Ricevute",
     "client": "Clienti",
-    "therapist": "Terapisti",
+    "therapist": "Terapeuti",
     "noti": "Notifiche",
     "message": "Messaggi"
   },
   "cognito-messages": {
-    "NotAuthorizedException": "Nome utente o password errati",
+    "NotAuthorizedException": "Username o Password errati",
     "UserNotFoundException": "Utente non trovato",
     "UserNotConfirmedException": "Registrazione utente non confermata",
-    "LimitExceededException": "Limite di tentativi superato, per favore riprova dopo un po'",
-    "CodeMismatchException": "Codice di verifica fornito non valido",
-    "UsernameExistsException": "Esiste già un account con l'email specificata!"
+    "LimitExceededException": "Limite tentativi superato, riprovare in seguito",
+    "CodeMismatchException": "Codice di verifica fornito invalido",
+    "UsernameExistsException": "Esiste già un account con l'e-mail fornita!"
   },
   "message": {
-    "delete-success": "Eliminato con successo!",
-    "save-success": "Salvato con successo!"
+    "delete-success": "Cancellazione riuscita!",
+    "save-success": "Salvataggio riuscito!"
   },
   "error-messages": {
-    "password-required": "La password è richiesta",
-    "password-length": "La password deve contenere almeno 8 caratteri",
-    "email-required": "E-mail è richiesta",
-    "email-valid": "L'e-mail deve essere valida",
+    "password-required": "Password richiesta",
+    "password-length": "La Password deve contenere almeno 8 caratteri",
+    "email-required": "E-mail richiesta",
+    "email-valid": "L'E-mail deve essere valida",
+    "number": "Questo campo deve essere numerico",
     "error": "Si è verificato un errore!",
-    "password-number": "La password deve contenere almeno 1 numero",
-    "password-lower": "La password deve contenere almeno 1 lettera minuscola",
-    "password-upper": "La password deve contenere almeno 1 lettera maiuscola",
-    "password-special": "La password deve contenere almeno 1 carattere speciale (!@#$%^&*\")",
-    "code-required": "Il codice è richiesto",
-    "phone-required": "Numero di telefono richiesto",
-    "first-required": "Nome utente è richiesto",
-    "last-required": "Il cognome utente è richiesto",
-    "name-required": "Il nome è richiesto",
-    "surname-required": "Il cognome è obbligatorio",
-    "field-required": "Il campo è obbligatorio"
+    "password-number": "la Password deve contenere almeno un numero",
+    "password-lower": "La Password deve contenere almeno una minuscola",
+    "password-upper": "La Password deve contenere almeno una maiuscola",
+    "password-special": "La password deve contenere almeno un carattere speciale (!@#$%^&*\")",
+    "code-required": "Codice richiesto",
+    "phone-required": "Telefono richiesto",
+    "first-required": "Nome Utente richiesto",
+    "last-required": "Cognome Utente richiesto",
+    "name-required": "Nome richiesto",
+    "surname-required": "Cognome richiesto",
+    "field-required": "Campo richiesto"
   },
   "login":{
-    "login": "Accedi",
-    "resend": "Invia nuovamente la conferma",
+    "login": "Accesso",
+    "resend": "Re-invia conferma",
     "email": "E-mail",
-    "password": "Parola d'ordine",
-    "forgot": "Dimenticato password?"
+    "password": "Password",
+    "forgot": "Password dimenticata?"
   },
   "forgot": {
-    "reset": "RESETTA LA PASSWORD",
-    "show-sent": "È stato inviato un codice di conferma al tuo telefono.",
-    "code-send": "Un codice di conferma verrà inviato al tuo telefono.",
-    "find-account": "Trova il tuo account",
+    "reset": "RESET PASSWORD",
+    "show-sent": "Un codice di conferma è stato iviato al tuo telefono.",
+    "code-send": "Un codice di conferma sarà inviato al tuo telefono.",
+    "find-account": "Trova il tuo Account",
     "find": "Trova",
-    "verify-account": "Verifica account...",
-    "confirm-pwd": "Conferma modifica password",
-    "confirm-code": "Codice di conferma",
-    "new-pwd": "Nuova password",
+    "verify-account": "Verifica Account...",
+    "confirm-pwd": "Conferma Cambio Password",
+    "confirm-code": "Codice di Conferma",
+    "new-pwd": "Nuova Password",
     "confirm": "Conferma",
-    "update-pwd": "Aggiornamento password...",
-    "send-code": "Codice di invio..."
+    "update-pwd": "Password in aggiornamento...",
+    "send-code": "Invio Codice..."
   },
   "changed": {
-    "update-pwd": "Hai aggiornato la tua password."
+    "update-pwd": "Password aggiornata."
   },
   "appointment": {
     "appointments": "Appuntamenti",
-    "list": "Elenco appuntamenti",
+    "list": "Lista Appuntamenti",
     "therapist-name": "Terapeuta",
     "user-name": "Utente",
-    "start-time": "Ora di inizio",
-    "end-time": "Tempo scaduto",
-    "created-time": "Tempo creato",
+    "start-time": "Ora Inizio",
+    "end-time": "Ora Fine",
+    "created-time": "Ora Creazione",
     "action": "Azioni",
-    "my": "I miei appuntamenti",
-    "create": "Crea appuntamento",
-    "delete-confirm": "Sei sicuro di voler eliminare questo appuntamento?",
+    "my": "I miei Appuntamenti",
+    "create": "Crea Appuntamento",
+    "delete-confirm": "Sicuro di voler eliminare questo Appuntamento?",
     "table-view": "Vista Tabella",
-    "calendar-view": "Vista calendario",
-    "date": "Data"
+    "calendar-view": "Vista Calendario",
+    "date": "Data",
+    "pay-status": "Stato Pagamento",
+    "paid": "Pagato",
+    "no-paid": "Non Pagato",
+    "go-meeting": "Avvio Meeting"
   },
   "invoice": {
-    "invoices": "Fatture",
-    "list": "Elenco fatture",
-    "my": "Le mie fatture",
-    "create": "Crea fattura",
-    "file": "File fattura",
-    "url": "URL fattura",
-    "delete-confirm": "Sei sicuro di voler eliminare questa fattura?"
+    "invoices": "Ricevute",
+    "list": "Lista Ricevute",
+    "therapist": "Ricevute Terapeuti",
+    "my": "Le mie Ricevute",
+    "create": "Crea Ricevuta",
+    "file": "Documento",
+    "url": "Url Ricevuta",
+    "delete-confirm": "Sicuro di voler eliminare questa Ricevuta?"
   },
   "client": {
     "clients": "Clienti",
-    "list": "Elenco clienti",
-    "my": "I miei clienti",
-    "create": "Crea cliente",
+    "list": "Lista Clienti",
+    "my": "I miei Clienti",
+    "create": "Crea Cliente",
     "first-name": "Nome",
     "last-name": "Cognome",
-    "phone": "Numero di telefono",
+    "phone": "Telefono",
     "credits": "Crediti",
     "address": "Indirizzo",
-    "delete-confirm": "Sei sicuro di voler eliminare questo Cliente?"
+    "delete-confirm": "Sicuro di voler eliminare questo Cliente?"
   },
   "therapist": {
-    "therapists": "Terapisti",
-    "list": "Elenco terapeuti",
-    "create": "Crea terapista",
+    "therapists": "Terapeuti",
+    "list": "Lista Terapeuti",
+    "create": "Crea Terapeuta",
     "suffix": "Suffisso",
     "name": "Nome",
     "surname": "Cognome",
     "specialization": "Specializzazione",
-    "license-number": "Numero di licenza",
-    "register-region": "Registrazione Regione",
-    "register-date": "Data di registrazione",
+    "license-number": "Numero di Licenza",
+    "register-region": "Regione",
+    "register-date": "Data di Registrazione",
     "vat-number": "Partita IVA",
-    "profile-image": "Immagine del profilo",
-    "banner-image": "Immagine banner",
+    "profile-image": "Imagine Profilo",
+    "banner-image": "Immagine Copertina",
     "desc": "Descrizione",
-    "note": "Nota",
-    "area-exp": "Aree di competenza",
-    "delete-confirm": "Sei sicuro di voler eliminare questo terapista?"
+    "note": "Note",
+    "area-exp": "AreeDiCompetenza",
+    "delete-confirm": "Sicuro di voler eliminare questo Terapeuta?"
   },
   "profile": {
     "profile": "Profilo",
-    "personal-info": "Informazioni personali",
-    "contact-info": "Informazioni di contatto"
+    "personal-info": "Info Personali",
+    "contact-info": "Info Contatto"
   },
   "noti": {
     "all": "Vedi tutto",
     "notis": "Notifiche",
-    "list": "Elenco notifiche",
+    "list": "Lista Notifiche",
     "title": "Titolo",
     "desc": "Descrizione"
   },
   "mail": {
-    "list": "Elenco messaggi",
+    "list": "Lista messaggi",
     "mails": "Messaggi",
-    "my": "I miei messaggi",
-    "content": "Contenuto del messaggio",
-    "answer": "Risposta"
+    "my": "I miei Messaggi",
+    "content": "Contenuto Messaggi",
+    "answer": "Rispondi"
   }
 }

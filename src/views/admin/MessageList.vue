@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="down-top-padding">
-    <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+    <BaseBreadcrumb :title="page.title" :icon="page.icon"></BaseBreadcrumb>
     <BaseCard :heading="$t('mail.mails')">
       <div>
         <v-list-item-subtitle class="text-wrap">
@@ -220,9 +220,23 @@ export default {
           this.items = []
           for (let i = 0; i < users.length; i++) {
             let tmp = {}
+            tmp['id'] = users[i]['id']
             tmp['username'] = users[i]['firstName'] + ' ' + users[i]['lastName']
             tmp['cognitoId'] = users[i]['cognitoId']
             this.items.push(tmp)
+          }
+          if(this.datas != []){
+            for(let i = 0; i < this.datas.length; i++){
+              let fromUser = this.datas[i]['fromUser']
+              for(let j = 0; j < this.items.length; j++){
+                console.log(fromUser)
+                if(this.items[j]['id'] == fromUser){
+                  this.datas[i]['fromUser'] = this.items[j]['username']
+                  break
+                }
+              }
+            }
+            console.log(this.datas)
           }
         }
       }).catch(error => {

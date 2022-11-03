@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="down-top-padding">
-    <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+    <BaseBreadcrumb :title="page.title" :icon="page.icon"></BaseBreadcrumb>
     <BaseCard :heading="$t('appointment.appointments')">
       <div>
         <v-list-item-subtitle class="text-wrap">
@@ -96,6 +96,7 @@
                   </v-toolbar>
                 </template>
                 <template v-slot:item.actions="{ item }">
+<!--                  <v-btn v-if="item.status == 1" color="blue darken-1" text @click="createMeetingLink(item)" :disabled="sending">{{$t('appointment.go-meeting')}}</v-btn>-->
                   <a v-if="item.status == 1" class="mr-2" target="_blank"
                      :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">
                     {{$t('appointment.go-meeting')}}</a>
@@ -122,7 +123,13 @@
 <script>
 
 import {convertEToDate, convertToDate, getCurrentDate, getLoginInfo, getToken} from '@/utils'
-import {createAppointment, deleteAppointment, getAppointmentList, getUserList, singleAppointment} from "@/api"
+import {
+  createAppointment,
+  createMeetingId,
+  deleteAppointment,
+  getAppointmentList,
+  getUserList, singleAppointment
+} from "@/api"
 import {meetingUrl} from "@/constants/config"
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
@@ -250,6 +257,7 @@ export default {
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
+          console.log(appointmens);
           this.datas = []
           this.events = []
           for (let i = 0; i < appointmens.length; i++) {
@@ -262,20 +270,25 @@ export default {
             tmp['startTime'] = appointmens[i]['startTime']
             tmp['endTime'] = appointmens[i]['endTime']
             tmp['meetingLink'] = appointmens[i]['meetingLink']
-            let meetingLink = JSON.parse(tmp['meetingLink'])
-            console.log(meetingLink)
-            tmp['meetingId'] = meetingLink.Meeting.MeetingId
-            tmp['JoinToken'] = meetingLink.Attendees[0].JoinToken
+            tmp['meetingId'] = ""
+            tmp['JoinToken'] = ""
+            if(tmp['meetingLink'] != null){
+              let meetingLink = JSON.parse(tmp['meetingLink'])
+              console.log(meetingLink)
+              tmp['meetingId'] = meetingLink.Meeting.MeetingId
+              tmp['JoinToken'] = meetingLink.Attendees[0].JoinToken
+            }
+
             let now = new Date()
             let beforeStart = new Date(parseInt(appointmens[i]['startTime'], 10) - 300000)
             let endTime = new Date(parseInt(appointmens[i]['endTime'], 10))
             if(now>endTime){
               tmp['status'] = 2
             }
-            else if(now > beforeStart) {
+            else if(now > beforeStart && tmp['meetingLink'] != null) {
               tmp['status'] = 1
             }
-            else if(now < beforeStart) {
+            else {
               tmp['status'] = 0
             }
 
@@ -285,13 +298,13 @@ export default {
             this.datas.push(tmp)
             this.events.push(event)
           }
+          console.log(this.datas)
         }
         this.loading = false
       }).catch(error => {
         this.loading = false
         this.handle(error)
       })
-
     },
     getUserData() {
       let data = {
@@ -315,23 +328,34 @@ export default {
     },
     getSingleData(){
       for (let i = 0; i < this.datas.length; i++) {
-        if(this.datas[i]['status'] != 2){
+        if(this.datas[i]['status'] != 2 && this.datas[i]['meetingLink'] == null){
           let now = new Date()
           let beforeStart = new Date(parseInt(this.datas[i]['startTime'], 10) - 300000)
           if(now > beforeStart) {
-            this.datas['status'] = 1
+            let data = {
+              appointmentId: this.datas[i]['id']
+            }
+            createMeetingId(data).then((response) => {
+              console.log(response)
+              this.datas[i]['status'] = 1
+              // if (response.data.msg == "success") {
+              //
+              // }
+            })
             singleAppointment(this.datas[i]['id']).then((response) => {
               console.log(response)
               if(response.data.msg == "success"){
-                this.datas['meetingLink'] = response.data.data.appointment.meetingLink
-                let meetingLink = JSON.parse(this.datas['meetingLink'])
-                console.log(meetingLink.Meeting.MeetingId)
-                this.datas['meetingId'] = meetingLink.Meeting.MeetingId
+                this.datas[i]['meetingLink'] = response.data.data.appointment.meetingLink
+                if(this.datas[i]['meetingLink'] != null){
+                  let meetingLink = JSON.parse(this.datas[i]['meetingLink'])
+                  this.datas[i]['meetingId'] = meetingLink.Meeting.MeetingId
+                  this.datas[i]['status'] = 1
+                }
               }
             })
           }
           else if(now < beforeStart) {
-            this.datas['status'] = 0
+            this.datas[i]['status'] = 0
           }
         }
       }

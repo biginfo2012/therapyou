@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="down-top-padding">
-    <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+    <BaseBreadcrumb :title="page.title" :icon="page.icon"></BaseBreadcrumb>
     <BaseCard :heading="$t('appointment.appointments')">
       <div>
         <v-list-item-subtitle class="text-wrap">
@@ -10,29 +10,53 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="therapistItems" item-text="name" outlined dense
+                  <v-autocomplete :items="therapistItems" item-text="name" outlined
                             item-value="cognitoId" :label="$t('appointment.therapist-name')"
                             v-model="searchItem.therapistId" class="mt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="items" item-text="username" outlined dense
+                  <v-autocomplete :items="items" item-text="username" outlined
                             item-value="cognitoId" :label="$t('appointment.user-name')"
                             v-model="searchItem.userId" class="mt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="payItems" item-text="label" outlined dense
+                  <v-autocomplete :items="payItems" item-text="label" outlined
                             item-value="paid" :label="$t('appointment.pay-status')"
                             v-model="searchItem.decreasedCredits" class="p-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-text-field
-                      v-model="searchItem.start_time"
-                      type="date"
-                      hide-details outlined dense
-                      background-color="transparent"
-                      :label="$t('appointment.date')"
-                      class="p-0"
-                  ></v-text-field>
+                  <v-menu
+                      ref="menu"
+                      v-model="menu"
+                      :close-on-content-click="false"
+                      :return-value.sync="date"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                          v-model="date"
+                          :label="$t('appointment.date')"
+                          prepend-icon="mdi-calendar"
+                          readonly outlined
+                          v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="date" no-title range>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="primary" @click="menu = false">{{$t('general.cancel')}}</v-btn>
+                      <v-btn text color="primary" @click="changeDateFilter">OK</v-btn>
+                    </v-date-picker>
+                  </v-menu>
+<!--                  <v-text-field-->
+<!--                      v-model="searchItem.start_time"-->
+<!--                      type="date"-->
+<!--                      hide-details outlined dense-->
+<!--                      background-color="transparent"-->
+<!--                      :label="$t('appointment.date')"-->
+<!--                      class="p-0"-->
+<!--                  ></v-text-field>-->
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="py-0 mt-2">
                   <v-btn color="success" class="mt-0 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
@@ -103,6 +127,7 @@
                      :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">
                     {{$t('appointment.go-meeting')}}</a>
                   <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+
                 </template>
                 <template v-slot:no-data>
                   <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
@@ -133,6 +158,12 @@ export default {
   components: { VueCal },
   data: function () {
     return {
+      date: null, //new Date().toISOString().substr(0, 10),
+      menu: false,
+      dateFilter: {
+        fromDate: '',
+        toDate: ''
+      },
       page: {
         title: this.$t('appointment.list'),
       },
@@ -180,14 +211,12 @@ export default {
         start_time: 0,
       },
       defaultItem: {
-        start_time: 0,
         therapistId: "",
         userId: "",
         decreasedCredits: null
       },
       searchItem: {
         userId: "",
-        start_time: "",
         therapistId: "",
         decreasedCredits: null
       },
@@ -214,6 +243,10 @@ export default {
   },
 
   methods: {
+    changeDateFilter(){
+      console.log(this.date)
+      this.$refs.menu.save(this.date)
+    },
     initialize() {
       this.getData()
       this.getUserData()
@@ -380,6 +413,7 @@ export default {
     },
     reset() {
       this.searchItem = Object.assign({}, this.defaultItem)
+      this.date = null
     }
   }
 }

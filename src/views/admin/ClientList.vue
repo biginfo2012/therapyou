@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="down-top-padding">
-    <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+    <BaseBreadcrumb :title="page.title" :icon="page.icon"></BaseBreadcrumb>
     <BaseCard :heading="$t('client.clients')">
       <div>
         <v-list-item-subtitle class="text-wrap">
@@ -145,6 +145,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
+              <v-icon v-if="item.testFileUrl != ''" small class="mr-2" @click="downloadFile(item)">mdi-cloud-download</v-icon>
               <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
@@ -162,6 +163,7 @@
 import {getLoginInfo} from '@/utils'
 import {poolData} from "@/constants/config"
 import {deleteUser, getTherapistList, getUserList, initUser, updateUser} from "@/api";
+import axios from "axios";
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -312,6 +314,24 @@ export default {
   },
 
   methods: {
+    downloadFile(item) {
+      console.log(item.testFileUrl)
+      axios({
+        url: item.testFileUrl, // File URL Goes Here
+        method: 'GET',
+        responseType: 'blob',
+      }).then((res) => {
+        console.log(res)
+        var FILE = window.URL.createObjectURL(new Blob([res.data]))
+
+        var docUrl = document.createElement('a')
+        docUrl.href = FILE
+        let fileName = item.testFileUrl.split("/").pop()
+        docUrl.setAttribute('download', fileName)
+        document.body.appendChild(docUrl)
+        docUrl.click()
+      });
+    },
     initialize() {
       this.getData()
       this.getTherapistData()

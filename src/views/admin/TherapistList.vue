@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="down-top-padding">
-    <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+    <BaseBreadcrumb :title="page.title" :icon="page.icon"></BaseBreadcrumb>
     <BaseCard :heading="$t('therapist.therapists')">
       <div>
         <v-list-item-subtitle class="text-wrap">
@@ -38,25 +38,25 @@
                                   :disabled="editedIndex === -1 ? false : true"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">
-                              <v-text-field
-                                  v-model="editedItem.phoneNumber"
-                                  :rules="phoneRules"
-                                  required outlined
-                                  :label="$t('client.phone')"
-                                  :disabled="editedIndex === -1 ? false : true"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">
-                              <v-text-field
-                                  v-model="editedItem.password"
-                                  :rules="passwordRules"
-                                  outlined required
-                                  :disabled="editedIndex === -1 ? false : true"
-                                  :label="$t('login.password')"
-                                  type="password"
-                              ></v-text-field>
-                            </v-col>
+<!--                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">-->
+<!--                              <v-text-field-->
+<!--                                  v-model="editedItem.phoneNumber"-->
+<!--                                  :rules="phoneRules"-->
+<!--                                  required outlined-->
+<!--                                  :label="$t('client.phone')"-->
+<!--                                  :disabled="editedIndex === -1 ? false : true"-->
+<!--                              ></v-text-field>-->
+<!--                            </v-col>-->
+<!--                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">-->
+<!--                              <v-text-field-->
+<!--                                  v-model="editedItem.password"-->
+<!--                                  :rules="passwordRules"-->
+<!--                                  outlined required-->
+<!--                                  :disabled="editedIndex === -1 ? false : true"-->
+<!--                                  :label="$t('login.password')"-->
+<!--                                  type="password"-->
+<!--                              ></v-text-field>-->
+<!--                            </v-col>-->
                             <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.name"
@@ -185,21 +185,21 @@
 
 <script>
 
-import {poolData} from "@/constants/config"
+//import {poolData} from "@/constants/config"
 import {getLoginInfo, singleUpload} from '@/utils'
-import {deleteTherapist, getTherapistList, saveTherapist, updateTherapist} from "@/api";
-var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
-
-var userPool = []
-var attributeList = []
-var dataEmail = {
-  Name: 'email',
-  Value: ''
-}
-var dataPhone = {
-  Name: 'phone_number',
-  Value: ''
-}
+import {deleteTherapist, getTherapistList, signUpTherapist, updateTherapist} from "@/api";
+// var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
+//
+// var userPool = []
+// var attributeList = []
+// var dataEmail = {
+//   Name: 'email',
+//   Value: ''
+// }
+// var dataPhone = {
+//   Name: 'phone_number',
+//   Value: ''
+// }
 export default {
   name: "TherapistList",
   data: function () {
@@ -466,63 +466,72 @@ export default {
             this.handle(error)
           })
         } else {
-          dataEmail.Value = this.editedItem.email
-          dataPhone.Value = this.editedItem.phoneNumber
-          var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail)
-          var attributePhone = new AmazonCognitoIdentity.CognitoUserAttribute(dataPhone)
-          attributeList.push(attributeEmail)
-          attributeList.push(attributePhone)
-          console.log('attribute list: ' + attributeList)
-          userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
-          console.log('sign up with: ' + this.editedItem.email + ' ' + this.editedItem.password)
-          this.callback = false
-          this.errcode = ''
+          let data = {
+            email: this.editedItem.email,
+            name: this.editedItem.name,
+            surname: this.editedItem.surname,
+          }
 
-          userPool.signUp(this.editedItem.email, this.editedItem.password, attributeList, null, (err, result) => {
-            if (!this.callback) {
-              this.callback = true
-              console.log('register callback')
-              if (err) {
-                console.error('registration error: ' + JSON.stringify(err))
-                this.errcode = JSON.stringify(err.code)
-                this.sending = false
-              } else {
-                this.showerr = false
-                this.errmsg = ""
-                this.editedItem.cognitoId = result.userSub
-                let data = {
-                  cognitoId: this.editedItem.cognitoId,
-                  suffix: this.editedItem.suffix,
-                  name: this.editedItem.name,
-                  surname: this.editedItem.surname,
-                  specialization: this.editedItem.specialization,
-                  licenseNumber: this.editedItem.licenseNumber,
-                  registrationRegion: this.editedItem.registrationRegion,
-                  registrationDate: this.editedItem.registrationDate,
-                  vatNumber: this.editedItem.vatNumber,
-                  profileImage: this.editedItem.profileImage,
-                  bannerImage: this.editedItem.bannerImage,
-                  description: this.editedItem.description,
-                  note: this.editedItem.note,
-                  areasOfExpertise: JSON.stringify(this.editedItem.areasOfExpertise),
-                  role: 1,
-                  isDefault: 0
-                }
-
-                saveTherapist(data).then((response) => {
-                  this.sending = false
-                  if (response.data.msg == "success") {
-                    this.close()
-                    this.getData()
-                  }
-                }).catch(error => {
-                  this.sending = false
-                  this.close()
-                  this.handle(error)
-                })
-              }
+          signUpTherapist(data).then((response) => {
+            this.sending = false
+            if (response.data.msg == "success") {
+              this.close()
+              this.getData()
             }
+          }).catch(error => {
+            this.sending = false
+            this.close()
+            this.handle(error)
           })
+
+          // dataEmail.Value = this.editedItem.email
+          // dataPhone.Value = this.editedItem.phoneNumber
+          // var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail)
+          // var attributePhone = new AmazonCognitoIdentity.CognitoUserAttribute(dataPhone)
+          // attributeList.push(attributeEmail)
+          // attributeList.push(attributePhone)
+          // console.log('attribute list: ' + attributeList)
+          // userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
+          // console.log('sign up with: ' + this.editedItem.email + ' ' + this.editedItem.password)
+          // this.callback = false
+          // this.errcode = ''
+          //
+          // userPool.signUp(this.editedItem.email, this.editedItem.password, attributeList, null, (err, result) => {
+          //   if (!this.callback) {
+          //     this.callback = true
+          //     console.log('register callback')
+          //     if (err) {
+          //       console.error('registration error: ' + JSON.stringify(err))
+          //       this.errcode = JSON.stringify(err.code)
+          //       this.sending = false
+          //     } else {
+          //       this.showerr = false
+          //       this.errmsg = ""
+          //       this.editedItem.cognitoId = result.userSub
+          //
+          //       let data = {
+          //         cognitoId: this.editedItem.cognitoId,
+          //         suffix: this.editedItem.suffix,
+          //         name: this.editedItem.name,
+          //         surname: this.editedItem.surname,
+          //         role: 1,
+          //         isDefault: 0
+          //       }
+          //
+          //       signUpTherapist(data).then((response) => {
+          //         this.sending = false
+          //         if (response.data.msg == "success") {
+          //           this.close()
+          //           this.getData()
+          //         }
+          //       }).catch(error => {
+          //         this.sending = false
+          //         this.close()
+          //         this.handle(error)
+          //       })
+          //     }
+          //   }
+          // })
         }
       }
     },

@@ -25,6 +25,9 @@ export function deleteAppointment(id) {
 export function singleAppointment(appointmentId) {
     return axios.get(apiBaseUrl + 'appointments/single?appointmentId=' + appointmentId)
 }
+export function createMeetingId(data) {
+    return axios.post(apiBaseUrl + 'appointments/create-meeting-link', data, config)
+}
 export function getTherapistList(data) {
     return axios.post(apiBaseUrl + 'therapist/list', data, config)
 }
@@ -36,6 +39,9 @@ export function saveTherapist(data) {
 }
 export function updateTherapist(data) {
     return axios.post(apiBaseUrl + 'therapist/update', data, config)
+}
+export function signUpTherapist(data) {
+    return axios.post(apiBaseUrl + 'therapist/sign-up', data, config)
 }
 export function getUserList(data) {
     return axios.post(apiBaseUrl + 'user/list', data, config)

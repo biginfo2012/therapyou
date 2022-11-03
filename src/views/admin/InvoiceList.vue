@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="down-top-padding">
-    <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+    <BaseBreadcrumb :title="page.title" :icon="page.icon"></BaseBreadcrumb>
     <BaseCard :heading="$t('invoice.invoices')">
       <div>
         <v-list-item-subtitle class="text-wrap">
@@ -49,6 +49,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
+              <v-icon small @click="downloadFile(item)">mdi-cloud-download</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
@@ -64,6 +65,7 @@
 <script>
 import {convertToDate, getLoginInfo, singleUpload} from '@/utils'
 import {deleteInvoice, getAppointmentList, getInvoiceList, uploadInvoice} from "@/api"
+import axios from "axios";
 export default {
   name: "InvoiceList",
   data: function () {
@@ -125,6 +127,24 @@ export default {
     initialize() {
       this.getData()
       this.getAppointmentData()
+    },
+    downloadFile(item) {
+      console.log(item.invoiceUrl)
+      axios({
+        url: item.invoiceUrl, // File URL Goes Here
+        method: 'GET',
+        responseType: 'blob',
+      }).then((res) => {
+        console.log(res)
+        var FILE = window.URL.createObjectURL(new Blob([res.data]))
+
+        var docUrl = document.createElement('a')
+        docUrl.href = FILE
+        let fileName = item.invoiceUrl.split("/").pop()
+        docUrl.setAttribute('download', fileName)
+        document.body.appendChild(docUrl)
+        docUrl.click()
+      });
     },
     handle(error) {
       console.log(error)
