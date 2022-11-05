@@ -123,9 +123,9 @@
                   </v-toolbar>
                 </template>
                 <template v-slot:item.actions="{ item }">
-                  <a v-if="item.meetingLink != null" class="mr-2" target="_blank"
-                     :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">
-                    {{$t('appointment.go-meeting')}}</a>
+<!--                  <a v-if="item.meetingLink != null" class="mr-2" target="_blank"-->
+<!--                     :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">-->
+<!--                    {{$t('appointment.go-meeting')}}</a>-->
                   <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
 
                 </template>
@@ -244,7 +244,35 @@ export default {
 
   methods: {
     changeDateFilter(){
+      if(this.date != null){
+        if(this.date.length == 1){
+          let fromDate = new Date(this.date[0] + " 00:00:00")
+          let toDate = new Date(this.date[0] + " 23:59:59")
+          this.dateFilter.fromDate = fromDate.getTime()
+          this.dateFilter.toDate = toDate.getTime()
+        }
+        else{
+          let date1 = new Date(this.date[0] + " 00:00:00")
+          let date2 = new Date(this.date[1] + " 23:59:59")
+          let dateMil1 = date1.getTime()
+          let dateMil2 = date2.getTime()
+          if(dateMil1 > dateMil2){
+            date1 = new Date(this.date[1] + " 00:00:00")
+            date2 = new Date(this.date[0] + " 23:59:59")
+            dateMil1 = date1.getTime()
+            dateMil2 = date2.getTime()
+            let tmp = this.date[0]
+            this.date[0] = this.date[1]
+            this.date[1] = tmp
+            this.dateFilter.fromDate = dateMil2
+            this.dateFilter.toDate = dateMil1
+          }
+          this.dateFilter.fromDate = dateMil1
+          this.dateFilter.toDate = dateMil2
+        }
+      }
       console.log(this.date)
+      console.log(this.dateFilter)
       this.$refs.menu.save(this.date)
     },
     initialize() {
@@ -262,11 +290,6 @@ export default {
     },
     getData() {
       this.loading = true
-      let data = {
-        cognitoId: this.loginInfo.cognitoId,
-        offset: 0,
-        limit: 500
-      }
       let filter = {}
       if (this.searchItem.therapistId != "") {
         filter.therapistId = this.searchItem.therapistId
@@ -274,26 +297,54 @@ export default {
       if (this.searchItem.userId != "") {
         filter.userId = this.searchItem.userId
       }
-      if (this.searchItem.start_time != "") {
-        filter.start_time = this.searchItem.start_time
-      }
       if (this.searchItem.decreasedCredits != null) {
         filter.decreasedCredits = this.searchItem.decreasedCredits
       }
+      let data
       if (filter != {}) {
-        data = {
-          cognitoId: this.loginInfo.cognitoId,
-          offset: 0,
-          limit: 500,
-          filters: filter
+        if(this.dateFilter.fromDate != ""){
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500,
+            filters: filter,
+            dateFilter: this.dateFilter
+          }
+        }
+        else{
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500,
+            filters: filter
+          }
         }
       }
-
+      else{
+        if(this.dateFilter.fromDate != ""){
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500,
+            dateFilter: this.dateFilter
+          }
+        }
+        else{
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500
+          }
+        }
+      }
+      console.log(data)
+      this.datas = []
+      this.events = []
       getAppointmentList(data).then((response) => {
+
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
-          this.datas = []
-          this.events = []
+
           for (let i = 0; i < appointmens.length; i++) {
             let tmp = {}
             let event = {}
@@ -315,7 +366,6 @@ export default {
         this.loading = false
         this.handle(error)
       })
-
     },
     getTherapistData() {
       let data = {
@@ -414,6 +464,8 @@ export default {
     reset() {
       this.searchItem = Object.assign({}, this.defaultItem)
       this.date = null
+      this.dateFilter.fromDate = ''
+      this.dateFilter.toDate = ''
     }
   }
 }

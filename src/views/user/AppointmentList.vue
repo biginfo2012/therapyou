@@ -15,13 +15,30 @@
                             v-model="searchItem.userId" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-text-field
-                      v-model="searchItem.start_time"
-                      type="date"
-                      hide-details outlined
-                      background-color="transparent"
-                      :label="$t('appointment.date')"
-                  ></v-text-field>
+                  <v-menu
+                      ref="menu"
+                      v-model="menu"
+                      :close-on-content-click="false"
+                      :return-value.sync="date"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                          v-model="date"
+                          :label="$t('appointment.date')"
+                          prepend-icon="mdi-calendar"
+                          readonly outlined
+                          v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="date" no-title range>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="primary" @click="menu = false">{{$t('general.cancel')}}</v-btn>
+                      <v-btn text color="primary" @click="changeDateFilter">OK</v-btn>
+                    </v-date-picker>
+                  </v-menu>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-autocomplete :items="payItems" item-text="label" outlined
@@ -139,6 +156,12 @@ export default {
   components: { VueCal },
   data: function () {
     return {
+      date: null, //new Date().toISOString().substr(0, 10),
+      menu: false,
+      dateFilter: {
+        fromDate: '',
+        toDate: ''
+      },
       page: {
         title: this.$t('appointment.list'),
       },
@@ -216,6 +239,38 @@ export default {
   },
 
   methods: {
+    changeDateFilter(){
+      if(this.date != null){
+        if(this.date.length == 1){
+          let fromDate = new Date(this.date[0] + " 00:00:00")
+          let toDate = new Date(this.date[0] + " 23:59:59")
+          this.dateFilter.fromDate = fromDate.getTime()
+          this.dateFilter.toDate = toDate.getTime()
+        }
+        else{
+          let date1 = new Date(this.date[0] + " 00:00:00")
+          let date2 = new Date(this.date[1] + " 23:59:59")
+          let dateMil1 = date1.getTime()
+          let dateMil2 = date2.getTime()
+          if(dateMil1 > dateMil2){
+            date1 = new Date(this.date[1] + " 00:00:00")
+            date2 = new Date(this.date[0] + " 23:59:59")
+            dateMil1 = date1.getTime()
+            dateMil2 = date2.getTime()
+            let tmp = this.date[0]
+            this.date[0] = this.date[1]
+            this.date[1] = tmp
+            this.dateFilter.fromDate = dateMil2
+            this.dateFilter.toDate = dateMil1
+          }
+          this.dateFilter.fromDate = dateMil1
+          this.dateFilter.toDate = dateMil2
+        }
+      }
+      console.log(this.date)
+      console.log(this.dateFilter)
+      this.$refs.menu.save(this.date)
+    },
     initialize() {
       this.getData()
       this.getUserData()
@@ -230,18 +285,11 @@ export default {
     },
     getData() {
       this.loading = true
-      let data = {
-        cognitoId: this.loginInfo.cognitoId,
-        offset: 0,
-        limit: 500
-      }
       let filter = {}
       if (this.searchItem.userId != "") {
         filter.userId = this.searchItem.userId
       }
-      if (this.searchItem.start_time != "") {
-        filter.start_time = this.searchItem.start_time
-      }
+
       if (this.searchItem.paid != null) {
         filter.paid = this.searchItem.paid
       }
@@ -254,6 +302,44 @@ export default {
           filters: filter
         }
       }
+      let data
+      if (filter != {}) {
+        if(this.dateFilter.fromDate != ""){
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500,
+            filters: filter,
+            dateFilter: this.dateFilter
+          }
+        }
+        else{
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500,
+            filters: filter
+          }
+        }
+      }
+      else{
+        if(this.dateFilter.fromDate != ""){
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500,
+            dateFilter: this.dateFilter
+          }
+        }
+        else{
+          data = {
+            cognitoId: this.loginInfo.cognitoId,
+            offset: 0,
+            limit: 500
+          }
+        }
+      }
+      console.log(data)
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments

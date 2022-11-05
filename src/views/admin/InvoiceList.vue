@@ -49,7 +49,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon small @click="downloadFile(item)">mdi-cloud-download</v-icon>
+              <v-icon small class="mr-2" @click="downloadFile(item)">mdi-cloud-download</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
@@ -87,10 +87,22 @@ export default {
       ],
       headers: [
         {
-          text: this.$t('invoice.url'),
+          text: this.$t('invoice.number'),
           align: "start",
-          sortable: false,
-          value: "invoiceUrl"
+          sortable: true,
+          value: "number"
+        },
+        {
+          text: this.$t('invoice.date'),
+          align: "start",
+          sortable: true,
+          value: "number"
+        },
+        {
+          text: this.$t('invoice.therapist-name'),
+          align: "start",
+          sortable: true,
+          value: "number"
         },
         { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],

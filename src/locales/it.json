@@ -107,6 +107,9 @@
     "create": "Crea Ricevuta",
     "file": "Documento",
     "url": "Url Ricevuta",
+    "number": "Numerico",
+    "date": "Data",
+    "therapist-name": "Terapeuta",
     "delete-confirm": "Sicuro di voler eliminare questa Ricevuta?"
   },
   "client": {

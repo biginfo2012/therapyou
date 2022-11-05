@@ -47,9 +47,10 @@
                 </v-dialog>
               </v-toolbar>
             </template>
-<!--            <template v-slot:item.actions="{ item }">-->
+            <template v-slot:item.actions="{ item }">
+              <v-icon small @click="downloadFile(item)">mdi-cloud-download</v-icon>
 <!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
-<!--            </template>-->
+            </template>
             <template v-slot:no-data>
               <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
             </template>
@@ -63,6 +64,7 @@
 <script>
 import {convertToDate, getLoginInfo, singleUpload} from '@/utils'
 import {deleteInvoice, getAppointmentList, getInvoiceList, uploadInvoice} from "@/api"
+import axios from "axios";
 export default {
   name: "InvoiceList",
   data: function () {
@@ -84,11 +86,24 @@ export default {
       ],
       headers: [
         {
-          text: this.$t('invoice.url'),
+          text: this.$t('invoice.number'),
           align: "start",
-          sortable: false,
-          value: "invoiceUrl"
+          sortable: true,
+          value: "number"
         },
+        {
+          text: this.$t('invoice.date'),
+          align: "start",
+          sortable: true,
+          value: "number"
+        },
+        {
+          text: this.$t('invoice.therapist-name'),
+          align: "start",
+          sortable: true,
+          value: "number"
+        },
+        { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],
       datas: [],
       editedIndex: -1,
@@ -120,6 +135,24 @@ export default {
   },
 
   methods: {
+    downloadFile(item) {
+      console.log(item.invoiceUrl)
+      axios({
+        url: item.invoiceUrl, // File URL Goes Here
+        method: 'GET',
+        responseType: 'blob',
+      }).then((res) => {
+        console.log(res)
+        var FILE = window.URL.createObjectURL(new Blob([res.data]))
+
+        var docUrl = document.createElement('a')
+        docUrl.href = FILE
+        let fileName = item.invoiceUrl.split("/").pop()
+        docUrl.setAttribute('download', fileName)
+        document.body.appendChild(docUrl)
+        docUrl.click()
+      });
+    },
     initialize() {
       this.getData()
       this.getAppointmentData()

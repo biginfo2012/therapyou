@@ -107,6 +107,9 @@
     "create": "Create Invoice",
     "file": "Invoice File",
     "url": "Invoice Url",
+    "number": "Number",
+    "date": "Date",
+    "therapist-name": "Therapist",
     "delete-confirm": "Are you sure you want to delete this Invoice?"
   },
   "client": {
