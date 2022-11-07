@@ -12,7 +12,7 @@
                 <v-toolbar-title>{{$t('therapist.list')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="1200px">
+                <v-dialog v-model="dialog" persistent max-width="1200px">
                   <template v-slot:activator="{ on }">
                     <v-btn color="success" dark class="mb-2" v-on="on">{{$t('therapist.create')}}</v-btn>
                   </template>
@@ -174,7 +174,7 @@
 <!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
+              {{ $t('general.no-data') }}
             </template>
           </v-data-table>
         </div>

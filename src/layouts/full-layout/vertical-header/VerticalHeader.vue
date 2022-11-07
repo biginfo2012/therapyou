@@ -55,7 +55,7 @@
         min-width="150">
       <template v-slot:activator="{ on }">
         <v-btn icon v-on="on" class="mr-5">
-          <img class="locale" :alt="$i18n.locale.toUpperCase()" src="@/assets/images/icons/language.png" draggable="false" width="32"/>
+          <img class="locale" :alt="$i18n.locale.toUpperCase()" src="@/assets/images/icons/language.png" draggable="false" width="24"/>
           <span class="name ml-2 mr-3">{{ $i18n.locale.toUpperCase() }}</span>
         </v-btn>
       </template>

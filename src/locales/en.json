@@ -10,7 +10,8 @@
     "search": "Search",
     "confirm": "Confirm",
     "change-password": "Change Password",
-    "reply": "Reply"
+    "reply": "Reply",
+    "no-data": "no results found"
   },
   "header": {
     "profile": "Profile"

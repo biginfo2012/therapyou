@@ -1,7 +1,7 @@
 <template>
   <v-footer app class="footerpart" inset>
     <v-col cols="12">
-      <span>©copyright {{ new Date().getFullYear() }} — Fill the Gap s.r.l.</span>
+      <span>Therapyou — ©️ Fill the Gap s.r.l. {{ new Date().getFullYear() }}</span>
     </v-col>
   </v-footer>
 </template>

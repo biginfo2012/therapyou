@@ -27,7 +27,7 @@
                 <v-toolbar-title>{{ $t('mail.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px">
+                <v-dialog v-model="dialog" persistent max-width="500px">
                   <v-card>
                     <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);" alt="Sending"/>
                     <v-card-title>
@@ -75,7 +75,7 @@
 <!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
+              {{ $t('general.no-data') }}
             </template>
           </v-data-table>
         </div>
@@ -300,6 +300,7 @@ export default {
     },
     reset() {
       this.searchItem = Object.assign({}, this.defaultItem)
+      this.getData()
     }
   }
 }

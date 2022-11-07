@@ -130,7 +130,7 @@
 
                 </template>
                 <template v-slot:no-data>
-                  <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
+                  {{ $t('general.no-data') }}
                 </template>
               </v-data-table>
             </v-tab-item>
@@ -466,6 +466,7 @@ export default {
       this.date = null
       this.dateFilter.fromDate = ''
       this.dateFilter.toDate = ''
+      this.getData()
     }
   }
 }

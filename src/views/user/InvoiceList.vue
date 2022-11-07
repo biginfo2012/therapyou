@@ -12,7 +12,7 @@
                 <v-toolbar-title>{{ $t('invoice.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px">
+                <v-dialog v-model="dialog" persistent max-width="500px" >
                   <template v-slot:activator="{ on }">
                     <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('invoice.create') }}</v-btn>
                   </template>
@@ -52,7 +52,7 @@
 <!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
+              {{ $t('general.no-data') }}
             </template>
           </v-data-table>
         </div>
@@ -89,19 +89,19 @@ export default {
           text: this.$t('invoice.number'),
           align: "start",
           sortable: true,
-          value: "number"
+          value: "invoiceCode"
         },
         {
           text: this.$t('invoice.date'),
           align: "start",
           sortable: true,
-          value: "number"
+          value: "invoiceDate"
         },
         {
           text: this.$t('invoice.therapist-name'),
           align: "start",
           sortable: true,
-          value: "number"
+          value: "therapyType"
         },
         { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],
@@ -183,10 +183,13 @@ export default {
 
     },
     getAppointmentData(){
+      let filter = {}
+      filter.decreasedCredits = 1
       let data = {
         cognitoId: this.loginInfo.cognitoId,
         offset: 0,
-        limit: 500
+        limit: 500,
+        filter: filter
       }
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {

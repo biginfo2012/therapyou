@@ -13,7 +13,7 @@
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
 
-                <v-dialog v-model="dialog" max-width="500px">
+                <v-dialog v-model="dialog" persistent max-width="500px">
                   <v-card>
                     <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
                          style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
@@ -56,7 +56,7 @@
               <v-icon v-if="item.notified != 1" small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
+              {{ $t('general.no-data') }}
             </template>
           </v-data-table>
         </div>

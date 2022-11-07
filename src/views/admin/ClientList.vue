@@ -150,7 +150,7 @@
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
-              <v-btn color="success" @click="getData">{{ $t('general.reset') }}</v-btn>
+              {{ $t('general.no-data') }}
             </template>
           </v-data-table>
         </div>
@@ -531,6 +531,7 @@ export default {
 
     reset() {
       this.searchItem = Object.assign({}, this.defaultItem)
+      this.getData()
     }
   }
 }

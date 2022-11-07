@@ -9,5 +9,5 @@ export const meetingUrl = 'https://d2qtcov1lh58xd.cloudfront.net/meetingV2.html?
 
 export const localeOptions = [
     {id: 'en', name: 'English', icon: require('../assets/images/flags/en.svg')},
-    {id: 'it', name: 'Italian', icon: require('../assets/images/flags/it.svg')}
+    {id: 'it', name: 'Italiano', icon: require('../assets/images/flags/it.svg')}
 ]
