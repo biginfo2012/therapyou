@@ -79,6 +79,9 @@ export function getMessageListByUser(data) {
 export function deleteMessage(data) {
     return axios.post(apiBaseUrl + 'message/delete', data, config)
 }
+export function getListUsers(data) {
+    return axios.post(apiBaseUrl + 'message/list-users', data, config)
+}
 export function replyMessage(data) {
     return axios.post(apiBaseUrl + 'message/reply', data, config)
 }

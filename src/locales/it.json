@@ -144,7 +144,7 @@
     "banner-image": "Immagine Copertina",
     "desc": "Descrizione",
     "note": "Note",
-    "area-exp": "AreeDiCompetenza",
+    "area-exp": "Aree Di Competenza",
     "delete-confirm": "Sicuro di voler eliminare questo Terapeuta?"
   },
   "profile": {
@@ -164,6 +164,7 @@
     "mails": "Messaggi",
     "my": "I miei Messaggi",
     "content": "Contenuto Messaggi",
-    "answer": "Rispondi"
+    "answer": "Rispondi",
+    "send": "Invio"
   }
 }

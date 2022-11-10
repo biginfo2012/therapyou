@@ -21,17 +21,16 @@
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
-
-                    <v-card-text>
-                      <v-container>
+                    <v-card-text class="pb-0">
+                      <v-container class="pb-0">
                         <v-form ref="uploadForm">
                           <v-row>
-                            <v-col cols="12" sm="12" md="12">
+                            <v-col cols="12" sm="12" md="12" class="pb-0">
                               <v-autocomplete :items="items" item-text="label" outlined required :rules="fieldRules"
                                               item-value="id" :label="$t('appointment.list')"
                                               v-model="editedItem.id" class="mt-0 pt-0"></v-autocomplete>
                             </v-col>
-                            <v-col cols="12" sm="12" md="12">
+                            <v-col cols="12" sm="12" md="12" class="pb-0">
                               <v-file-input
                                   :label="$t('invoice.file')" outlined
                                   @change="uploadFile"></v-file-input>
@@ -54,22 +53,13 @@
                                   :label="$t('invoice.date')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="12">
+                            <v-col cols="12" sm="12" md="12" class="pb-0">
                               <v-select
                                   v-model="editedItem.therapyType"
                                   :items="areas"
                                   :label="$t('invoice.therapist-type')"
                                   outlined
                               >
-<!--                                <template v-slot:selection="{ item, index }">-->
-<!--                                  <v-chip v-if="index === 0">-->
-<!--                                    <span>{{ item }}</span>-->
-<!--                                  </v-chip>-->
-<!--                                  <span-->
-<!--                                      v-if="index === 1"-->
-<!--                                      class="grey&#45;&#45;text caption"-->
-<!--                                  >(+{{ editedItem.therapyType.length - 1 }} others)</span>-->
-<!--                                </template>-->
                               </v-select>
                             </v-col>
                           </v-row>

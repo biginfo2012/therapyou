@@ -1,154 +1,97 @@
 <template>
-  <v-container fluid class="down-top-padding">
-    <BaseBreadcrumb :title="page.title" :icon="page.icon"></BaseBreadcrumb>
-    <BaseCard :heading="$t('mail.mails')">
-      <div>
-        <v-list-item-subtitle class="text-wrap">
-        </v-list-item-subtitle>
-        <div class="mt-4">
-          <v-container>
-            <v-form ref="search_form">
-              <v-row>
-                <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-autocomplete :items="items" item-text="username" outlined dense
-                            item-value="cognitoId" :label="$t('appointment.user-name')"
-                            v-model="searchItem.userId" class="mt-0 pt-0"></v-autocomplete>
-                </v-col>
-                <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-btn color="success" class="mt-0 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
-                  <v-btn color="success" class="mt-0" @click="getData">{{ $t('general.search') }}</v-btn>
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-container>
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
-            <template v-slot:top>
-              <v-toolbar flat>
-                <v-toolbar-title>{{ $t('mail.my')}}</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>
-                <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" persistent max-width="500px">
-                  <v-card>
-                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px); z-index: 1" alt="Sending"/>
-                    <v-card-title>
-                      <span class="headline">{{ formTitle }}</span>
-                    </v-card-title>
+  <v-container fluid class="chat-app common-left-right">
+    <v-row>
+      <v-col cols="12" sm="12">
+        <v-card class="d-flex flex-row">
+          <div>
 
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-autocomplete :items="items" item-text="username" outlined dense
-                                      item-value="cognitoId" :label="$t('appointment.user-name')"
-                                      v-model="editedItem.cognitoId" class="mt-0 pt-0"></v-autocomplete>
-                          </v-col>
-                          <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-textarea
-                                v-model="editedItem.text"
-                                outlined required auto-grow disabled
-                                :label="$t('mail.content')"
-                            ></v-textarea>
-                          </v-col>
-                          <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-textarea
-                                v-model="editedItem.content"
-                                :rules="fieldRules"
-                                outlined required auto-grow
-                                :label="$t('mail.answer')"
-                            ></v-textarea>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-                    </v-card-text>
+            <!---/Left chat list -->
+            <v-navigation-drawer left v-model="drawer" class="flex-shrink-0">
+              <div class="px-3 border-bottom"><v-text-field placeholder="Search contact" class="mb-0 mt-0 " v-model="handleSearchInput"></v-text-field></div>
+              <v-list nav class="hightauto" >
+                <v-list-item v-for="(conversation, i) in filteredList" :key="i" @click="(e) => openMessages(conversation, e)" :class="isActive ? 'active':'s'">
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      <h4>{{conversation.name}}</h4>
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-navigation-drawer>
+          </div>
+          <!---/Left chat list -->
+          <!---right chat conversation -->
+          <div class="chat-right-part">
+            <template  v-if="conversation">
+              <!---conversation header-->
+              <div class="chat-topbar d-flex px-3 py-3 align-center">
+                <div>
+                  <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="d-block d-lg-none mr-2" />
+                </div>
+                <div class="user-about">
+                  <h6>{{conversation.name}}</h6>
+                </div>
+              </div>
+              <!---conversation header-->
+              <!---Chat Room-->
+              <div class="">
+                <div class="chat-room px-3 py-3">
+                  <div class="d-flex align-center mb-3" light v-for="message in conversation.messages" :key="message.id" :class="{fromMe: message.fromMe, 'messageItem': true}">
+                    <v-chip :color="message.fromMe ? 'primary': ''">{{message.text}}</v-chip>
+                  </div>
+                </div>
+              </div>
+              <!---Chat Room-->
+              <div class="pa-3 border-top">
+                <v-textarea name="input-4-1" rows="2" placeholder="Type and hit Enter" v-model="conversation.replyContent"  @keydown="addMessage"></v-textarea>
+                <v-btn color="success" class="mr-2 text-capitalize" @click="addMessageBtn" :loading="loading">
+                  {{ $t('mail.send') }}
+                  <span slot="loader">...</span>
+                </v-btn>
+              </div>
+            </template>
+            <template v-else>
+              <div class="d-flex justify-center hightauto align-center">
+                <h4>Start conversation</h4>
+              </div>
+            </template>
+          </div>
+          <!---right chat conversation -->
+        </v-card>
 
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.reply') }}</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-toolbar>
-            </template>
-            <template v-slot:item.actions="{ item }">
-              <v-icon v-if="item.isRead != 1" small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-<!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
-            </template>
-            <template v-slot:no-data>
-              {{ $t('general.no-data') }}
-            </template>
-          </v-data-table>
-        </div>
-      </div>
-    </BaseCard>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import Vue from 'vue';
 import { getLoginInfo } from '@/utils'
-import {deleteMessage, getMessageList, getMessageListByUser, getUserList, replyMessage} from "@/api"
+import {getListUsers, getMessageListByUser, replyMessage} from "@/api"
 export default {
   name: "MessageList",
   data: function () {
     return {
-      page: {
-        title: this.$t('mail.list'),
-      },
-      breadcrumbs: [
-        {
-          text: this.$t('mail.list'),
-          disabled: false,
-          to: "#",
-        }
-      ],
-      dialog: false,
+      drawer:null,
+      doNotClose:true,
+      handleSearchInput:"",
+      UsersList: [],
+      chatUserActive: true,
+      conversation: "",
+      sendMessage:" ",
+      isActive: false,
+      windowWidth: window.innerWidth,
+      loginInfo: getLoginInfo(),
+      timer: null,
       loading: false,
-      sending: false,
-      items: [
-      ],
-      headers: [
-        {
-          text: this.$t('appointment.user-name'),
-          align: "start",
-          sortable: true,
-          value: "fromUser"
-        },
-        {
-          text: this.$t('mail.content'),
-          align: "start",
-          sortable: true,
-          value: "text"
-        },
-        { text: this.$t('appointment.action'), value: "actions", sortable: false }
-      ],
-      datas: [],
-      editedIndex: -1,
-      editedItem: {
-        id: 0,
-        therapistId: "",
-        userId: "",
-        content: "",
-        text: ""
-      },
-      defaultItem:{
-        id: 0,
-        therapistId: "",
-        userId: "",
-        content: "",
-        text: ""
-      },
-      searchItem:{
-        userId: ""
-      },
-      fieldRules:[
-        v => !!v || this.$t('error-messages.field-required'),
-      ],
-      loginInfo: getLoginInfo()
+      loader: false,
     }
   },
   computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? this.$t('general.new') : this.$t('general.reply')
+    filteredList() {
+      return this.UsersList.filter(user => {
+        return user.name.toLowerCase().includes(this.handleSearchInput.toLowerCase())
+      })
     }
   },
 
@@ -160,12 +103,23 @@ export default {
 
   created() {
     this.initialize()
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.handleWindowResize);
+    })
+    this.setSidebarWidth()
+  },
+  mounted() {
+    // this.timer = setInterval(() => {
+    //   this.getListUser()
+    // }, 60 *1000)
+  },
+  beforeDestroy: function () {
+    window.removeEventListener('resize', this.handleWindowResize)
   },
 
   methods: {
     initialize() {
-      this.getUserData()
-      this.getData()
+      this.getListUser()
     },
     handle(error) {
       console.log(error)
@@ -175,54 +129,24 @@ export default {
         //this.$dialog.notify.error(error.response.data.msg)
       }
     },
-    getData() {
-      this.loading = true
+    getListUser() {
       let data = {
         therapistId: this.loginInfo.cognitoId,
         alreadyRead: true
       }
-      this.datas = []
-      if (this.searchItem.userId != "") {
-        data = {
-          therapistId: this.loginInfo.cognitoId,
-          userId: this.searchItem.userId,
-          alreadyRead: true
-        }
-        getMessageListByUser(data).then((response) => {
-          if (response.data.msg == "success") {
-            this.datas = response.data.data.messages
-          }
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          this.handle(error)
-        })
-      }
-      else{
-        getMessageList(data).then((response) => {
-          if (response.data.msg == "success") {
-            this.datas = response.data.data.messages
-          }
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          this.handle(error)
-        })
-      }
-    },
-    getUserData() {
-      let data = {
-        cognitoId: this.loginInfo.cognitoId,
-      }
-      getUserList(data).then((response) => {
-        if (response.data.msg == "success") {
-          let users = response.data.data.userList
-          this.items = []
-          for (let i = 0; i < users.length; i++) {
+      this.UsersList = []
+      getListUsers(data).then((response) => {
+        if (response.data.error == false){
+          console.log(response)
+          let users = response.data.data.users
+          for(let i = 0; i < users.length; i++){
             let tmp = {}
-            tmp['username'] = users[i]['firstName'] + ' ' + users[i]['lastName']
-            tmp['cognitoId'] = users[i]['cognitoId']
-            this.items.push(tmp)
+            let data = users[i]
+            tmp['name'] = data['firstName'] + ' ' + data['lastName']
+            tmp['userId'] = data['cognitoId']
+            tmp['replyContent'] = ""
+            tmp['messages'] = []
+            this.UsersList.push(tmp)
           }
         }
       }).catch(error => {
@@ -230,68 +154,152 @@ export default {
       })
     },
 
-    editItem(item) {
-      this.editedIndex = this.datas.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
+    selectedchat: function() {
+      this.isActive = !this.isActive;
+      // some code to filter users
     },
-
-    async deleteItem(item) {
-      let res = await this.$dialog["warning"]({
-        title: this.$t('general.confirm'),
-        text: this.$t('invoice.delete-confirm'),
-        persistent: false
-      })
-      if(res){
-        let data = {
-          invoiceUrl: item.invoiceUrl
-        }
-        deleteMessage(data).then((response) => {
-          if (response.data.msg == "OK") {
-            this.$dialog.notify.success(this.$t('message.delete-success'))
-            this.getData()
-          }
-        }).catch(error => {
-          this.handle(error)
-        })
+    openMessages(conversation) {
+      let data = {
+        therapistId: this.loginInfo.cognitoId,
+        userId: conversation.userId,
+        alreadyRead: false
       }
+      conversation.messages = []
+      getMessageListByUser(data).then((response) => {
+        if (response.data.error == false){
+          let messages = response.data.data.messages
+          for(let i = 0; i < messages.length; i++){
+            let tmp = {}
+            let data = messages[i]
+            tmp['id'] = data['id']
+            tmp['text'] = data['text']
+            tmp['fromMe'] = data['fromUser'] == 1 ? false : true
+            conversation.messages.push(tmp)
+          }
+          Vue.set(this, 'conversation', conversation);
+        }
+      }).catch(error => {
+        this.handle(error)
+      })
     },
 
-    close() {
-      this.dialog = false
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      }, 300)
-    },
-
-    save() {
-      this.sending = true
-      if (this.editedIndex > -1) {
+    addMessage(e) {
+      this.loader = 'loading'
+      const l = this.loader
+      this[l] = !this[l]
+      console.log(e)
+      if (e.key === 'Enter' && e.target.value) {
+        const value = {
+          text: e.target.value,
+          fromMe: true,
+        }
         let data = {
-          messageId: this.editedItem.id,
-          content: this.editedItem.content
+          therapistId: this.loginInfo.cognitoId,
+          userId: this.conversation.userId,
+          content: e.target.value
         }
         replyMessage(data).then((response) => {
-          this.sending = false
-          if (response.data.msg == "success") {
-            this.close()
-            this.getData()
+          this[l] = false
+          this.loader = null
+          if (response.data.error == false){
+            console.log(response)
+            Vue.set(this, 'conversation', Object.assign({}, this.conversation, {
+              messages: [
+                ...this.conversation.messages || [],
+                value,
+              ],
+            }))
           }
+          e.target.value = ''
+          this.conversation.replyContent = ''
         }).catch(error => {
-          this.sending = false
+          e.target.value = ''
+          this.conversation.replyContent = ''
+          this[l] = false
+          this.loader = null
           this.handle(error)
         })
       }
     },
-    reset() {
-      this.searchItem = Object.assign({}, this.defaultItem)
-      this.getData()
+
+    addMessageBtn(){
+      this.loader = 'loading'
+      const l = this.loader
+      this[l] = !this[l]
+      if (this.conversation.replyContent != "") {
+        const value = {
+          text: this.conversation.replyContent,
+          fromMe: true,
+        }
+        let data = {
+          therapistId: this.loginInfo.cognitoId,
+          userId: this.conversation.userId,
+          content: this.conversation.replyContent
+        }
+        replyMessage(data).then((response) => {
+          this[l] = false
+          this.loader = null
+          if (response.data.error == false){
+            console.log(response)
+            Vue.set(this, 'conversation', Object.assign({}, this.conversation, {
+              messages: [
+                ...this.conversation.messages || [],
+                value,
+              ],
+            }))
+          }
+          this.conversation.replyContent = ''
+        }).catch(error => {
+          this.conversation.replyContent = ''
+          this.loader = null
+          this[l] = false
+          this.handle(error)
+        })
+      }
+    },
+    handleWindowResize(event) {
+      this.windowWidth = event.currentTarget.innerWidth;
+      this.setSidebarWidth();
+    },
+    setSidebarWidth() {
+      if(this.windowWidth < 1170) {
+        this.chatSidebarActive = this.doNotClose = false;
+      }else {
+        this.chatSidebarActive = this.doNotClose =  true;
+      }
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+.chat-app{
+  overflow:hidden;
+  .v-navigation-drawer__border{
+    width:0;
+  }
+  .chat-right-part{
+    width: 100%;
+    border-left:1px solid rgba(0,0,0,0.1);
+    .chat-topbar{
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+  }
+  .chat-room {
+    min-height: calc(100vh - 385px);
+    .fromMe {
+      -webkit-box-pack: start;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: reverse;
+      -ms-flex-direction: row-reverse;
+      flex-direction: row-reverse;
+    }
+  }
+  .hightauto{
+    min-height: calc(100vh - 360px);
+  }
+}
 
 </style>

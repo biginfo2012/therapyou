@@ -77,14 +77,14 @@
                         </v-card-title>
 
                         <v-card-text>
-                          <v-container>
+                          <v-container class="pb-0">
                             <v-row>
-                              <v-col cols="12" sm="12" md="12">
+                              <v-col cols="12" sm="12" md="12" class="pb-0">
                                 <v-autocomplete :items="items" item-text="username" outlined
                                           item-value="cognitoId" :label="$t('appointment.user-name')"
                                           v-model="editedItem.userId" class="mt-0 pt-0"></v-autocomplete>
                               </v-col>
-                              <v-col cols="12" sm="12" md="12">
+                              <v-col cols="12" sm="12" md="12" class="pb-0">
                                 <v-text-field
                                     v-model="editedItem.start_time"
                                     type="datetime-local"
@@ -131,7 +131,7 @@
               </v-data-table>
             </v-tab-item>
             <v-tab-item key="calendar">
-              <vue-cal active-view="month" class="vuecal--blue-theme" :disable-views="['years', 'year']" :locale="$i18n.locale" :time-from="8 * 60" timeFormat="h:mm {am}"
+              <vue-cal active-view="month" class="vuecal--blue-theme" :disable-views="['years', 'year']" :locale="$i18n.locale" :time-from="8 * 60"
                        :time-to="21 * 60" :selected-date="selectedDate" :events="events"></vue-cal>
             </v-tab-item>
           </v-tabs-items>

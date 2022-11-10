@@ -144,7 +144,7 @@
     "banner-image": "Banner Image",
     "desc": "Description",
     "note": "Note",
-    "area-exp": "AreasOfExpertise",
+    "area-exp": "Areas Of Expertise",
     "delete-confirm": "Are you sure you want to delete this Therapist?"
   },
   "profile": {
@@ -164,6 +164,7 @@
     "mails": "Messages",
     "my": "My Messages",
     "content": "Message Content",
-    "answer": "Answer"
+    "answer": "Answer",
+    "send": "Send"
   }
 }
