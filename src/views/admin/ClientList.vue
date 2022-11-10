@@ -62,7 +62,7 @@
                 <v-dialog v-model="dialog" max-width="1000px">
                   <v-card>
                     <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
-                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px); z-index: 1"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
@@ -145,7 +145,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon v-if="item.testFileUrl != ''" small class="mr-2" @click="downloadFile(item)">mdi-cloud-download</v-icon>
+              <v-icon :disabled="item.testFileUrl == ''" small class="mr-2" @click="downloadFile(item)">mdi-cloud-download</v-icon>
               <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
@@ -164,6 +164,7 @@ import {getLoginInfo} from '@/utils'
 import {poolData} from "@/constants/config"
 import {deleteUser, getTherapistList, getUserList, initUser, updateUser} from "@/api";
 import axios from "axios";
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -341,7 +342,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.msg)
+        //this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -384,11 +385,7 @@ export default {
         } else if (error.response.status == 500) {
           if (error.response.data.msg == "No users found for this therapist") {
             this.listData = []
-          } else {
-            this.$dialog.notify.error(error.message)
           }
-        } else {
-          this.$dialog.notify.error(error.message)
         }
       })
     },

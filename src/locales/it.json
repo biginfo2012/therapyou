@@ -98,7 +98,9 @@
     "pay-status": "Stato Pagamento",
     "paid": "Pagato",
     "no-paid": "Non Pagato",
-    "go-meeting": "Avvio Meeting"
+    "go-meeting": "Avvio Meeting",
+    "meeting": "Meeting",
+    "join": "Connettiti"
   },
   "invoice": {
     "invoices": "Ricevute",
@@ -111,6 +113,7 @@
     "number": "Numerico",
     "date": "Data",
     "therapist-name": "Terapeuta",
+    "therapist-type": "Terapeuta Type",
     "delete-confirm": "Sicuro di voler eliminare questa Ricevuta?"
   },
   "client": {

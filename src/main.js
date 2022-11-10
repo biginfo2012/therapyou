@@ -12,6 +12,8 @@ import InstantSearch from "vue-instantsearch"
 import VueFeather from "vue-feather"
 import VueI18n from 'vue-i18n'
 import "material-design-icons-iconfont/dist/material-design-icons.css"
+import "vuetify/dist/vuetify.min.css";
+//import "github-markdown-css";
 
 import {defaultLocale, localeOptions} from './constants/config'
 // Multi Language Add

@@ -17,24 +17,63 @@
                     <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('invoice.create') }}</v-btn>
                   </template>
                   <v-card>
-                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px); z-index: 1"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
                     <v-card-text>
                       <v-container>
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-autocomplete :items="items" item-text="label" outlined
-                                      item-value="id" :label="$t('appointment.list')"
-                                      v-model="editedItem.id" class="mt-0 pt-0"></v-autocomplete>
-                          </v-col>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-file-input
-                            :label="$t('invoice.file')" outlined
-                            @change="uploadFile"></v-file-input>
-                          </v-col>
-                        </v-row>
+                        <v-form ref="uploadForm">
+                          <v-row>
+                            <v-col cols="12" sm="12" md="12">
+                              <v-autocomplete :items="items" item-text="label" outlined required :rules="fieldRules"
+                                              item-value="id" :label="$t('appointment.list')"
+                                              v-model="editedItem.id" class="mt-0 pt-0"></v-autocomplete>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="12">
+                              <v-file-input
+                                  :label="$t('invoice.file')" outlined
+                                  @change="uploadFile"></v-file-input>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="12">
+                              <v-text-field
+                                  v-model="editedItem.invoiceCode"
+                                  :rules="numberRules" max-length="10"
+                                  hide-details outlined required
+                                  background-color="transparent"
+                                  :label="$t('invoice.number')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="12">
+                              <v-text-field
+                                  v-model="editedItem.invoiceDate"
+                                  type="date" :rules="fieldRules"
+                                  hide-details outlined required
+                                  background-color="transparent"
+                                  :label="$t('invoice.date')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="12">
+                              <v-select
+                                  v-model="editedItem.therapyType"
+                                  :items="areas"
+                                  :label="$t('invoice.therapist-type')"
+                                  outlined
+                              >
+<!--                                <template v-slot:selection="{ item, index }">-->
+<!--                                  <v-chip v-if="index === 0">-->
+<!--                                    <span>{{ item }}</span>-->
+<!--                                  </v-chip>-->
+<!--                                  <span-->
+<!--                                      v-if="index === 1"-->
+<!--                                      class="grey&#45;&#45;text caption"-->
+<!--                                  >(+{{ editedItem.therapyType.length - 1 }} others)</span>-->
+<!--                                </template>-->
+                              </v-select>
+                            </v-col>
+                          </v-row>
+                        </v-form>
+
                       </v-container>
                     </v-card-text>
 
@@ -79,6 +118,11 @@ export default {
           to: "#",
         }
       ],
+      areas: ["Stress", "Ansia", "Attacchi di panico", "Crisi esistenziale", "Depressione post partum", "Dipendenza sessuale", "Disturbi alimentari", "Disturbi di personalita",
+        "Disturbo bipolare", "Disturbo post traumatico da stress", "Lutto", "Burn out", "Fobie", "Impotenza", "Insonnia", "Ipocondria", "Problemi adolescenziali",
+        "Problemi relazionali", "Somatizzazione", "Tricotillomania", "Tic", "Stalking", "Problemi di coppia", "Nevrosi", "Paranoia", "Mobbing", "Ludopatia", "Frigidita",
+        "Esaurimento nervoso", "Divorzio o separazione", "Disturbo ossessivo compulsivo", "Disturbo da alimentazione incontrollata", "Dipendenze comportamentali",
+        "Dipendenza affettiva", "Depressione", "Bulimia", "Anoressia", "Aggressivita", "Balbuzie", "Anorgasmia"],
       dialog: false,
       loading: false,
       sending: false,
@@ -109,13 +153,26 @@ export default {
       editedIndex: -1,
       editedItem: {
         id: 0,
-        invoiceUrl: ""
+        invoiceUrl: "",
+        invoiceCode: "",
+        invoiceDate: "",
+        therapyType: ""
       },
       defaultItem: {
         id: 0,
-        invoiceUrl: ""
+        invoiceUrl: "",
+        invoiceCode: "",
+        invoiceDate: "",
+        therapyType: ""
       },
-      loginInfo: getLoginInfo()
+      loginInfo: getLoginInfo(),
+      fieldRules:[
+        v => !!v || this.$t('error-messages.field-required'),
+      ],
+      numberRules: [
+        v => !!v || this.$t('error-messages.field-required'),
+        v => (v && v.length <= 10) || this.$t('error-messages.password-length')
+      ],
     }
   },
   computed: {
@@ -162,7 +219,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.msg)
+        //this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -174,6 +231,9 @@ export default {
       getInvoiceList(data).then((response) => {
         if (response.data.msg == "Success") {
           this.datas = response.data.data.invoices
+          for (let i = 0; i < this.datas.length; i++){
+            this.datas[i]['invoiceDate'] = this.datas[i]['invoiceDate'].substring(0, 10)
+          }
         }
         this.loading = false
       }).catch(error => {
@@ -189,7 +249,7 @@ export default {
         cognitoId: this.loginInfo.cognitoId,
         offset: 0,
         limit: 500,
-        filter: filter
+        filters: filter
       }
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
@@ -260,30 +320,36 @@ export default {
     },
 
     save() {
-      this.sending = true
-      if (this.editedIndex > -1) {
-        this.sending = false
-        Object.assign(this.datas[this.editedIndex], this.editedItem)
-      } else {
-        if(this.editedItem.id == 0 || this.editedItem.invoiceUrl == ""){
+      this.$refs.uploadForm.validate()
+      if (this.$refs.uploadForm.validate(true)) {
+        this.sending = true
+        if (this.editedIndex > -1) {
           this.sending = false
-          return
-        }
-        let data = {
-          appointmentId: this.editedItem.id,
-          invoiceUrl: this.editedItem.invoiceUrl
-        }
-        uploadInvoice(data).then((response) => {
-          this.sending = false
-          if (response.data.msg == "OK") {
-            this.close()
-            this.getData()
+          Object.assign(this.datas[this.editedIndex], this.editedItem)
+        } else {
+          if(this.editedItem.id == 0 || this.editedItem.invoiceUrl == ""){
+            this.sending = false
+            return
           }
-        }).catch(error => {
-          this.sending = false
-          this.close()
-          this.handle(error)
-        })
+          let data = {
+            appointmentId: this.editedItem.id,
+            invoiceUrl: this.editedItem.invoiceUrl,
+            invoiceCode: this.editedItem.invoiceCode,
+            invoiceDate: this.editedItem.invoiceDate,
+            therapyType: this.editedItem.therapyType
+          }
+          uploadInvoice(data).then((response) => {
+            this.sending = false
+            if (response.data.error == false) {
+              this.close()
+              this.getData()
+            }
+          }).catch(error => {
+            this.sending = false
+            this.close()
+            this.handle(error)
+          })
+        }
       }
     }
   }

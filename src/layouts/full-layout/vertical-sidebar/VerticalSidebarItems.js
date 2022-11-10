@@ -18,10 +18,5 @@ export default [
         title: "menu.therapist",
         icon: "user-check",
         to: "/admin/therapist/list",
-    },
-    {
-        title: "menu.message",
-        icon: "mail",
-        to: "/admin/message/list",
     }
 ]

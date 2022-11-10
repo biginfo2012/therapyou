@@ -16,7 +16,7 @@
                 <v-dialog v-model="dialog" persistent max-width="500px">
                   <v-card>
                     <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
-                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px); z-index: 1"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
@@ -53,7 +53,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon v-if="item.notified != 1" small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+              <v-icon :disabled="item.notified == 1" small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
             </template>
             <template v-slot:no-data>
               {{ $t('general.no-data') }}
@@ -145,7 +145,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.msg)
+        //this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData(){

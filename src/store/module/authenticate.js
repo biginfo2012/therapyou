@@ -149,6 +149,7 @@ const actions = {
                     commit('signIn')
                     //dispatch('getUserAttributes')
                     dispatch('setLogoutTimer', 3600)
+                    window.location.reload()
                 }
             })
         }

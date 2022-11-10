@@ -29,7 +29,7 @@
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" persistent max-width="500px">
                   <v-card>
-                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);" alt="Sending"/>
+                    <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending" style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px); z-index: 1" alt="Sending"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>

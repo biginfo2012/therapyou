@@ -46,7 +46,7 @@
             </v-col>
           </v-row>
         </v-card>
-        <img src="@/assets/images/icons/logo-icon.gif" width="80" class="middle" v-show="loading"/>
+        <img src="@/assets/images/icons/logo-icon.gif" width="80" class="middle" style="z-index: 1" v-show="loading"/>
       </v-col>
     </v-row>
   </v-container>

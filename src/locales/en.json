@@ -98,7 +98,9 @@
     "pay-status": "Pay Status",
     "paid": "Paid",
     "no-paid": "No Paid",
-    "go-meeting": "Go Meeting"
+    "go-meeting": "Go Meeting",
+    "meeting": "Meeting",
+    "join": "Join"
   },
   "invoice": {
     "invoices": "Invoices",
@@ -111,6 +113,7 @@
     "number": "Number",
     "date": "Date",
     "therapist-name": "Therapist",
+    "therapist-type": "Therapist Type",
     "delete-confirm": "Are you sure you want to delete this Invoice?"
   },
   "client": {

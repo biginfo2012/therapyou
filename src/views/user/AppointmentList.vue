@@ -43,7 +43,7 @@
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-autocomplete :items="payItems" item-text="label" outlined
                             item-value="paid" :label="$t('appointment.pay-status')"
-                            v-model="searchItem.paid" class="mt-0 pt-0"></v-autocomplete>
+                            v-model="searchItem.decreasedCredits" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
                   <v-btn color="success" class="mt-3 mr-3" @click="reset">{{ $t('general.reset') }}</v-btn>
@@ -71,7 +71,7 @@
                       </template>
                       <v-card>
                         <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
-                             style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                             style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px); z-index: 1"/>
                         <v-card-title>
                           <span class="headline">{{ formTitle }}</span>
                         </v-card-title>
@@ -112,11 +112,17 @@
                     </v-dialog>
                   </v-toolbar>
                 </template>
-                <template v-slot:item.actions="{ item }">
-<!--                  <v-btn v-if="item.status == 1" color="blue darken-1" text @click="createMeetingLink(item)" :disabled="sending">{{$t('appointment.go-meeting')}}</v-btn>-->
+                <template v-slot:item.decreasedCredits="{ item }">
+                  <img class="mt-2" v-if="item.decreasedCredits == 1" src="@/assets/images/icons/check-circle.svg"/>
+                </template>
+                <template v-slot:item.meeting="{ item }">
                   <a v-if="item.status == 1" class="mr-2" target="_blank"
                      :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">
-                    {{$t('appointment.go-meeting')}}</a>
+                    {{$t('appointment.join')}}</a>
+                </template>
+                <template v-slot:item.actions="{ item }">
+<!--                  <v-btn v-if="item.status == 1" color="blue darken-1" text @click="createMeetingLink(item)" :disabled="sending">{{$t('appointment.go-meeting')}}</v-btn>-->
+
                   <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
                 <template v-slot:no-data>
@@ -125,8 +131,8 @@
               </v-data-table>
             </v-tab-item>
             <v-tab-item key="calendar">
-              <vue-cal active-view="month" class="vuecal--blue-theme"
-                       :selected-date="selectedDate" :events="events"></vue-cal>
+              <vue-cal active-view="month" class="vuecal--blue-theme" :disable-views="['years', 'year']" :locale="$i18n.locale" :time-from="8 * 60" timeFormat="h:mm {am}"
+                       :time-to="21 * 60" :selected-date="selectedDate" :events="events"></vue-cal>
             </v-tab-item>
           </v-tabs-items>
 
@@ -179,8 +185,8 @@ export default {
       sending: false,
       items: [],
       payItems: [
-        {label: this.$t('appointment.paid'), paid: true},
-        {label: this.$t('appointment.no-paid'), paid: false}
+        {label: this.$t('appointment.paid'), paid: 1},
+        {label: this.$t('appointment.no-paid'), paid: 0}
       ],
       tab: null,
       headers: [
@@ -192,6 +198,18 @@ export default {
         },
         {text: this.$t('appointment.start-time'), value: "start_time"},
         {text: this.$t('appointment.end-time'), value: "end_time"},
+        {
+          text: this.$t('appointment.paid'),
+          align: "start",
+          sortable: true,
+          value: "decreasedCredits"
+        },
+        {
+          text: this.$t('appointment.meeting'),
+          align: "start",
+          sortable: true,
+          value: "meeting"
+        },
         {text: this.$t('appointment.action'), value: "actions", sortable: false}
       ],
       datas: [],
@@ -203,12 +221,12 @@ export default {
       defaultItem: {
         userId: "",
         start_time: 0,
-        paid: null
+        decreasedCredits: null
       },
       searchItem: {
         userId: "",
         start_time: "",
-        paid: null
+        decreasedCredits: null
       },
       loginInfo: getLoginInfo(),
       timer: null,
@@ -280,7 +298,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.msg)
+        //this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -290,8 +308,8 @@ export default {
         filter.userId = this.searchItem.userId
       }
 
-      if (this.searchItem.paid != null) {
-        filter.paid = this.searchItem.paid
+      if (this.searchItem.decreasedCredits != null) {
+        filter.decreasedCredits = this.searchItem.decreasedCredits
       }
 
       if (filter != {}) {
@@ -355,6 +373,7 @@ export default {
             tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
             tmp['startTime'] = appointmens[i]['startTime']
             tmp['endTime'] = appointmens[i]['endTime']
+            tmp['decreasedCredits'] = appointmens[i]['decreasedCredits']
             tmp['meetingLink'] = appointmens[i]['meetingLink']
             tmp['meetingId'] = ""
             tmp['JoinToken'] = ""
@@ -380,7 +399,7 @@ export default {
 
             event['start'] = convertEToDate(appointmens[i]['startTime'])
             event['end'] = convertEToDate(appointmens[i]['endTime'])
-            event['title'] = appointmens[i]['name'] + ': ' + appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
+            event['title'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
             this.datas.push(tmp)
             this.events.push(event)
           }

@@ -15,11 +15,6 @@ export default [
         to: "/user/client/list",
     },
     {
-        title: "menu.noti",
-        icon: "bell",
-        to: "/user/notification/list",
-    },
-    {
         title: "menu.message",
         icon: "mail",
         to: "/user/message/list",

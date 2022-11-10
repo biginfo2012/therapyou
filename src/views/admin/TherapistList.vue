@@ -18,12 +18,12 @@
                   </template>
                   <v-card>
                     <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
-                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px);"/>
+                         style="position: absolute;left: calc(50% - 40px);top: calc(50% - 40px); z-index: 1"/>
                     <v-card-title>
                       <span class="headline">{{ formTitle }}</span>
                     </v-card-title>
-                    <v-card-text>
-                      <v-container>
+                    <v-card-text class="pb-0">
+                      <v-container class="pb-0">
                         <v-form ref="form">
                           <v-alert outlined type="error" dismissible class="mb-4 mt-0" v-model="showerr">
                             {{ errmsg }}
@@ -38,25 +38,6 @@
                                   :disabled="editedIndex === -1 ? false : true"
                               ></v-text-field>
                             </v-col>
-<!--                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">-->
-<!--                              <v-text-field-->
-<!--                                  v-model="editedItem.phoneNumber"-->
-<!--                                  :rules="phoneRules"-->
-<!--                                  required outlined-->
-<!--                                  :label="$t('client.phone')"-->
-<!--                                  :disabled="editedIndex === -1 ? false : true"-->
-<!--                              ></v-text-field>-->
-<!--                            </v-col>-->
-<!--                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">-->
-<!--                              <v-text-field-->
-<!--                                  v-model="editedItem.password"-->
-<!--                                  :rules="passwordRules"-->
-<!--                                  outlined required-->
-<!--                                  :disabled="editedIndex === -1 ? false : true"-->
-<!--                                  :label="$t('login.password')"-->
-<!--                                  type="password"-->
-<!--                              ></v-text-field>-->
-<!--                            </v-col>-->
                             <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.name"
@@ -81,7 +62,7 @@
                                   :label="$t('therapist.specialization')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.licenseNumber"
                                   :rules="fieldRules"
@@ -89,7 +70,7 @@
                                   :label="$t('therapist.license-number')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.registrationRegion"
                                   :rules="fieldRules"
@@ -122,7 +103,7 @@
                                   :label="$t('therapist.banner-image')" outlined
                                   @change="uploadBannerFile"></v-file-input>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.vatNumber"
                                   :rules="fieldRules"
@@ -130,17 +111,37 @@
                                   :label="$t('therapist.vat-number')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="8" class="pb-0" v-if="editedIndex !== -1">
-                              <v-autocomplete
+                            <v-col cols="12" sm="12" md="12" class="pb-0 pt-0" v-if="editedIndex !== -1">
+                              <v-select
                                   v-model="editedItem.areasOfExpertise"
                                   :items="areas"
-                                  :menu-props="{ maxHeight: '400' }"
                                   :label="$t('therapist.area-exp')"
-                                  multiple outlined required
-                                  persistent-hint
-                              ></v-autocomplete>
+                                  multiple outlined
+                              >
+                                <template v-slot:selection="{ item, index }">
+                                  <v-chip v-if="index === 0">
+                                    <span>{{ item }}</span>
+                                  </v-chip>
+                                  <v-chip v-if="index === 1">
+                                    <span>{{ item }}</span>
+                                  </v-chip>
+                                  <v-chip v-if="index === 2">
+                                    <span>{{ item }}</span>
+                                  </v-chip>
+                                  <v-chip v-if="index === 3">
+                                    <span>{{ item }}</span>
+                                  </v-chip>
+                                  <v-chip v-if="index === 4">
+                                    <span>{{ item }}</span>
+                                  </v-chip>
+                                  <span
+                                      v-if="index === 5"
+                                      class="grey--text caption"
+                                  >(+{{ editedItem.areasOfExpertise.length > 5 ? editedItem.areasOfExpertise.length - 5 : 0}} others)</span>
+                                </template>
+                              </v-select>
                             </v-col>
-                            <v-col cols="12" sm="12" md="6" class="pb-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="6" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-textarea
                                   v-model="editedItem.description"
                                   :rules="fieldRules"
@@ -148,7 +149,7 @@
                                   :label="$t('therapist.desc')"
                               ></v-textarea>
                             </v-col>
-                            <v-col cols="12" sm="12" md="6" class="pb-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="6" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-textarea
                                   v-model="editedItem.note"
                                   :rules="fieldRules"
@@ -375,7 +376,7 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        this.$dialog.notify.error(error.response.data.msg)
+        //this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData(){
@@ -483,55 +484,6 @@ export default {
             this.close()
             this.handle(error)
           })
-
-          // dataEmail.Value = this.editedItem.email
-          // dataPhone.Value = this.editedItem.phoneNumber
-          // var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail)
-          // var attributePhone = new AmazonCognitoIdentity.CognitoUserAttribute(dataPhone)
-          // attributeList.push(attributeEmail)
-          // attributeList.push(attributePhone)
-          // console.log('attribute list: ' + attributeList)
-          // userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
-          // console.log('sign up with: ' + this.editedItem.email + ' ' + this.editedItem.password)
-          // this.callback = false
-          // this.errcode = ''
-          //
-          // userPool.signUp(this.editedItem.email, this.editedItem.password, attributeList, null, (err, result) => {
-          //   if (!this.callback) {
-          //     this.callback = true
-          //     console.log('register callback')
-          //     if (err) {
-          //       console.error('registration error: ' + JSON.stringify(err))
-          //       this.errcode = JSON.stringify(err.code)
-          //       this.sending = false
-          //     } else {
-          //       this.showerr = false
-          //       this.errmsg = ""
-          //       this.editedItem.cognitoId = result.userSub
-          //
-          //       let data = {
-          //         cognitoId: this.editedItem.cognitoId,
-          //         suffix: this.editedItem.suffix,
-          //         name: this.editedItem.name,
-          //         surname: this.editedItem.surname,
-          //         role: 1,
-          //         isDefault: 0
-          //       }
-          //
-          //       signUpTherapist(data).then((response) => {
-          //         this.sending = false
-          //         if (response.data.msg == "success") {
-          //           this.close()
-          //           this.getData()
-          //         }
-          //       }).catch(error => {
-          //         this.sending = false
-          //         this.close()
-          //         this.handle(error)
-          //       })
-          //     }
-          //   }
-          // })
         }
       }
     },
