@@ -40,24 +40,24 @@ const mutations = {
         state.phoneNumber = ''
         state.cognitoId = ''
         state.userPool = []
-        sessionStorage.removeItem('userData')
-        sessionStorage.removeItem('token')
-        sessionStorage.removeItem('username')
-        sessionStorage.removeItem('attributes')
+        localStorage.removeItem('userData')
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('attributes')
     },
     setAttributes(state, attributes) {
         state.attributes = attributes
         state.username = state.attributes.filter(function (Obj) {
             return Obj.Name === 'email'
         })[0].Value
-        sessionStorage.setItem('username', state.username)
+        localStorage.setItem('username', state.username)
         state.cognitoId = state.attributes.filter(function (Obj) {
             return Obj.Name === 'sub'
         })[0].Value
         state.phoneNumber = state.attributes.filter(function (Obj) {
             return Obj.Name === 'phone_number'
         })[0].Value
-        sessionStorage.setItem('phoneNumber', state.phoneNumber)
+        localStorage.setItem('phoneNumber', state.phoneNumber)
         getLoggedUserInfo(state.cognitoId)
     },
     setUsername(state, payload) {
@@ -76,7 +76,7 @@ const mutations = {
         state.tokens.accessToken = payload.getAccessToken().getJwtToken()
         state.tokens.idToken = payload.getIdToken().getJwtToken()
         state.tokens.refreshToken = payload.getRefreshToken().getToken()
-        sessionStorage.setItem('token', JSON.stringify(state.tokens))
+        localStorage.setItem('token', JSON.stringify(state.tokens))
     },
     setCognitoUser(state, payload) {
         state.cognitoUser = payload
@@ -94,7 +94,7 @@ const mutations = {
     },
     getCognitoUser(state) {
         var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
-        let username = sessionStorage.getItem('username')
+        let username = localStorage.getItem('username')
         var userData = {
             Username: username,
             Pool: userPool,

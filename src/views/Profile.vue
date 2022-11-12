@@ -321,8 +321,8 @@ export default {
   created() {
     this.editedItem.registrationDate = this.editedItem.registrationDate.substring(0, 10)
     this.editedItem.areasOfExpertise = JSON.parse(this.editedItem.areasOfExpertise)
-    this.editedItem.email = sessionStorage.getItem('username')
-    this.editedItem.phoneNumber = sessionStorage.getItem('phoneNumber')
+    this.editedItem.email = localStorage.getItem('username')
+    this.editedItem.phoneNumber = localStorage.getItem('phoneNumber')
   },
   methods: {
     handle(error) {
@@ -405,7 +405,7 @@ export default {
           this.sending = false
           if (response.data.msg == "success") {
             this.$dialog.notify.success(this.$t('message.save-success'))
-            sessionStorage.setItem('userData', JSON.stringify(this.editedItem))
+            localStorage.setItem('userData', JSON.stringify(this.editedItem))
             window.location.reload()
           }
         }).catch(error => {

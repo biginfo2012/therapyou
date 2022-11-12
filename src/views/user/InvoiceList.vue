@@ -220,10 +220,11 @@ export default {
       }
       getInvoiceList(data).then((response) => {
         if (response.data.msg == "Success") {
-          this.datas = response.data.data.invoices
-          for (let i = 0; i < this.datas.length; i++){
-            this.datas[i]['invoiceDate'] = this.datas[i]['invoiceDate'].substring(0, 10)
+          let invoices = response.data.data.invoices
+          for (let i = 0; i < invoices.length; i++){
+            invoices[i]['invoiceDate'] = invoices[i]['invoiceDate'].substring(0, 10)
           }
+          this.datas = response.data.data.invoices
         }
         this.loading = false
       }).catch(error => {

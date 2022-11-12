@@ -160,7 +160,6 @@ import {getLoginInfo} from '@/utils'
 import {poolData} from "@/constants/config"
 import {deleteUser, getTherapistList, getUserList, initUser, updateUser} from "@/api";
 import axios from "axios";
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 
@@ -533,5 +532,8 @@ export default {
 <style>
   .yellow-background {
     background: yellow !important;
+  }
+  .mdi-exclamation{
+    display: none !important;
   }
 </style>

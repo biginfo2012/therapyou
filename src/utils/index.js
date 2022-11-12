@@ -81,7 +81,7 @@ export const isLoggedInAsUser = () => {
 }
 
 export const getLoginInfo = () => {
-    let loginInfo = sessionStorage.getItem('userData')
+    let loginInfo = localStorage.getItem('userData')
     try {
         loginInfo = JSON.parse(loginInfo)
         if (loginInfo) {
@@ -94,7 +94,7 @@ export const getLoginInfo = () => {
     return false
 }
 export const getToken = () => {
-    let token = sessionStorage.getItem('token')
+    let token = localStorage.getItem('token')
     try {
         token = JSON.parse(token)
         if (token) {
@@ -112,7 +112,7 @@ export const getLoggedUserInfo = (cognitoId) => {
     axios.get(apiBaseUrl + 'therapist/get?cognitoId=' + cognitoId).then((response) => {
         let userData = response.data.data.therapist[0]
         if (userData) {
-            sessionStorage.setItem('userData', JSON.stringify(userData))
+            localStorage.setItem('userData', JSON.stringify(userData))
             if (userData.role == 2) {
                 router.push('/admin')
             } else {
@@ -128,7 +128,7 @@ export const getLoggedUserInfo = (cognitoId) => {
 }
 
 export const setLocale = localValue => {
-    sessionStorage.setItem('currentLanguage', localValue)
+    localStorage.setItem('currentLanguage', localValue)
 }
 export const convertToDate = milliseconds => {
     let d = new Date(parseInt(milliseconds, 10))

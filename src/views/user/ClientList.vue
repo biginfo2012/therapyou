@@ -10,18 +10,14 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-text-field
-                      v-model="searchItem.firstName"
-                      outlined
-                      :label="$t('client.first-name')"
-                  ></v-text-field>
+                  <v-autocomplete :items="listData" item-text="firstName" outlined
+                                  item-value="firstName" :label="$t('client.first-name')"
+                                  v-model="searchItem.firstName" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-text-field
-                      v-model="searchItem.lastName"
-                      outlined
-                      :label="$t('client.last-name')"
-                  ></v-text-field>
+                  <v-autocomplete :items="listData" item-text="lastName" outlined
+                                  item-value="lastName" :label="$t('client.last-name')"
+                                  v-model="searchItem.lastName" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="py-0">
                   <v-text-field
@@ -504,5 +500,8 @@ export default {
 <style>
 .yellow-background {
   background: yellow !important;
+}
+.mdi-exclamation{
+  display: none !important;
 }
 </style>

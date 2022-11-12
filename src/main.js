@@ -11,8 +11,8 @@ import VueSkycons from "vue-skycons"
 import InstantSearch from "vue-instantsearch"
 import VueFeather from "vue-feather"
 import VueI18n from 'vue-i18n'
-import "material-design-icons-iconfont/dist/material-design-icons.css"
-import "vuetify/dist/vuetify.min.css";
+// import "material-design-icons-iconfont/dist/material-design-icons.css"
+// import "vuetify/dist/vuetify.min.css";
 //import "github-markdown-css";
 
 import {defaultLocale, localeOptions} from './constants/config'
@@ -30,9 +30,9 @@ Vue.use(VueI18n)
 Vue.use(VuetifyDialog)
 
 const messages = {en: en, it: it}
-const locale = (sessionStorage.getItem('currentLanguage') &&
-    localeOptions.filter(x => x.id === sessionStorage.getItem('currentLanguage')).length > 0)
-    ? sessionStorage.getItem('currentLanguage') : defaultLocale
+const locale = (localStorage.getItem('currentLanguage') &&
+    localeOptions.filter(x => x.id === localStorage.getItem('currentLanguage')).length > 0)
+    ? localStorage.getItem('currentLanguage') : defaultLocale
 
 const i18n = new VueI18n({
     locale: locale,

@@ -32,7 +32,7 @@ export default new Vuex.Store({
         },
         changeLang(state, payload) {
             app.$i18n.locale = payload
-            sessionStorage.setItem('currentLanguage', payload)
+            localStorage.setItem('currentLanguage', payload)
         }
     },
     modules: {

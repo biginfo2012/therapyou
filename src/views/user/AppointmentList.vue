@@ -230,7 +230,7 @@ export default {
       },
       loginInfo: getLoginInfo(),
       timer: null,
-      email: sessionStorage.getItem('username'),
+      email: localStorage.getItem('username'),
       token: getToken().idToken,
       meetingUrl : meetingUrl
     }
@@ -529,6 +529,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+.mdi-exclamation{
+  display: none !important;
+}
 
 </style>
