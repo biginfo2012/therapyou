@@ -10,12 +10,12 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-autocomplete :items="listData" item-text="firstName" outlined
+                  <v-autocomplete :items="listData" item-text="firstName" outlined :no-data-text="$t('general.no-data-text')"
                                   item-value="firstName" :label="$t('client.first-name')"
                                   v-model="searchItem.firstName" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="4" class="py-0">
-                  <v-autocomplete :items="listData" item-text="lastName" outlined
+                  <v-autocomplete :items="listData" item-text="lastName" outlined :no-data-text="$t('general.no-data-text')"
                                   item-value="lastName" :label="$t('client.last-name')"
                                   v-model="searchItem.lastName" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
@@ -94,7 +94,7 @@
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
-                              <v-autocomplete :items="therapistData" item-text="name" outlined
+                              <v-autocomplete :items="therapistData" item-text="name" outlined :no-data-text="$t('general.no-data-text')"
                                         item-value="cognitoId" :label="$t('appointment.therapist-name')"
                                         v-model="editedItem.therapist_cognitoId" class="mt-0 pt-0"></v-autocomplete>
                             </v-col>
@@ -311,13 +311,11 @@ export default {
 
   methods: {
     downloadFile(item) {
-      console.log(item.testFileUrl)
       axios({
         url: item.testFileUrl, // File URL Goes Here
         method: 'GET',
         responseType: 'blob',
       }).then((res) => {
-        console.log(res)
         var FILE = window.URL.createObjectURL(new Blob([res.data]))
 
         var docUrl = document.createElement('a')
@@ -414,6 +412,10 @@ export default {
       let res = await this.$dialog["warning"]({
         title: this.$t('general.confirm'),
         text: this.$t('client.delete-confirm'),
+        actions: {
+          false: this.$t('general.cancel'),
+          true: "OK"
+        },
         persistent: false
       })
       if (res) {
@@ -478,9 +480,7 @@ export default {
           var attributePhone = new AmazonCognitoIdentity.CognitoUserAttribute(dataPhone)
           attributeList.push(attributeEmail)
           attributeList.push(attributePhone)
-          console.log('attribute list: ' + attributeList)
           userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
-          console.log('sign up with: ' + this.editedItem.email + ' ' + this.editedItem.password)
           this.callback = false
           this.errcode = ''
 

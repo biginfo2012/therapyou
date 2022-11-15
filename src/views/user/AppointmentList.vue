@@ -10,7 +10,7 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="items" item-text="username" outlined
+                  <v-autocomplete :items="items" item-text="username" outlined :no-data-text="$t('general.no-data-text')"
                             item-value="cognitoId" :label="$t('appointment.user-name')"
                             v-model="searchItem.userId" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
@@ -26,14 +26,14 @@
                   >
                     <template v-slot:activator="{ on }">
                       <v-text-field
-                          v-model="date"
+                          v-model="dateShow"
                           :label="$t('appointment.date')"
                           prepend-icon="mdi-calendar"
                           readonly outlined
                           v-on="on"
                       ></v-text-field>
                     </template>
-                    <v-date-picker v-model="date" no-title range>
+                    <v-date-picker v-model="date" no-title range :locale="$i18n.locale + '-' + $i18n.locale.toUpperCase()">
                       <v-spacer></v-spacer>
                       <v-btn text color="primary" @click="menu = false">{{$t('general.cancel')}}</v-btn>
                       <v-btn text color="primary" @click="changeDateFilter">OK</v-btn>
@@ -41,7 +41,7 @@
                   </v-menu>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="payItems" item-text="label" outlined
+                  <v-autocomplete :items="payItems" item-text="label" outlined :no-data-text="$t('general.no-data-text')"
                             item-value="paid" :label="$t('appointment.pay-status')"
                             v-model="searchItem.decreasedCredits" class="mt-0 pt-0"></v-autocomplete>
                 </v-col>
@@ -80,18 +80,14 @@
                           <v-container class="pb-0">
                             <v-row>
                               <v-col cols="12" sm="12" md="12" class="pb-0">
-                                <v-autocomplete :items="items" item-text="username" outlined
+                                <v-autocomplete :items="items" item-text="username" outlined :no-data-text="$t('general.no-data-text')"
                                           item-value="cognitoId" :label="$t('appointment.user-name')"
                                           v-model="editedItem.userId" class="mt-0 pt-0"></v-autocomplete>
                               </v-col>
                               <v-col cols="12" sm="12" md="12" class="pb-0">
-                                <v-text-field
-                                    v-model="editedItem.start_time"
-                                    type="datetime-local"
-                                    hide-details outlined
-                                    background-color="transparent"
-                                    :label="$t('appointment.start-time')"
-                                ></v-text-field>
+                                <DateTimePicker v-model="editedItem.start_time" :label="$t('appointment.start-time')"
+                                                :locale="$i18n.locale + '-' + $i18n.locale.toUpperCase()" date-format="dd/MM/yyyy"
+                                                :clear-text="$t('general.cancel')"></DateTimePicker>
                               </v-col>
                             </v-row>
                           </v-container>
@@ -145,7 +141,7 @@
 
 <script>
 
-import {convertEToDate, convertToDate, getCurrentDate, getLoginInfo, getToken} from '@/utils'
+import {convertEToDate, convertToDate, dateFormatFit, getCurrentDate, getLoginInfo, getToken} from '@/utils'
 import {
   createAppointment,
   createMeetingId,
@@ -156,12 +152,13 @@ import {
 import {meetingUrl} from "@/constants/config"
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
-
+import DateTimePicker from "@/components/commonComponents/DateTimePicker";
 export default {
   name: "AppointmentList",
-  components: { VueCal },
+  components: { VueCal, DateTimePicker },
   data: function () {
     return {
+      dateShow: null,
       date: null, //new Date().toISOString().substr(0, 10),
       menu: false,
       dateFilter: {
@@ -216,16 +213,15 @@ export default {
       editedIndex: -1,
       editedItem: {
         userId: "",
-        start_time: 0,
+        start_time: null,
       },
       defaultItem: {
         userId: "",
-        start_time: 0,
+        start_time: null,
         decreasedCredits: null
       },
       searchItem: {
         userId: "",
-        start_time: "",
         decreasedCredits: null
       },
       loginInfo: getLoginInfo(),
@@ -244,6 +240,26 @@ export default {
   watch: {
     dialog(val) {
       val || this.close()
+    },
+    date(val){
+      if(val != null){
+        if(val.length == 1){
+          this.dateShow = dateFormatFit(val[0])
+        }
+        else{
+          let date1 = new Date(val[0] + " 00:00:00")
+          let date2 = new Date(val[1] + " 23:59:59")
+          let dateMil1 = date1.getTime()
+          let dateMil2 = date2.getTime()
+          if(dateMil1 > dateMil2){
+            this.dateShow = dateFormatFit(val[1]) + " ~ " + dateFormatFit(val[0])
+          }
+          else{
+            this.dateShow = dateFormatFit(val[0]) + " ~ " + dateFormatFit(val[1])
+          }
+        }
+      }
+
     }
   },
 
@@ -285,8 +301,6 @@ export default {
           this.dateFilter.toDate = dateMil2
         }
       }
-      console.log(this.date)
-      console.log(this.dateFilter)
       this.$refs.menu.save(this.date)
     },
     initialize() {
@@ -357,11 +371,9 @@ export default {
           }
         }
       }
-      console.log(data)
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
-          console.log(appointmens);
           this.datas = []
           this.events = []
           for (let i = 0; i < appointmens.length; i++) {
@@ -379,7 +391,6 @@ export default {
             tmp['JoinToken'] = ""
             if(tmp['meetingLink'] != null){
               let meetingLink = JSON.parse(tmp['meetingLink'])
-              console.log(meetingLink)
               tmp['meetingId'] = meetingLink.Meeting.MeetingId
               tmp['JoinToken'] = meetingLink.Attendees[0].JoinToken
             }
@@ -403,7 +414,6 @@ export default {
             this.datas.push(tmp)
             this.events.push(event)
           }
-          console.log(this.datas)
         }
         this.loading = false
       }).catch(error => {
@@ -426,7 +436,6 @@ export default {
             this.items.push(tmp)
           }
         }
-        console.log(response)
       }).catch(error => {
         this.handle(error)
       })
@@ -448,7 +457,6 @@ export default {
               // }
             })
             singleAppointment(this.datas[i]['id']).then((response) => {
-              console.log(response)
               if(response.data.msg == "success"){
                 this.datas[i]['meetingLink'] = response.data.data.appointment.meetingLink
                 if(this.datas[i]['meetingLink'] != null){
@@ -469,6 +477,10 @@ export default {
       let res = await this.$dialog["warning"]({
         title: this.$t('general.confirm'),
         text: this.$t('appointment.delete-confirm'),
+        actions: {
+          false: this.$t('general.cancel'),
+          true: "OK"
+        },
         persistent: false
       })
       if (res) {
@@ -496,7 +508,7 @@ export default {
         Object.assign(this.datas[this.editedIndex], this.editedItem)
         this.sending = false
       } else {
-        if (this.editedItem.userId == "" || this.editedItem.start_time == 0) {
+        if (this.editedItem.userId == "" || this.editedItem.start_time == null) {
           this.sending = false
           return
         }

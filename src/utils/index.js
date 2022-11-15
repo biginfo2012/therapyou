@@ -16,7 +16,6 @@ export const s3 = new aws.S3({
 
 export const singleUpload = (file, folder) => {
     const key = folder + '/' + Date.now() + '-' + file.name.replace(/\s/g, '-')
-    console.log(key)
     const params = {
         Bucket: AWS_BUCKET,
         Key: key,
@@ -31,7 +30,6 @@ export const singleUpload = (file, folder) => {
             },
         })
         .then(result => {
-            console.log(result)
             const bucketUrl = decodeURIComponent(result.request.responseURL).split(
                 key
             )[0]
@@ -149,6 +147,11 @@ export const getCurrentDate = () => {
     return yyyy + '-' + mm + '-' + dd
 }
 
+export const dateFormatFit = (str) => {
+    let dateStr = str.split("-")
+    return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0]
+}
+
 function padTo2Digits(num) {
     return num.toString().padStart(2, '0')
 }
@@ -156,8 +159,8 @@ function padTo2Digits(num) {
 function formatDate(date) {
     return (
         [
-            padTo2Digits(date.getMonth() + 1),
             padTo2Digits(date.getDate()),
+            padTo2Digits(date.getMonth() + 1),
             date.getFullYear(),
         ].join('/') +
         ' ' +

@@ -99,14 +99,42 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="8" class="pb-0">
-                  <v-autocomplete
+                  <v-select
                       v-model="editedItem.areasOfExpertise"
                       :items="areas"
-                      :menu-props="{ maxHeight: '400' }"
                       :label="$t('therapist.area-exp')"
                       multiple outlined required
-                      persistent-hint
-                  ></v-autocomplete>
+                  >
+                    <template v-slot:selection="{ item, index }">
+                      <v-chip v-if="index === 0">
+                        <span>{{ item }}</span>
+                      </v-chip>
+                      <v-chip v-if="index === 1">
+                        <span>{{ item }}</span>
+                      </v-chip>
+                      <v-chip v-if="index === 2">
+                        <span>{{ item }}</span>
+                      </v-chip>
+                      <v-chip v-if="index === 3">
+                        <span>{{ item }}</span>
+                      </v-chip>
+                      <v-chip v-if="index === 4">
+                        <span>{{ item }}</span>
+                      </v-chip>
+                      <span
+                          v-if="index === 5"
+                          class="grey--text caption"
+                      >(+{{ editedItem.areasOfExpertise.length > 5 ? editedItem.areasOfExpertise.length - 5 : 0}} others)</span>
+                    </template>
+                  </v-select>
+<!--                  <v-autocomplete-->
+<!--                      v-model="editedItem.areasOfExpertise"-->
+<!--                      :items="areas"-->
+<!--                      :menu-props="{ maxHeight: '400' }"-->
+<!--                      :label="$t('therapist.area-exp')"-->
+<!--                      multiple outlined required-->
+<!--                      persistent-hint-->
+<!--                  ></v-autocomplete>-->
                 </v-col>
                 <v-col cols="12" sm="12" md="6" class="pb-0">
                   <v-textarea
@@ -342,7 +370,6 @@ export default {
         if (result.status === 200) {
           // Handle storing it to your database here
           this.editedItem.bannerImage = result.fullPath
-          console.log(result)
         } else {
           this.$dialog.notify.error("File Upload to S3 failed")
         }
@@ -365,7 +392,6 @@ export default {
         if (result.status === 200) {
           // Handle storing it to your database here
           this.editedItem.profileImage = result.fullPath
-          console.log(result)
         } else {
           this.$dialog.notify.error("File Upload to S3 failed")
         }
@@ -424,7 +450,6 @@ export default {
         Username: this.editedItem.email,
         Pool: userPool
       }
-      console.log('password forgot for ' + userData.Username)
       var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
       this.showerr = false
       this.errcode = ''

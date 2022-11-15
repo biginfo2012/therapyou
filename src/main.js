@@ -12,7 +12,9 @@ import InstantSearch from "vue-instantsearch"
 import VueFeather from "vue-feather"
 import VueI18n from 'vue-i18n'
 // import "material-design-icons-iconfont/dist/material-design-icons.css"
-// import "vuetify/dist/vuetify.min.css";
+import "vuetify/dist/vuetify.min.css";
+// import DatetimePicker from './components/commonComponents/DatetimePicker'
+//Vue.component('v-datetime-picker', DatetimePicker)
 //import "github-markdown-css";
 
 import {defaultLocale, localeOptions} from './constants/config'
@@ -28,6 +30,7 @@ Vue.use(VuetifyDialog, {
 Vue.use(VueFeather)
 Vue.use(VueI18n)
 Vue.use(VuetifyDialog)
+//Vue.use(DatetimePicker)
 
 const messages = {en: en, it: it}
 const locale = (localStorage.getItem('currentLanguage') &&
@@ -46,7 +49,6 @@ Vue.use(VueSkycons, {
 Vue.use(InstantSearch)
 Vue.config.productionTip = false
 Vue.use(Vuebar)
-
 
 export default new Vue({
     render: (h) => h(App),

@@ -263,7 +263,7 @@ export default {
     let loginInfo = getLoginInfo()
     this.userInfo.id = loginInfo.id
     this.userInfo.name = loginInfo.name
-    this.userInfo.role = loginInfo.role == 2 ? "Admin" : "Therapist"
+    this.userInfo.role = loginInfo.role == 2 ? "Admin" : this.$t('appointment.therapist-name')
     this.userInfo.profileImage = loginInfo.profileImage
     this.setLanguageInfo()
     this.showNoti = isLoggedInAsUser()

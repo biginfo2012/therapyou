@@ -26,7 +26,8 @@
                         <v-form ref="uploadForm">
                           <v-row>
                             <v-col cols="12" sm="12" md="12" class="pb-0">
-                              <v-autocomplete :items="items" item-text="label" outlined required :rules="fieldRules"
+                              <v-autocomplete :items="items" item-text="label" outlined :no-data-text="$t('general.no-data-text')"
+                                              required :rules="fieldRules"
                                               item-value="id" :label="$t('appointment.list')"
                                               v-model="editedItem.id" class="mt-0 pt-0"></v-autocomplete>
                             </v-col>
@@ -35,36 +36,51 @@
                                   :label="$t('invoice.file')" outlined
                                   @change="uploadFile"></v-file-input>
                             </v-col>
-                            <v-col cols="12" sm="12" md="12">
+                            <v-col cols="12" sm="12" md="12" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.invoiceCode"
-                                  :rules="numberRules" max-length="10"
-                                  hide-details outlined required
+                                  :rules="numberRules"
+                                  outlined required
                                   background-color="transparent"
                                   :label="$t('invoice.number')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="12">
-                              <v-text-field
-                                  v-model="editedItem.invoiceDate"
-                                  type="date" :rules="fieldRules"
-                                  hide-details outlined required
-                                  background-color="transparent"
-                                  :label="$t('invoice.date')"
-                              ></v-text-field>
-                            </v-col>
                             <v-col cols="12" sm="12" md="12" class="pb-0">
-                              <v-select
-                                  v-model="editedItem.therapyType"
-                                  :items="areas"
-                                  :label="$t('invoice.therapist-type')"
-                                  outlined
+                              <v-menu
+                                  ref="menu"
+                                  v-model="menu"
+                                  :close-on-content-click="false"
+                                  :return-value.sync="editedItem.invoiceDate"
+                                  transition="scale-transition"
+                                  offset-y
+                                  min-width="290px"
                               >
-                              </v-select>
+                                <template v-slot:activator="{ on }">
+                                  <v-text-field
+                                      :value="dateFormatFit(editedItem.invoiceDate)"
+                                      :label="$t('invoice.date')"
+                                      prepend-icon="mdi-calendar"
+                                      :rules="fieldRules"
+                                      readonly outlined required
+                                      v-on="on"
+                                  ></v-text-field>
+                                </template>
+                                <v-date-picker v-model="editedItem.invoiceDate" no-title :locale="$i18n.locale + '-' + $i18n.locale.toUpperCase()">
+                                  <v-spacer></v-spacer>
+                                  <v-btn text color="primary" @click="menu = false">{{$t('general.cancel')}}</v-btn>
+                                  <v-btn text color="primary" @click="changeDateFilter">OK</v-btn>
+                                </v-date-picker>
+                              </v-menu>
+<!--                              <v-text-field-->
+<!--                                  v-model="editedItem.invoiceDate"-->
+<!--                                  type="date" :rules="fieldRules"-->
+<!--                                  hide-details outlined required-->
+<!--                                  background-color="transparent"-->
+<!--                                  :label="$t('invoice.date')"-->
+<!--                              ></v-text-field>-->
                             </v-col>
                           </v-row>
                         </v-form>
-
                       </v-container>
                     </v-card-text>
 
@@ -92,13 +108,14 @@
 </template>
 
 <script>
-import {convertToDate, getLoginInfo, singleUpload} from '@/utils'
+import {convertToDate, dateFormatFit, getLoginInfo, singleUpload} from '@/utils'
 import {deleteInvoice, getAppointmentList, getInvoiceList, uploadInvoice} from "@/api"
 import axios from "axios";
 export default {
   name: "InvoiceList",
   data: function () {
     return {
+      menu: false,
       page: {
         title: this.$t('invoice.list'),
       },
@@ -109,11 +126,6 @@ export default {
           to: "#",
         }
       ],
-      areas: ["Stress", "Ansia", "Attacchi di panico", "Crisi esistenziale", "Depressione post partum", "Dipendenza sessuale", "Disturbi alimentari", "Disturbi di personalita",
-        "Disturbo bipolare", "Disturbo post traumatico da stress", "Lutto", "Burn out", "Fobie", "Impotenza", "Insonnia", "Ipocondria", "Problemi adolescenziali",
-        "Problemi relazionali", "Somatizzazione", "Tricotillomania", "Tic", "Stalking", "Problemi di coppia", "Nevrosi", "Paranoia", "Mobbing", "Ludopatia", "Frigidita",
-        "Esaurimento nervoso", "Divorzio o separazione", "Disturbo ossessivo compulsivo", "Disturbo da alimentazione incontrollata", "Dipendenze comportamentali",
-        "Dipendenza affettiva", "Depressione", "Bulimia", "Anoressia", "Aggressivita", "Balbuzie", "Anorgasmia"],
       dialog: false,
       loading: false,
       sending: false,
@@ -133,10 +145,10 @@ export default {
           value: "invoiceDate"
         },
         {
-          text: this.$t('invoice.therapist-name'),
+          text: this.$t('invoice.appointment'),
           align: "start",
           sortable: true,
-          value: "therapyType"
+          value: "invoiceCode"
         },
         { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],
@@ -146,15 +158,13 @@ export default {
         id: 0,
         invoiceUrl: "",
         invoiceCode: "",
-        invoiceDate: "",
-        therapyType: ""
+        invoiceDate: ""
       },
       defaultItem: {
         id: 0,
         invoiceUrl: "",
         invoiceCode: "",
-        invoiceDate: "",
-        therapyType: ""
+        invoiceDate: ""
       },
       loginInfo: getLoginInfo(),
       fieldRules:[
@@ -183,18 +193,25 @@ export default {
   },
 
   methods: {
+    dateFormatFit(val){
+      if (val == "" || val == null){
+        return ""
+      }
+      return dateFormatFit(val)
+    },
+    changeDateFilter(){
+      this.$refs.menu.save(this.editedItem.invoiceDate)
+    },
     initialize() {
       this.getData()
       this.getAppointmentData()
     },
     downloadFile(item) {
-      console.log(item.invoiceUrl)
       axios({
         url: item.invoiceUrl, // File URL Goes Here
         method: 'GET',
         responseType: 'blob',
       }).then((res) => {
-        console.log(res)
         var FILE = window.URL.createObjectURL(new Blob([res.data]))
 
         var docUrl = document.createElement('a')
@@ -223,7 +240,7 @@ export default {
         if (response.data.msg == "Success") {
           let invoices = response.data.data.invoices
           for (let i = 0; i < invoices.length; i++){
-            invoices[i]['invoiceDate'] = invoices[i]['invoiceDate'].substring(0, 10)
+            invoices[i]['invoiceDate'] = dateFormatFit(invoices[i]['invoiceDate'].substring(0, 10))
           }
           this.datas = response.data.data.invoices
         }
@@ -268,7 +285,6 @@ export default {
         if (result.status === 200) {
           // Handle storing it to your database here
           this.editedItem.invoiceUrl = result.fullPath
-          console.log(result)
         } else {
           this.$dialog.notify.error("File Upload to S3 failed")
         }
@@ -286,6 +302,10 @@ export default {
       let res = await this.$dialog["warning"]({
         title: this.$t('general.confirm'),
         text: this.$t('invoice.delete-confirm'),
+        actions: {
+          false: this.$t('general.cancel'),
+          true: "OK"
+        },
         persistent: false
       })
       if(res){
@@ -328,7 +348,6 @@ export default {
             invoiceUrl: this.editedItem.invoiceUrl,
             invoiceCode: this.editedItem.invoiceCode,
             invoiceDate: this.editedItem.invoiceDate,
-            therapyType: this.editedItem.therapyType
           }
           uploadInvoice(data).then((response) => {
             this.sending = false

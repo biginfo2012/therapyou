@@ -56,6 +56,14 @@
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
                               <v-text-field
+                                  v-model="editedItem.suffix"
+                                  :rules="fieldRules"
+                                  outlined required
+                                  :label="$t('therapist.suffix')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                              <v-text-field
                                   v-model="editedItem.specialization"
                                   :rules="fieldRules"
                                   outlined required
@@ -78,15 +86,15 @@
                                   :label="$t('therapist.register-region')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
-                              <v-text-field
-                                  v-model="editedItem.registrationDate"
-                                  type="date"
-                                  hide-details outlined
-                                  background-color="transparent"
-                                  :label="$t('therapist.register-date')"
-                              ></v-text-field>
-                            </v-col>
+<!--                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">-->
+<!--                              <v-text-field-->
+<!--                                  v-model="editedItem.registrationDate"-->
+<!--                                  type="date"-->
+<!--                                  hide-details outlined-->
+<!--                                  background-color="transparent"-->
+<!--                                  :label="$t('therapist.register-date')"-->
+<!--                              ></v-text-field>-->
+<!--                            </v-col>-->
                             <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
                               <img :src="editedItem.profileImage" style="width: 100%; height: 59px"/>
                             </v-col>
@@ -172,7 +180,7 @@
             </template>
             <template v-slot:item.actions="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-<!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
+              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
             <template v-slot:no-data>
               {{ $t('general.no-data') }}
@@ -187,7 +195,7 @@
 <script>
 
 //import {poolData} from "@/constants/config"
-import {getLoginInfo, singleUpload} from '@/utils'
+import {dateFormatFit, getLoginInfo, singleUpload} from '@/utils'
 import {deleteTherapist, getTherapistList, signUpTherapist, updateTherapist} from "@/api";
 // var AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 //
@@ -388,7 +396,7 @@ export default {
         if (response.data.msg == "success") {
           let therapists = response.data.data.therapistList
           for (let i = 0; i < therapists.length; i++){
-            therapists[i]['registrationDate'] = therapists[i]['registrationDate'].substring(0, 10)
+            therapists[i]['registrationDate'] = dateFormatFit(therapists[i]['registrationDate'].substring(0, 10))
             therapists[i]['areasOfExpertise'] = JSON.parse(therapists[i]['areasOfExpertise'])
           }
           this.datas = response.data.data.therapistList
@@ -408,6 +416,10 @@ export default {
       let res = await this.$dialog["warning"]({
         title: this.$t('general.confirm'),
         text: this.$t('therapist.delete-confirm'),
+        actions: {
+          false: this.$t('general.cancel'),
+          true: "OK"
+        },
         persistent: false
       })
       if(res){
@@ -497,7 +509,6 @@ export default {
         if (result.status === 200) {
           // Handle storing it to your database here
           this.editedItem.bannerImage = result.fullPath
-          console.log(result)
         } else {
           this.$dialog.notify.error("File Upload to S3 failed")
         }
@@ -538,6 +549,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.mdi-exclamation{
+  display: none !important;
+}
 </style>

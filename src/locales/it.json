@@ -11,7 +11,8 @@
     "confirm": "Conferma",
     "change-password": "Cambio Password",
     "reply": "Rispondi",
-    "no-data": "nessun risultato trovato"
+    "no-data": "nessun risultato trovato",
+    "no-data-text": "Nessun risultato"
   },
   "header": {
     "profile": "Profilo"
@@ -19,8 +20,8 @@
   "menu": {
     "dashboard": "Dashboard",
     "appointment": "Appuntamenti",
-    "invoice": "Ricevute",
-    "client": "Clienti",
+    "invoice": "Fatture",
+    "client": "Pazienti",
     "therapist": "Terapeuti",
     "noti": "Notifiche",
     "message": "Messaggi"
@@ -50,8 +51,8 @@
     "password-special": "La password deve contenere almeno un carattere speciale (!@#$%^&*\")",
     "code-required": "Codice richiesto",
     "phone-required": "Telefono richiesto",
-    "first-required": "Nome Utente richiesto",
-    "last-required": "Cognome Utente richiesto",
+    "first-required": "Nome Paziente richiesto",
+    "last-required": "Cognome Paziente richiesto",
     "name-required": "Nome richiesto",
     "surname-required": "Cognome richiesto",
     "field-required": "Campo richiesto"
@@ -84,7 +85,7 @@
     "appointments": "Appuntamenti",
     "list": "Lista Appuntamenti",
     "therapist-name": "Terapeuta",
-    "user-name": "Utente",
+    "user-name": "Paziente",
     "start-time": "Ora Inizio",
     "end-time": "Ora Fine",
     "created-time": "Ora Creazione",
@@ -103,23 +104,24 @@
     "join": "Connettiti"
   },
   "invoice": {
-    "invoices": "Ricevute",
-    "list": "Lista Ricevute",
-    "therapist": "Ricevute Terapeuti",
-    "my": "Le mie Ricevute",
-    "create": "Crea Ricevuta",
+    "invoices": "Fatture",
+    "list": "Lista Fatture",
+    "therapist": "Fatture Terapeuti",
+    "my": "Le mie Fatture",
+    "create": "Crea Fattura",
     "file": "Documento",
-    "url": "Url Ricevuta",
+    "url": "Url Fattura",
     "number": "Numerico",
     "date": "Data",
     "therapist-name": "Terapeuta",
     "therapist-type": "Terapeuta Type",
-    "delete-confirm": "Sicuro di voler eliminare questa Ricevuta?"
+    "appointment": "Appuntamento",
+    "delete-confirm": "Sicuro di voler eliminare questa Fattura?"
   },
   "client": {
-    "clients": "Clienti",
-    "list": "Lista Clienti",
-    "my": "I miei Clienti",
+    "clients": "Pazienti",
+    "list": "Lista Pazienti",
+    "my": "I miei Pazienti",
     "create": "Crea Cliente",
     "first-name": "Nome",
     "last-name": "Cognome",

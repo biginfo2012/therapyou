@@ -11,7 +11,8 @@
     "confirm": "Confirm",
     "change-password": "Change Password",
     "reply": "Reply",
-    "no-data": "no results found"
+    "no-data": "no results found",
+    "no-data-text": "No data available"
   },
   "header": {
     "profile": "Profile"
@@ -114,6 +115,7 @@
     "date": "Date",
     "therapist-name": "Therapist",
     "therapist-type": "Therapist Type",
+    "appointment": "Appointment",
     "delete-confirm": "Are you sure you want to delete this Invoice?"
   },
   "client": {

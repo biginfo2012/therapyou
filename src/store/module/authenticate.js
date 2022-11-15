@@ -115,7 +115,7 @@ const actions = {
                 commit('setTokens', result)
                 commit('signIn')
                 dispatch('getUserAttributes')
-                dispatch('setLogoutTimer', 3600)
+                //dispatch('setLogoutTimer', 3600)
                 //POTENTIAL: Region needs to be set if not already set previously elsewhere.
                 AWS.config.region = AWS_REGION
 
@@ -135,7 +135,7 @@ const actions = {
             }
         })
     },
-    tryAutoSignIn({state, commit, dispatch}) {
+    tryAutoSignIn({state, commit}) {
         commit('setUserPool')
         let cognitoUser = state.userPool.getCurrentUser()
         if (cognitoUser != null) {
@@ -148,7 +148,7 @@ const actions = {
                     commit('setTokens', session)
                     commit('signIn')
                     //dispatch('getUserAttributes')
-                    dispatch('setLogoutTimer', 3600)
+                    //dispatch('setLogoutTimer', 3600)
                     window.location.reload()
                 }
             })

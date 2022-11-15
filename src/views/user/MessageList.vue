@@ -7,12 +7,14 @@
 
             <!---/Left chat list -->
             <v-navigation-drawer left v-model="drawer" class="flex-shrink-0">
-              <div class="px-3 border-bottom"><v-text-field placeholder="Search contact" class="mb-0 mt-0 " v-model="handleSearchInput"></v-text-field></div>
+              <div class="px-3 border-bottom"><v-text-field placeholder="Search contact" hide-details outlined class="my-2" v-model="handleSearchInput"></v-text-field></div>
               <v-list nav class="hightauto" >
                 <v-list-item v-for="(conversation, i) in filteredList" :key="i" @click="(e) => openMessages(conversation, e)" :class="isActive ? 'active':'s'">
+                  <v-avatar size="42" class="mr-3"><img src="@/assets/images/icons/logo-icon.png"/></v-avatar>
                   <v-list-item-content>
                     <v-list-item-title>
                       <h4>{{conversation.name}}</h4>
+                      <span class="caption">{{conversation.lastMessage}}</span>
                     </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
@@ -37,13 +39,18 @@
               <div class="">
                 <div class="chat-room px-3 py-3">
                   <div class="d-flex align-center mb-3" light v-for="message in conversation.messages" :key="message.id" :class="{fromMe: message.fromMe, 'messageItem': true}">
+                    <div class="thumb">
+                      <v-avatar size="37" class="mx-2" v-if="message.fromMe" ><img :src="loginInfo.profileImage" alt="..."/></v-avatar>
+                      <v-avatar size="37"  class="mx-2" v-else><img src="@/assets/images/icons/logo-icon.png" alt="..."/>
+                      </v-avatar>
+                    </div>
                     <v-chip :color="message.fromMe ? 'primary': ''">{{message.text}}</v-chip>
                   </div>
                 </div>
               </div>
               <!---Chat Room-->
               <div class="pa-3 border-top">
-                <v-textarea name="input-4-1" rows="2" placeholder="Type and hit Enter" v-model="conversation.replyContent"  @keydown="addMessage"></v-textarea>
+                <v-textarea name="input-4-1" rows="2" placeholder="Type and hit Enter" outlined v-model="conversation.replyContent"></v-textarea>
                 <v-btn color="success" class="mr-2 text-capitalize" @click="addMessageBtn" :loading="loading">
                   {{ $t('mail.send') }}
                   <span slot="loader">...</span>
@@ -131,13 +138,11 @@ export default {
     },
     getListUser() {
       let data = {
-        therapistId: this.loginInfo.cognitoId,
-        alreadyRead: true
+        therapistId: this.loginInfo.cognitoId
       }
       this.UsersList = []
       getListUsers(data).then((response) => {
         if (response.data.error == false){
-          console.log(response)
           let users = response.data.data.users
           for(let i = 0; i < users.length; i++){
             let tmp = {}
@@ -146,6 +151,7 @@ export default {
             tmp['userId'] = data['cognitoId']
             tmp['replyContent'] = ""
             tmp['messages'] = []
+            tmp['lastMessage'] = data['lastMessage']['text']
             this.UsersList.push(tmp)
           }
         }
@@ -202,7 +208,6 @@ export default {
           this[l] = false
           this.loader = null
           if (response.data.error == false){
-            console.log(response)
             Vue.set(this, 'conversation', Object.assign({}, this.conversation, {
               messages: [
                 ...this.conversation.messages || [],
@@ -240,7 +245,6 @@ export default {
           this[l] = false
           this.loader = null
           if (response.data.error == false){
-            console.log(response)
             Vue.set(this, 'conversation', Object.assign({}, this.conversation, {
               messages: [
                 ...this.conversation.messages || [],

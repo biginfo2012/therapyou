@@ -10,17 +10,17 @@
             <v-form ref="search_form">
               <v-row>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="therapistItems" item-text="name" outlined
+                  <v-autocomplete :items="therapistItems" item-text="name" outlined :no-data-text="$t('general.no-data-text')"
                             item-value="cognitoId" :label="$t('appointment.therapist-name')"
                             v-model="searchItem.therapistId" class="mt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="items" item-text="username" outlined
+                  <v-autocomplete :items="items" item-text="username" outlined :no-data-text="$t('general.no-data-text')"
                             item-value="cognitoId" :label="$t('appointment.user-name')"
                             v-model="searchItem.userId" class="mt-0"></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="py-0">
-                  <v-autocomplete :items="payItems" item-text="label" outlined
+                  <v-autocomplete :items="payItems" item-text="label" outlined :no-data-text="$t('general.no-data-text')"
                             item-value="paid" :label="$t('appointment.pay-status')"
                             v-model="searchItem.decreasedCredits" class="p-0"></v-autocomplete>
                 </v-col>
@@ -36,14 +36,14 @@
                   >
                     <template v-slot:activator="{ on }">
                       <v-text-field
-                          v-model="date"
+                          v-model="dateShow"
                           :label="$t('appointment.date')"
                           prepend-icon="mdi-calendar"
                           readonly outlined
                           v-on="on"
                       ></v-text-field>
                     </template>
-                    <v-date-picker v-model="date" no-title range>
+                    <v-date-picker v-model="date" no-title range :locale="$i18n.locale + '-' + $i18n.locale.toUpperCase()">
                       <v-spacer></v-spacer>
                       <v-btn text color="primary" @click="menu = false">{{$t('general.cancel')}}</v-btn>
                       <v-btn text color="primary" @click="changeDateFilter">OK</v-btn>
@@ -77,23 +77,19 @@
                       <v-container class="pb-0">
                         <v-row>
                           <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-autocomplete :items="therapistItems" item-text="name" outlined
+                            <v-autocomplete :items="therapistItems" item-text="name" outlined :no-data-text="$t('general.no-data-text')"
                                             item-value="cognitoId" :label="$t('appointment.therapist-name')"
                                             v-model="editedItem.therapistId" class="mt-0 pt-0"></v-autocomplete>
                           </v-col>
                           <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-autocomplete :items="items" item-text="username" outlined
+                            <v-autocomplete :items="items" item-text="username" outlined :no-data-text="$t('general.no-data-text')"
                                             item-value="cognitoId" :label="$t('appointment.user-name')"
                                             v-model="editedItem.userId" class="mt-0 pt-0"></v-autocomplete>
                           </v-col>
                           <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-text-field
-                                v-model="editedItem.start_time"
-                                type="datetime-local"
-                                hide-details outlined
-                                background-color="transparent"
-                                :label="$t('appointment.start-time')"
-                            ></v-text-field>
+                            <DateTimePicker v-model="editedItem.start_time" :label="$t('appointment.start-time')"
+                                            :locale="$i18n.locale + '-' + $i18n.locale.toUpperCase()" date-format="dd/MM/yyyy"
+                                            :clear-text="$t('general.cancel')"></DateTimePicker>
                           </v-col>
                         </v-row>
                       </v-container>
@@ -129,14 +125,17 @@
 
 <script>
 
-import {getLoginInfo, convertToDate, convertEToDate, getCurrentDate, getToken} from '@/utils'
+import {getLoginInfo, convertToDate, convertEToDate, getCurrentDate, getToken, dateFormatFit} from '@/utils'
 import {createAppointment, deleteAppointment, getAppointmentList, getTherapistList, getUserList} from "@/api"
 import {meetingUrl} from "@/constants/config"
+import DateTimePicker from "@/components/commonComponents/DateTimePicker";
 
 export default {
   name: "AppointmentList",
+  components: {DateTimePicker},
   data: function () {
     return {
+      dateShow: null,
       date: null, //new Date().toISOString().substr(0, 10),
       menu: false,
       dateFilter: {
@@ -193,11 +192,12 @@ export default {
       editedItem: {
         therapistId: "",
         userId: "",
-        start_time: 0,
+        start_time: null,
       },
       defaultItem: {
         therapistId: "",
         userId: "",
+        start_time: null,
         decreasedCredits: null
       },
       searchItem: {
@@ -220,6 +220,26 @@ export default {
   watch: {
     dialog(val) {
       val || this.close()
+    },
+    date(val){
+      if(val != null){
+        if(val.length == 1){
+          this.dateShow = dateFormatFit(val[0])
+        }
+        else{
+          let date1 = new Date(val[0] + " 00:00:00")
+          let date2 = new Date(val[1] + " 23:59:59")
+          let dateMil1 = date1.getTime()
+          let dateMil2 = date2.getTime()
+          if(dateMil1 > dateMil2){
+            this.dateShow = dateFormatFit(val[1]) + " ~ " + dateFormatFit(val[0])
+          }
+          else{
+            this.dateShow = dateFormatFit(val[0]) + " ~ " + dateFormatFit(val[1])
+          }
+        }
+      }
+
     }
   },
 
@@ -256,8 +276,6 @@ export default {
           this.dateFilter.toDate = dateMil2
         }
       }
-      console.log(this.date)
-      console.log(this.dateFilter)
       this.$refs.menu.save(this.date)
     },
     initialize() {
@@ -322,7 +340,6 @@ export default {
           }
         }
       }
-      console.log(data)
       this.datas = []
       this.events = []
       getAppointmentList(data).then((response) => {
@@ -334,7 +351,7 @@ export default {
             let tmp = {}
             let event = {}
             tmp['id'] = appointmens[i]['id']
-            tmp['therapistname'] = appointmens[i]['name']
+            tmp['therapistname'] = appointmens[i]['name'] + ' ' + appointmens[i]['surname']
             tmp['username'] = appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
             tmp['start_time'] = convertToDate(appointmens[i]['startTime'])
             tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
@@ -363,7 +380,7 @@ export default {
           this.therapistItems = []
           for (let i = 0; i < therapists.length; i++) {
             let tmp = {}
-            tmp['name'] = therapists[i]['name']
+            tmp['name'] = therapists[i]['name'] + ' ' + therapists[i]['surname']
             tmp['cognitoId'] = therapists[i]['cognitoId']
             this.therapistItems.push(tmp)
           }
@@ -395,6 +412,10 @@ export default {
       let res = await this.$dialog["warning"]({
         title: this.$t('general.confirm'),
         text: this.$t('appointment.delete-confirm'),
+        actions: {
+          false: this.$t('general.cancel'),
+          true: "OK"
+        },
         persistent: false
       })
       if(res){
@@ -422,7 +443,7 @@ export default {
         Object.assign(this.datas[this.editedIndex], this.editedItem)
         this.sending = false
       } else {
-        if (this.editedItem.therapistId == "" || this.editedItem.userId == "" || this.editedItem.start_time == 0) {
+        if (this.editedItem.therapistId == "" || this.editedItem.userId == "" || this.editedItem.start_time == null) {
           this.sending = false
           return
         }
