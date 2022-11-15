@@ -104,7 +104,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.decreasedCredits="{ item }">
-              <img class="mt-2" v-if="item.decreasedCredits == 1" src="@/assets/images/icons/check-circle.svg"/>
+              <v-icon v-if="item.decreasedCredits == 1" small>mdi-check</v-icon>
             </template>
             <template v-slot:item.actions="{ item }">
               <!--                  <a v-if="item.meetingLink != null" class="mr-2" target="_blank"-->
@@ -181,7 +181,7 @@ export default {
         {text: this.$t('appointment.end-time'), value: "end_time"},
         {
           text: this.$t('appointment.paid'),
-          align: "start",
+          align: "center",
           sortable: true,
           value: "decreasedCredits"
         },

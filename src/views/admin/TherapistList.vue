@@ -95,16 +95,16 @@
 <!--                                  :label="$t('therapist.register-date')"-->
 <!--                              ></v-text-field>-->
 <!--                            </v-col>-->
-                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
-                              <img :src="editedItem.profileImage" style="width: 100%; height: 59px"/>
+                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center" v-if="editedIndex !== -1">
+                              <img :src="editedItem.profileImage" style="width: auto; height: 59px; max-width: 100%;"/>
                             </v-col>
                             <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-file-input
                                   :label="$t('therapist.profile-image')" outlined
                                   @change="uploadProfileFile"></v-file-input>
                             </v-col>
-                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0" v-if="editedIndex !== -1">
-                              <img :src="editedItem.bannerImage" style="width: 100%; height: 59px"/>
+                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center" v-if="editedIndex !== -1">
+                              <img :src="editedItem.bannerImage" style="width: auto; height: 59px; max-width: 100%;"/>
                             </v-col>
                             <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-file-input

@@ -74,16 +74,16 @@
                       :label="$t('therapist.register-date')"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0">
-                  <img :src="editedItem.profileImage" style="width: auto; height: 59px"/>
+                <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center">
+                  <img :src="editedItem.profileImage" style="width: auto; height: 59px; max-width: 100%;"/>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="pb-0 pt-0">
                   <v-file-input
                       :label="$t('therapist.profile-image')" outlined
                       @change="uploadProfileFile"></v-file-input>
                 </v-col>
-                <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0">
-                  <img :src="editedItem.bannerImage" style="width: auto; height: 59px"/>
+                <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center">
+                  <img :src="editedItem.bannerImage" style="width: auto; height: 59px; max-width: 100%;"/>
                 </v-col>
                 <v-col cols="12" sm="12" md="3" class="pb-0 pt-0">
                   <v-file-input
@@ -118,13 +118,10 @@
                       <v-chip v-if="index === 3">
                         <span>{{ item }}</span>
                       </v-chip>
-                      <v-chip v-if="index === 4">
-                        <span>{{ item }}</span>
-                      </v-chip>
                       <span
-                          v-if="index === 5"
+                          v-if="index === 4"
                           class="grey--text caption"
-                      >(+{{ editedItem.areasOfExpertise.length > 5 ? editedItem.areasOfExpertise.length - 5 : 0}} others)</span>
+                      >(+{{ editedItem.areasOfExpertise.length - 5 }} others)</span>
                     </template>
                   </v-select>
 <!--                  <v-autocomplete-->
