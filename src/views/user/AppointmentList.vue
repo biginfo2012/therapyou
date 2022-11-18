@@ -127,8 +127,8 @@
               </v-data-table>
             </v-tab-item>
             <v-tab-item key="calendar">
-              <vue-cal active-view="month" class="vuecal--blue-theme" :disable-views="['years', 'year']" :locale="$i18n.locale" :time-from="8 * 60"
-                       :time-to="21 * 60" :selected-date="selectedDate" :events="events"></vue-cal>
+              <vue-cal active-view="month" class="vuecal--blue-theme" :disable-views="['years', 'year']" :locale="$i18n.locale" :time-from="7 * 60"
+                       :time-to="24 * 60" :selected-date="selectedDate" :events="events"></vue-cal>
             </v-tab-item>
           </v-tabs-items>
 

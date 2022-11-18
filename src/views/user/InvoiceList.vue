@@ -12,7 +12,7 @@
                 <v-toolbar-title>{{ $t('invoice.my')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" persistent max-width="500px" >
+                <v-dialog v-model="dialog" persistent max-width="500px">
                   <template v-slot:activator="{ on }">
                     <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('invoice.create') }}</v-btn>
                   </template>
@@ -94,7 +94,7 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon small @click="downloadFile(item)">mdi-cloud-download</v-icon>
+              <v-icon small :disabled="item.invoiceUrl == null || item.invoiceUrl == ''" class="mr-2" @click="downloadFile(item)">mdi-cloud-download</v-icon>
 <!--              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
             </template>
             <template v-slot:no-data>
@@ -148,7 +148,7 @@ export default {
           text: this.$t('invoice.appointment'),
           align: "start",
           sortable: true,
-          value: "invoiceCode"
+          value: "appointment"
         },
         { text: this.$t('appointment.action'), value: "actions", sortable: false }
       ],
@@ -236,13 +236,15 @@ export default {
         cognitoId: this.loginInfo.cognitoId,
         isTherapist: true
       }
+      this.datas = []
       getInvoiceList(data).then((response) => {
-        if (response.data.msg == "Success") {
-          let invoices = response.data.data.invoices
-          for (let i = 0; i < invoices.length; i++){
-            invoices[i]['invoiceDate'] = dateFormatFit(invoices[i]['invoiceDate'].substring(0, 10))
-          }
+        if (response.data.error == false) {
+          console.log(response.data)
           this.datas = response.data.data.invoices
+          for (let i = 0; i < this.datas.length; i++){
+            this.datas[i]['invoiceDate'] = this.datas[i]['invoiceDate'] == null || this.datas[i]['invoiceDate'] == "" ? "" : dateFormatFit(this.datas[i]['invoiceDate'].substring(0, 10))
+            this.datas[i]['appointment'] = this.datas[i]['firstName'] + " " + this.datas[i]['lastName'] + ": " + convertToDate(this.datas[i]['startTime'])
+          }
         }
         this.loading = false
       }).catch(error => {
@@ -254,6 +256,7 @@ export default {
     getAppointmentData(){
       let filter = {}
       filter.decreasedCredits = 1
+      filter.invoiceUploaded = 0
       let data = {
         cognitoId: this.loginInfo.cognitoId,
         offset: 0,

@@ -148,6 +148,9 @@ export const getCurrentDate = () => {
 }
 
 export const dateFormatFit = (str) => {
+    if(str == null || str == ""){
+        return ""
+    }
     let dateStr = str.split("-")
     return dateStr[2] + "/" + dateStr[1] + "/" + dateStr[0]
 }
