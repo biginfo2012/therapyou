@@ -9,7 +9,9 @@ let config = {
         'Content-Type': 'application/json'
     }
 }
-
+export function getTherapist(cognitoId) {
+    return axios.get(apiBaseUrl + 'therapist/get?cognitoId=' + cognitoId)
+}
 export function getAppointmentList(data) {
     return axios.post(apiBaseUrl + 'appointments/list', data, config)
 }
@@ -84,4 +86,7 @@ export function getListUsers(data) {
 }
 export function replyMessage(data) {
     return axios.post(apiBaseUrl + 'message/reply', data, config)
+}
+export function decreaseCredits(data) {
+    return axios.post(apiBaseUrl + 'user/decrease-credits', data, config)
 }

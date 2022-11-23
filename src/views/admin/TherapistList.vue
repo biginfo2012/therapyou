@@ -6,7 +6,7 @@
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading..." :footer-props="{'items-per-page-text':$t('general.per')}">
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>{{$t('therapist.list')}}</v-toolbar-title>
@@ -379,12 +379,12 @@ export default {
     initialize() {
       this.getData()
     },
-    handle(error) {
+    handle(error, isConfirm = false) {
       console.log(error)
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        //this.$dialog.notify.error(error.response.data.msg)
+        if(isConfirm) this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData(){
@@ -392,6 +392,7 @@ export default {
       let data = {
         cognitoId: this.loginInfo.cognitoId,
       }
+      this.datas = []
       getTherapistList(data).then((response) => {
         if (response.data.msg == "success") {
           let therapists = response.data.data.therapistList
@@ -400,8 +401,8 @@ export default {
             therapists[i]['areasOfExpertise'] = JSON.parse(therapists[i]['areasOfExpertise'])
           }
           this.datas = response.data.data.therapistList
-          this.loading = false
         }
+        this.loading = false
       }).catch(error => {
         this.loading = false
         this.handle(error)
@@ -424,15 +425,19 @@ export default {
       })
       if(res){
         let data = {
-          cognitoId: item.cognitoId,
+          therapistToDelete: item.cognitoId,
+          adminId: this.loginInfo.cognitoId
         }
         deleteTherapist(data).then((response) => {
           if (response.data.msg == "success") {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
           }
+          else{
+            this.$dialog.notify.error(response.data.msg)
+          }
         }).catch(error => {
-          this.handle(error)
+          this.handle(error, true)
         })
       }
     },
@@ -474,9 +479,12 @@ export default {
               this.close()
               this.getData()
             }
+            else{
+              this.$dialog.notify.error(response.data.msg)
+            }
           }).catch(error => {
             this.sending = false
-            this.handle(error)
+            this.handle(error, true)
           })
         } else {
           let data = {
@@ -491,10 +499,13 @@ export default {
               this.close()
               this.getData()
             }
+            else{
+              this.$dialog.notify.error(response.data.msg)
+            }
           }).catch(error => {
             this.sending = false
             this.close()
-            this.handle(error)
+            this.handle(error, true)
           })
         }
       }

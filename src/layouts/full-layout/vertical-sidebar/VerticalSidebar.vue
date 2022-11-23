@@ -60,7 +60,8 @@
 import {mapState} from "vuex"
 import VerticalSidebarItems from "./VerticalSidebarItems"
 import VerticalSidebarItemsUser from "./VerticalSidebarItemsUser"
-import {isLoggedInAsAdmin} from "@/utils"
+import VerticalSidebarItemsClient from "./VerticalSidebarItemsClient"
+import {isLoggedInAsAdmin, isLoggedInAsUser} from "@/utils"
 
 export default {
   name: "Vertical-Sidebar",
@@ -95,8 +96,14 @@ export default {
 
   methods: {},
   mounted() {
-    if (!isLoggedInAsAdmin()) {
+    if (isLoggedInAsUser()) {
       this.items = VerticalSidebarItemsUser
+    }
+    else if(isLoggedInAsAdmin()){
+      this.items = VerticalSidebarItems
+    }
+    else{
+      this.items = VerticalSidebarItemsClient
     }
   }
 }

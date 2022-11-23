@@ -57,7 +57,7 @@
               </v-row>
             </v-form>
           </v-container>
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading"
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" :footer-props="{'items-per-page-text':$t('general.per')}"
                         loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat>
@@ -79,10 +79,10 @@
                           <v-col cols="12" sm="12" md="12" class="pb-0">
                             <v-autocomplete :items="therapistItems" item-text="name" outlined :no-data-text="$t('general.no-data-text')"
                                             item-value="cognitoId" :label="$t('appointment.therapist-name')"
-                                            v-model="editedItem.therapistId" class="mt-0 pt-0"></v-autocomplete>
+                                            v-model="editedItemTherapistId" class="mt-0 pt-0"></v-autocomplete>
                           </v-col>
                           <v-col cols="12" sm="12" md="12" class="pb-0">
-                            <v-autocomplete :items="items" item-text="username" outlined :no-data-text="$t('general.no-data-text')"
+                            <v-autocomplete :items="users" item-text="username" outlined :no-data-text="$t('general.no-data-text')"
                                             item-value="cognitoId" :label="$t('appointment.user-name')"
                                             v-model="editedItem.userId" class="mt-0 pt-0"></v-autocomplete>
                           </v-col>
@@ -158,6 +158,7 @@ export default {
       loading: false,
       sending: false,
       items: [],
+      users: [],
       payItems: [
         {label: this.$t('appointment.paid'), paid: 1},
         {label: this.$t('appointment.no-paid'), paid: 0}
@@ -189,6 +190,7 @@ export default {
       ],
       datas: [],
       editedIndex: -1,
+      editedItemTherapistId: "",
       editedItem: {
         therapistId: "",
         userId: "",
@@ -240,7 +242,12 @@ export default {
         }
       }
 
-    }
+    },
+    editedItemTherapistId(val){
+      if(val != ""){
+        this.getUserData(val)
+      }
+    },
   },
 
   created() {
@@ -280,15 +287,15 @@ export default {
     },
     initialize() {
       this.getData()
-      this.getUserData()
+      this.getUserData(this.loginInfo.cognitoId)
       this.getTherapistData()
     },
-    handle(error) {
+    handle(error, isConfirm = false) {
       console.log(error)
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        //this.$dialog.notify.error(error.response.data.msg)
+        if(isConfirm) this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -343,7 +350,6 @@ export default {
       this.datas = []
       this.events = []
       getAppointmentList(data).then((response) => {
-
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
 
@@ -389,19 +395,22 @@ export default {
         this.handle(error)
       })
     },
-    getUserData() {
+    getUserData(cognitoId) {
       let data = {
-        cognitoId: this.loginInfo.cognitoId,
+        cognitoId: cognitoId,
       }
+      this.users = []
       getUserList(data).then((response) => {
-        if (response.data.msg == "success") {
+        if (!response.data.error) {
           let users = response.data.data.userList
-          this.items = []
           for (let i = 0; i < users.length; i++) {
             let tmp = {}
             tmp['username'] = users[i]['firstName'] + ' ' + users[i]['lastName']
             tmp['cognitoId'] = users[i]['cognitoId']
-            this.items.push(tmp)
+            if(cognitoId == this.loginInfo.cognitoId){
+              this.items.push(tmp)
+            }
+            this.users.push(tmp)
           }
         }
       }).catch(error => {
@@ -420,13 +429,15 @@ export default {
       })
       if(res){
         deleteAppointment(item.id).then((response) => {
-          if (response.data.msg == "success") {
+          if (!response.data.error) {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
           }
+          else{
+            this.$dialog.notify.error(response.data.msg)
+          }
         }).catch(error => {
-          console.log(error)
-          this.$dialog.notify.error(error.response.data.message)
+          this.handle(error, true)
         })
       }
     },
@@ -434,6 +445,7 @@ export default {
       this.dialog = false
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedItemTherapistId = ""
         this.editedIndex = -1
       }, 300)
     },
@@ -443,18 +455,18 @@ export default {
         Object.assign(this.datas[this.editedIndex], this.editedItem)
         this.sending = false
       } else {
-        if (this.editedItem.therapistId == "" || this.editedItem.userId == "" || this.editedItem.start_time == null) {
+        if (this.editedItemTherapistId == "" || this.editedItem.userId == "" || this.editedItem.start_time == null) {
           this.sending = false
           return
         }
         let data = {
-          cognitoId: this.editedItem.therapistId,
+          cognitoId: this.editedItemTherapistId,
           userId: this.editedItem.userId,
           datetime: Date.parse(this.editedItem.start_time)
         }
         createAppointment(data).then((response) => {
           this.sending = false
-          if (response.data.msg == "success") {
+          if (!response.data.error) {
             this.close()
             this.getData()
           }
@@ -464,7 +476,7 @@ export default {
         }).catch(error => {
           this.sending = false
           this.close()
-          this.handle(error)
+          this.handle(error, true)
         })
       }
     },

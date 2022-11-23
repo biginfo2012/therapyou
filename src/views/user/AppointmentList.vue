@@ -58,7 +58,7 @@
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item key="table">
-              <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading"
+              <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" :footer-props="{'items-per-page-text':$t('general.per')}"
                             loading-text="Loading...">
                 <template v-slot:top>
                   <v-toolbar flat>
@@ -112,9 +112,11 @@
                   <v-icon v-if="item.decreasedCredits == 1" small>mdi-check</v-icon>
                 </template>
                 <template v-slot:item.meeting="{ item }">
-                  <a v-if="item.status == 1" class="mr-2" target="_blank"
-                     :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">
-                    {{$t('appointment.join')}}</a>
+                  <v-btn v-if="item.status == 1" class="mr-2" @click="decreaseCredits(item.meetingId, item.id, item.userId, item.userEmail)">
+                    {{$t('appointment.join')}}</v-btn>
+<!--                  <a v-if="item.status == 1" class="mr-2" target="_blank"-->
+<!--                     :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">-->
+<!--                    {{$t('appointment.join')}}</a>-->
                 </template>
                 <template v-slot:item.actions="{ item }">
 <!--                  <v-btn v-if="item.status == 1" color="blue darken-1" text @click="createMeetingLink(item)" :disabled="sending">{{$t('appointment.go-meeting')}}</v-btn>-->
@@ -144,7 +146,7 @@
 import {convertEToDate, convertToDate, dateFormatFit, getCurrentDate, getLoginInfo, getToken} from '@/utils'
 import {
   createAppointment,
-  createMeetingId,
+  createMeetingId, decreaseCredits,
   deleteAppointment,
   getAppointmentList,
   getUserList, singleAppointment
@@ -303,16 +305,42 @@ export default {
       }
       this.$refs.menu.save(this.date)
     },
+    decreaseCredits(meetingId, id, userId, userEmail){
+      this.decreaseUser(id, userId, userEmail)
+      let url = this.meetingUrl + 'a=' + id + '&t=' + this.token + '&id=' + meetingId + '&email=' + this.email
+      window.open(url, '_blank', 'noreferrer');
+    },
+    decreaseUser(id, userId, userEmail){
+      let data = {
+        cognitoId: userId,
+        userEmail: userEmail,
+        creditsToBeDecreased: 1,
+        firstMeeting: false,
+        meetingId: id
+      }
+      decreaseCredits(data).then((response) => {
+        if (!response.data.error) {
+          return true
+        }
+        else{
+          this.$dialog.notify.error(response.data.msg)
+          return false
+        }
+      }).catch(error => {
+        this.handle(error, true)
+        return false
+      })
+    },
     initialize() {
       this.getData()
       this.getUserData()
     },
-    handle(error) {
+    handle(error, isConfirm = false) {
       console.log(error)
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        //this.$dialog.notify.error(error.response.data.msg)
+        if(isConfirm) this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -371,11 +399,11 @@ export default {
           }
         }
       }
+      this.datas = []
+      this.events = []
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
-          this.datas = []
-          this.events = []
           for (let i = 0; i < appointmens.length; i++) {
             let tmp = {}
             let event = {}
@@ -387,6 +415,8 @@ export default {
             tmp['endTime'] = appointmens[i]['endTime']
             tmp['decreasedCredits'] = appointmens[i]['decreasedCredits']
             tmp['meetingLink'] = appointmens[i]['meetingLink']
+            tmp['userId'] = appointmens[i]['userId']
+            tmp['userEmail'] = appointmens[i]['email']
             tmp['meetingId'] = ""
             tmp['JoinToken'] = ""
             if(tmp['meetingLink'] != null){
@@ -489,9 +519,12 @@ export default {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
           }
+          else{
+            this.$dialog.notify.error(response.data.msg)
+          }
         }).catch(error => {
           console.log(error)
-          this.$dialog.notify.error(error.response.data.message)
+          this.handle(error, true)
         })
       }
     },
@@ -529,7 +562,7 @@ export default {
         }).catch(error => {
           this.sending = false
           this.close()
-          this.handle(error)
+          this.handle(error, true)
         })
       }
     },
@@ -545,5 +578,24 @@ export default {
 .mdi-exclamation{
   display: none !important;
 }
+.vuecal__time-cell{
+  //height: 60px !important;
+}
+.vuecal__event {cursor: pointer;}
 
+.vuecal__event-title {
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.vuecal__event-time {
+  font-size: 0.8em;
+}
+.vuecal__cell-events-count{
+  left: 59% !important;
+  top: auto !important;
+  height: 15px;
+  line-height: 15px;
+  font-size: 14px;
+}
 </style>

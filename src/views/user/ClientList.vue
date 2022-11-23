@@ -49,7 +49,7 @@
             </v-form>
 
           </v-container>
-          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading"
+          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading" :footer-props="{'items-per-page-text':$t('general.per')}"
                         :item-class="itemClass" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat>

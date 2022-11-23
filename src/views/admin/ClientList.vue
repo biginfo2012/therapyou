@@ -48,7 +48,7 @@
               </v-row>
             </v-form>
           </v-container>
-          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading"
+          <v-data-table :headers="headers" :items="listData" sort-by="calories" class="border" :loading="loading" :footer-props="{'items-per-page-text':$t('general.per')}"
                         :item-class="itemClass" loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat>
@@ -330,12 +330,12 @@ export default {
       this.getData()
       this.getTherapistData()
     },
-    handle(error) {
+    handle(error, isConfirm = false) {
       console.log(error)
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        //this.$dialog.notify.error(error.response.data.msg)
+        if(isConfirm) this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -365,7 +365,7 @@ export default {
           filters: filter
         }
       }
-
+      this.listData = []
       getUserList(data).then((response) => {
         if (response.data.msg == "success") {
           this.listData = response.data.data.userList
@@ -373,13 +373,7 @@ export default {
         this.loading = false
       }).catch(error => {
         this.loading = false
-        if (error.response.status == 401) {
-          this.$store.dispatch('tryAutoSignIn')
-        } else if (error.response.status == 500) {
-          if (error.response.data.msg == "No users found for this therapist") {
-            this.listData = []
-          }
-        }
+        this.handle(error)
       })
     },
     getTherapistData() {
@@ -389,7 +383,6 @@ export default {
       getTherapistList(data).then((response) => {
         if (response.data.msg == "success") {
           let therapists = response.data.data.therapistList
-          this.therapistData = []
           for (let i = 0; i < therapists.length; i++) {
             let tmp = {}
             tmp['name'] = therapists[i]['name']
@@ -427,8 +420,11 @@ export default {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
           }
+          else{
+            this.$dialog.notify.error(response.data.msg)
+          }
         }).catch(error => {
-          this.handle(error)
+          this.handle(error, true)
         })
       }
     },
@@ -469,9 +465,12 @@ export default {
               this.close()
               this.getData()
             }
+            else{
+              this.$dialog.notify.error(response.data.msg)
+            }
           }).catch(error => {
             this.sending = false
-            this.handle(error)
+            this.handle(error, true)
           })
         } else {
           dataEmail.Value = this.editedItem.email

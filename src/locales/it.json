@@ -12,7 +12,9 @@
     "change-password": "Cambio Password",
     "reply": "Rispondi",
     "no-data": "nessun risultato trovato",
-    "no-data-text": "Nessun risultato"
+    "no-data-text": "Nessun risultato",
+    "client" : "Pazienti",
+    "per": "Righe per pagina:"
   },
   "header": {
     "profile": "Profilo"

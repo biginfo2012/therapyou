@@ -1,7 +1,6 @@
-import {apiBaseUrl} from '@/constants/config'
 import axios from 'axios'
 import router from "@/router/router"
-import {AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY, AWS_REGION, AWS_BUCKET} from "@/constants/config"
+import {AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY, AWS_REGION, AWS_BUCKET, apiBaseUrl} from "@/constants/config"
 import store from '../store/store'
 
 const aws = require('aws-sdk')
@@ -56,6 +55,7 @@ export const deleteObjectByKey = key => {
 export const isLoggedIn = () => {
     let loginInfo = getLoginInfo()
     if (loginInfo) {
+        console.log(getLoginInfo())
         return true
     } else {
         return false
@@ -72,7 +72,15 @@ export const isLoggedInAsAdmin = () => {
 export const isLoggedInAsUser = () => {
     let loginInfo = getLoginInfo()
 
-    if (loginInfo.role != 2) {
+    if (loginInfo.role == 1) {
+        return true
+    }
+    return false
+}
+export const isLoggedInAsClient = () => {
+    let loginInfo = getLoginInfo()
+
+    if (loginInfo.role != 2 && loginInfo.role) {
         return true
     }
     return false
@@ -93,6 +101,7 @@ export const getLoginInfo = () => {
 }
 export const getToken = () => {
     let token = localStorage.getItem('token')
+    console.log(token)
     try {
         token = JSON.parse(token)
         if (token) {
@@ -108,17 +117,30 @@ export const getToken = () => {
 
 export const getLoggedUserInfo = (cognitoId) => {
     axios.get(apiBaseUrl + 'therapist/get?cognitoId=' + cognitoId).then((response) => {
-        let userData = response.data.data.therapist[0]
-        if (userData) {
-            localStorage.setItem('userData', JSON.stringify(userData))
-            if (userData.role == 2) {
-                router.push('/admin')
+        if(response.data.data.isClient){
+            let userData = response.data.data.user[0]
+            if (userData) {
+                userData.role = 3
+                localStorage.setItem('userData', JSON.stringify(userData))
+                router.push('/client')
             } else {
-                router.push('/user')
+                store.commit('setError', 'Unknown')
             }
-        } else {
-            store.commit('setError', 'Unknown')
         }
+        else{
+            let userData = response.data.data.therapist[0]
+            if (userData) {
+                localStorage.setItem('userData', JSON.stringify(userData))
+                if (userData.role == 2) {
+                    router.push('/admin')
+                } else {
+                    router.push('/user')
+                }
+            } else {
+                store.commit('setError', 'Unknown')
+            }
+        }
+
     }).catch(error => {
         console.error(error)
         store.commit('setError', 'Unknown')

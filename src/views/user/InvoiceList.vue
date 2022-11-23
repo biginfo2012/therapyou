@@ -6,7 +6,7 @@
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading..." :footer-props="{'items-per-page-text':$t('general.per')}">
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>{{ $t('invoice.my')}}</v-toolbar-title>
@@ -222,12 +222,12 @@ export default {
         docUrl.click()
       });
     },
-    handle(error) {
+    handle(error, isConfirm = false) {
       console.log(error)
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        //this.$dialog.notify.error(error.response.data.msg)
+        if(isConfirm) this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData() {
@@ -263,10 +263,10 @@ export default {
         limit: 500,
         filters: filter
       }
+      this.items = []
       getAppointmentList(data).then((response) => {
         if (response.data.msg == "success") {
           let appointmens = response.data.data.appointments
-          this.items = []
           for (let i = 0; i < appointmens.length; i++) {
             let tmp = {}
             tmp['id'] = appointmens[i]['id']
@@ -316,12 +316,16 @@ export default {
           invoiceUrl: item.invoiceUrl
         }
         deleteInvoice(data).then((response) => {
-          if (response.data.msg == "OK") {
+          if (!response.data.error) {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
+            this.getAppointmentData()
+          }
+          else{
+            this.$dialog.notify.error(response.data.msg)
           }
         }).catch(error => {
-          this.handle(error)
+          this.handle(error, true)
         })
       }
     },
@@ -354,14 +358,18 @@ export default {
           }
           uploadInvoice(data).then((response) => {
             this.sending = false
-            if (response.data.error == false) {
+            if (!response.data.error) {
               this.close()
               this.getData()
+              this.getAppointmentData()
+            }
+            else{
+              this.$dialog.notify.error(response.data.msg)
             }
           }).catch(error => {
             this.sending = false
             this.close()
-            this.handle(error)
+            this.handle(error, true)
           })
         }
       }

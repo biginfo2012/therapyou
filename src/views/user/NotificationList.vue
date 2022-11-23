@@ -6,7 +6,7 @@
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading...">
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading..." :footer-props="{'items-per-page-text':$t('general.per')}">
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>{{$t('noti.list')}}</v-toolbar-title>
@@ -140,12 +140,12 @@ export default {
     initialize() {
       this.getData()
     },
-    handle(error) {
+    handle(error, isConfirm = false) {
       console.log(error)
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        //this.$dialog.notify.error(error.response.data.msg)
+        if(isConfirm) this.$dialog.notify.error(error.response.data.msg)
       }
     },
     getData(){
@@ -157,8 +157,8 @@ export default {
       getNotiList(data).then((response) => {
         if (response.data.msg == "success") {
           this.datas = response.data.data.notifications
-          this.loading = false
         }
+        this.loading = false
       }).catch(error => {
         this.loading = false
         this.handle(error)
@@ -186,7 +186,7 @@ export default {
         }
       }).catch(error => {
         this.sending = false
-        this.handle(error)
+        this.handle(error, true)
       })
     },
     close() {

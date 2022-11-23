@@ -153,7 +153,7 @@
         <h4 class="font-weight-medium fs-18">{{ $t('header.profile') }}</h4>
         <div class="d-flex align-center my-4" @click="goPage" style="cursor: pointer">
           <img :src="userInfo.profileImage"
-               alt="Julia" class="rounded-circle" width="90" style="height: auto; max-height: 90px !important;"/>
+               class="rounded-circle" width="90" style="height: auto; max-height: 90px !important;"/>
           <div class="ml-4">
             <h4 class="font-weight-medium fs-18">{{ userInfo.name }}</h4>
             <span class="subtitle-2 font-weight-light">{{ userInfo.role }}</span>
@@ -167,9 +167,10 @@
 <script>
 // Utilities
 import {mapState, mapMutations, mapActions} from "vuex"
-import {getLoginInfo, setLocale, isLoggedInAsUser} from "@/utils"
+import {getLoginInfo, setLocale, isLoggedInAsUser, isLoggedInAsClient} from "@/utils"
 import {localeOptions} from "@/constants/config"
 import {getNotiList} from "@/api";
+import logoIcon from "@/assets/images/icons/logo-icon.png"
 
 export default {
   name: "VerticalHeader",
@@ -226,7 +227,9 @@ export default {
       return localeOptions[1].icon
     },
     goPage() {
-      this.$router.push('/profile')
+      if(!isLoggedInAsClient()){
+        this.$router.push('/profile')
+      }
     },
     goNoti() {
       this.$router.push('/user/notification/list')
@@ -262,9 +265,9 @@ export default {
   mounted() {
     let loginInfo = getLoginInfo()
     this.userInfo.id = loginInfo.id
-    this.userInfo.name = loginInfo.name
-    this.userInfo.role = loginInfo.role == 2 ? "Admin" : this.$t('appointment.therapist-name')
-    this.userInfo.profileImage = loginInfo.profileImage
+    this.userInfo.name = loginInfo.role != 3 ? loginInfo.name : (loginInfo.firstName + " " + loginInfo.lastName)
+    this.userInfo.role = loginInfo.role == 2 ? "Admin" : (loginInfo.role == 1 ? this.$t('appointment.therapist-name') : this.$t("general.client"))
+    this.userInfo.profileImage = loginInfo.role != 3 ? loginInfo.profileImage : logoIcon
     this.setLanguageInfo()
     this.showNoti = isLoggedInAsUser()
     if(this.showNoti){
