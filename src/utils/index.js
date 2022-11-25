@@ -80,7 +80,7 @@ export const isLoggedInAsUser = () => {
 export const isLoggedInAsClient = () => {
     let loginInfo = getLoginInfo()
 
-    if (loginInfo.role != 2 && loginInfo.role) {
+    if (loginInfo.role == 3 && loginInfo.role) {
         return true
     }
     return false

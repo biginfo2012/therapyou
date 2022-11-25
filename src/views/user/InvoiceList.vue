@@ -33,6 +33,7 @@
                             </v-col>
                             <v-col cols="12" sm="12" md="12" class="pb-0">
                               <v-file-input
+                                  v-model="filename"
                                   :label="$t('invoice.file')" outlined
                                   @change="uploadFile"></v-file-input>
                             </v-col>
@@ -116,6 +117,7 @@ export default {
   data: function () {
     return {
       menu: false,
+      filename: null,
       page: {
         title: this.$t('invoice.list'),
       },
@@ -358,6 +360,7 @@ export default {
           }
           uploadInvoice(data).then((response) => {
             this.sending = false
+            this.filename = null
             if (!response.data.error) {
               this.close()
               this.getData()
@@ -368,6 +371,7 @@ export default {
             }
           }).catch(error => {
             this.sending = false
+            this.filename = null
             this.close()
             this.handle(error, true)
           })

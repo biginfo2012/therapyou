@@ -141,7 +141,19 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon :disabled="item.testFileUrl == ''" small class="mr-2" @click="downloadFile(item)">mdi-cloud-download</v-icon>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon v-bind="attrs" v-on="on" :disabled="item.testFileUrl == ''" small class="mr-2" @click="downloadFile(item.testFileUrl)">mdi-download</v-icon>
+                </template>
+                <span>Test</span>
+              </v-tooltip>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon v-bind="attrs" v-on="on"  :disabled="item.informedConsentUrl == ''" small class="mr-2" @click="downloadFile(item.informedConsentUrl)">mdi-download-multiple</v-icon>
+                </template>
+                <span>{{ $t('client.informed-consent') }}</span>
+              </v-tooltip>
+
               <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
@@ -310,9 +322,9 @@ export default {
   },
 
   methods: {
-    downloadFile(item) {
+    downloadFile(url) {
       axios({
-        url: item.testFileUrl, // File URL Goes Here
+        url: url, // File URL Goes Here
         method: 'GET',
         responseType: 'blob',
       }).then((res) => {
@@ -320,7 +332,7 @@ export default {
 
         var docUrl = document.createElement('a')
         docUrl.href = FILE
-        let fileName = item.testFileUrl.split("/").pop()
+        let fileName = url.split("/").pop()
         docUrl.setAttribute('download', fileName)
         document.body.appendChild(docUrl)
         docUrl.click()
@@ -385,7 +397,7 @@ export default {
           let therapists = response.data.data.therapistList
           for (let i = 0; i < therapists.length; i++) {
             let tmp = {}
-            tmp['name'] = therapists[i]['name']
+            tmp['name'] = therapists[i]['name'] + ' ' + therapists[i]['surname']
             tmp['cognitoId'] = therapists[i]['cognitoId']
             this.therapistData.push(tmp)
           }

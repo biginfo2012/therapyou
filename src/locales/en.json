@@ -38,7 +38,8 @@
   },
   "message": {
     "delete-success": "Deleted Successfully!",
-    "save-success": "Saved Successfully!"
+    "save-success": "Saved Successfully!",
+    "therapist-error": "Pending duties. Impossible to cancel the Therapist."
   },
   "error-messages": {
     "password-required": "Password is required",
@@ -103,7 +104,8 @@
     "no-paid": "No Paid",
     "go-meeting": "Go Meeting",
     "meeting": "Meeting",
-    "join": "Join"
+    "join": "Join",
+    "sign": "Please, sign the informed consent on the Mobile APP before joining your first session"
   },
   "invoice": {
     "invoices": "Invoices",
@@ -130,7 +132,8 @@
     "phone": "Phone Number",
     "credits": "Credits",
     "address": "Address",
-    "delete-confirm": "Are you sure you want to delete this Client?"
+    "delete-confirm": "Are you sure you want to delete this Client?",
+    "informed-consent": "Informed Consent"
   },
   "therapist": {
     "therapists": "Therapists",

@@ -41,7 +41,7 @@
                             <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.name"
-                                  :rules="fieldRules"
+                                  :rules="nameRules"
                                   outlined required
                                   :label="$t('therapist.name')"
                               ></v-text-field>
@@ -49,7 +49,7 @@
                             <v-col cols="12" sm="12" md="4" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.surname"
-                                  :rules="fieldRules"
+                                  :rules="surnameRules"
                                   outlined required
                                   :label="$t('therapist.surname')"
                               ></v-text-field>
@@ -62,7 +62,7 @@
                                   :label="$t('therapist.suffix')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.specialization"
                                   :rules="fieldRules"
@@ -342,6 +342,12 @@ export default {
       phoneRules:[
         v => !!v || this.$t('error-messages.phone-required'),
       ],
+      nameRules:[
+        v => !!v || this.$t('error-messages.name-required'),
+      ],
+      surnameRules:[
+        v => !!v || this.$t('error-messages.surname-required'),
+      ],
       fieldRules:[
         v => !!v || this.$t('error-messages.field-required'),
       ],
@@ -384,7 +390,14 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        if(isConfirm) this.$dialog.notify.error(error.response.data.msg)
+        if(isConfirm) {
+          if(error.response.data.msg == "Error - Therapist has pending activity and cannot be deleted"){
+            this.$dialog.notify.error(this.$t('message.therapist-error'))
+          }
+          else{
+            this.$dialog.notify.error(error.response.data.msg)
+          }
+        }
       }
     },
     getData(){
@@ -434,7 +447,14 @@ export default {
             this.getData()
           }
           else{
-            this.$dialog.notify.error(response.data.msg)
+            console.log(response.data.msg)
+            if(response.data.msg == "Error - Therapist has pending activity and cannot be deleted"){
+              this.$dialog.notify.error(this.$t('message.therapist-error'))
+            }
+            else{
+              this.$dialog.notify.error(response.data.msg)
+            }
+
           }
         }).catch(error => {
           this.handle(error, true)
@@ -451,9 +471,10 @@ export default {
     },
 
     save() {
-      this.sending = true
+
       this.$refs.form.validate()
       if (this.$refs.form.validate(true)) {
+        this.sending = true
         if (this.editedIndex > -1) {
           let data = {
             cognitoId: this.editedItem.cognitoId,

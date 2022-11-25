@@ -143,8 +143,8 @@
             color="transparent"
             plain
             :ripple="false">
-          <v-avatar size="35">
-            <img :src="userInfo.profileImage" style="max-width: 35px !important;"/>
+          <v-avatar size="35" :style="{'background-image': 'url(' + userInfo.profileImage + ')'}" style="background-size: cover; background-position: center;">
+<!--            <img :src="userInfo.profileImage" style="max-width: 35px !important;"/>-->
           </v-avatar>
         </v-btn>
       </template>
@@ -152,8 +152,11 @@
       <v-list class="pa-8">
         <h4 class="font-weight-medium fs-18">{{ $t('header.profile') }}</h4>
         <div class="d-flex align-center my-4" @click="goPage" style="cursor: pointer">
-          <img :src="userInfo.profileImage"
-               class="rounded-circle" width="90" style="height: auto; max-height: 90px !important;"/>
+          <v-avatar size="90" :style="{'background-image': 'url(' + userInfo.profileImage + ')'}" style="background-size: cover; background-position: center;">
+            <!--            <img :src="userInfo.profileImage" style="max-width: 35px !important;"/>-->
+          </v-avatar>
+<!--          <img :src="userInfo.profileImage"-->
+<!--               class="rounded-circle" width="90" style="height: auto; max-height: 90px !important;"/>-->
           <div class="ml-4">
             <h4 class="font-weight-medium fs-18">{{ userInfo.name }}</h4>
             <span class="subtitle-2 font-weight-light">{{ userInfo.role }}</span>

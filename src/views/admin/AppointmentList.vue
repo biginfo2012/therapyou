@@ -58,7 +58,7 @@
             </v-form>
           </v-container>
           <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" :footer-props="{'items-per-page-text':$t('general.per')}"
-                        loading-text="Loading...">
+                        :item-class="itemClass"  loading-text="Loading...">
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>{{ $t('appointment.my') }}</v-toolbar-title>
@@ -255,6 +255,9 @@ export default {
   },
 
   methods: {
+    itemClass(item){
+      return item.credits == 0 ? 'yellow-background' : ''
+    },
     changeDateFilter(){
       if(this.date != null){
         if(this.date.length == 1){
@@ -363,6 +366,7 @@ export default {
             tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
             tmp['meetingLink'] = appointmens[i]['meetingLink']
             tmp['decreasedCredits'] = appointmens[i]['decreasedCredits']
+            tmp['credits'] = appointmens[i]['credits']
             event['start'] = convertEToDate(appointmens[i]['startTime'])
             event['end'] = convertEToDate(appointmens[i]['endTime'])
             event['title'] = appointmens[i]['name'] + ': ' + appointmens[i]['firstName'] + ' ' + appointmens[i]['lastName']
@@ -493,5 +497,8 @@ export default {
 <style>
 .mdi-exclamation{
   display: none !important;
+}
+.yellow-background {
+  background: yellow !important;
 }
 </style>

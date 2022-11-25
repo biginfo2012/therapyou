@@ -38,7 +38,8 @@
   },
   "message": {
     "delete-success": "Cancellazione riuscita!",
-    "save-success": "Salvataggio riuscito!"
+    "save-success": "Salvataggio riuscito!",
+    "therapist-error": "Vincoli presenti. Impossibile cancellare il Terapeuta."
   },
   "error-messages": {
     "password-required": "Password richiesta",
@@ -103,7 +104,8 @@
     "no-paid": "Non Pagato",
     "go-meeting": "Avvio Meeting",
     "meeting": "Meeting",
-    "join": "Connettiti"
+    "join": "Connettiti",
+    "sign": "Firma il consenso informato sull'APP Mobile prima di partecipare alla tua prima sessione"
   },
   "invoice": {
     "invoices": "Fatture",
@@ -130,7 +132,8 @@
     "phone": "Telefono",
     "credits": "Crediti",
     "address": "Indirizzo",
-    "delete-confirm": "Sicuro di voler eliminare questo Cliente?"
+    "delete-confirm": "Sicuro di voler eliminare questo Cliente?",
+    "informed-consent": "Consenso Informato"
   },
   "therapist": {
     "therapists": "Terapeuti",

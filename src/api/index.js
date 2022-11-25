@@ -90,3 +90,6 @@ export function replyMessage(data) {
 export function decreaseCredits(data) {
     return axios.post(apiBaseUrl + 'user/decrease-credits', data, config)
 }
+export function checkConsent(data) {
+    return axios.post(apiBaseUrl + 'user/check-informed-consent', data, config)
+}

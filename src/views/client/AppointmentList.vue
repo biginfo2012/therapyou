@@ -36,7 +36,7 @@
 <script>
 
 import {convertToDate, dateFormatFit, getLoginInfo, getToken} from '@/utils'
-import {decreaseCredits, getAppointmentList, getTherapist, singleAppointment} from "@/api"
+import {checkConsent, getAppointmentList, getTherapist, singleAppointment} from "@/api"
 import {meetingUrl} from "@/constants/config"
 export default {
   name: "AppointmentList",
@@ -204,7 +204,7 @@ export default {
             tmp['meetingLink'] = appointmens[i]['details']['meetingLink']
             tmp['meetingId'] = ""
             tmp['JoinToken'] = ""
-            if(tmp['meetingLink'] != null){
+            if(tmp['meetingLink'] != null && tmp['meetingLink'] != ""){
               let meetingLink = JSON.parse(tmp['meetingLink'])
               tmp['meetingId'] = meetingLink.Meeting.MeetingId
               tmp['JoinToken'] = meetingLink.Attendees[0].JoinToken
@@ -263,17 +263,34 @@ export default {
       })
     },
     decreaseCredits(meetingId, id){
-      let url = this.meetingUrl + 'a=' + id + '&t=' + this.token + '&id=' + meetingId + '&email=' + this.email
-      window.open(url, '_blank', 'noreferrer');
-    },
-    decreaseUser(meetingId){
       let data = {
         cognitoId: this.loginInfo.cognitoId,
-        creditsToBeDecreased: 1,
-        firstMeeting: false,
-        meetingId: meetingId
       }
-      decreaseCredits(data).then((response) => {
+      checkConsent(data).then((response) => {
+        console.log(!response.data.error)
+        if (!response.data.error) {
+          if(response.data.data.informedConsentApproval == 1){
+            let url = this.meetingUrl + 'a=' + id + '&t=' + this.token + '&id=' + meetingId + '&email=' + this.email
+            window.open(url, '_blank', 'noreferrer')
+          }
+          else{
+            this.$dialog.notify.error(this.$t('appointment.sign'))
+          }
+        }
+        else{
+          this.$dialog.notify.error(response.data.msg)
+        }
+      }).catch(error => {
+        this.handle(error, true)
+        return false
+      })
+    },
+    checkConsent(){
+      let data = {
+        cognitoId: this.loginInfo.cognitoId,
+      }
+      checkConsent(data).then((response) => {
+        console.log(!response.data.error)
         if (!response.data.error) {
           return true
         }
@@ -297,5 +314,8 @@ export default {
 <style>
 .mdi-exclamation{
   display: none !important;
+}
+.yellow-background {
+  background: yellow !important;
 }
 </style>

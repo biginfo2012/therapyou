@@ -59,7 +59,7 @@
           <v-tabs-items v-model="tab">
             <v-tab-item key="table">
               <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" :footer-props="{'items-per-page-text':$t('general.per')}"
-                            loading-text="Loading...">
+                            :item-class="itemClass" loading-text="Loading...">
                 <template v-slot:top>
                   <v-toolbar flat>
                     <v-toolbar-title>{{ $t('appointment.my') }}</v-toolbar-title>
@@ -275,6 +275,9 @@ export default {
   },
 
   methods: {
+    itemClass(item){
+      return item.credits == 0 ? 'yellow-background' : ''
+    },
     changeDateFilter(){
       if(this.date != null){
         if(this.date.length == 1){
@@ -419,7 +422,8 @@ export default {
             tmp['userEmail'] = appointmens[i]['email']
             tmp['meetingId'] = ""
             tmp['JoinToken'] = ""
-            if(tmp['meetingLink'] != null){
+            tmp['credits'] = appointmens[i]['credits']
+            if(tmp['meetingLink'] != null && tmp['meetingLink'] != ""){
               let meetingLink = JSON.parse(tmp['meetingLink'])
               tmp['meetingId'] = meetingLink.Meeting.MeetingId
               tmp['JoinToken'] = meetingLink.Attendees[0].JoinToken
@@ -597,5 +601,8 @@ export default {
   height: 15px;
   line-height: 15px;
   font-size: 14px;
+}
+.yellow-background {
+  background: yellow !important;
 }
 </style>
