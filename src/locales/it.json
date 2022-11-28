@@ -105,7 +105,8 @@
     "go-meeting": "Avvio Meeting",
     "meeting": "Meeting",
     "join": "Connettiti",
-    "sign": "Firma il consenso informato sull'APP Mobile prima di partecipare alla tua prima sessione"
+    "sign": "Firma il consenso informato sull'APP Mobile prima di partecipare alla tua prima sessione",
+    "create-error": "Errore! Un altro appuntamento è in corso per questo orario. Cambia orario"
   },
   "invoice": {
     "invoices": "Fatture",

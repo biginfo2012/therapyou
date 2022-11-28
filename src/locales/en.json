@@ -105,7 +105,8 @@
     "go-meeting": "Go Meeting",
     "meeting": "Meeting",
     "join": "Join",
-    "sign": "Please, sign the informed consent on the Mobile APP before joining your first session"
+    "sign": "Please, sign the informed consent on the Mobile APP before joining your first session",
+    "create-error": "Error! Too early to book and appointment. Please change time"
   },
   "invoice": {
     "invoices": "Invoices",

@@ -561,7 +561,12 @@ export default {
             this.getData()
           }
           else{
-            this.$dialog.notify.error(response.data.msg)
+            if(response.data.msg == "Error! Too early to book and appointment. Please change time"){
+              this.$dialog.notify.error(this.$t('appointment.create-error'))
+            }
+            else{
+              this.$dialog.notify.error(response.data.msg)
+            }
           }
         }).catch(error => {
           this.sending = false
