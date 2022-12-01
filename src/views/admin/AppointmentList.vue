@@ -256,7 +256,9 @@ export default {
 
   methods: {
     itemClass(item){
-      return item.credits == 0 ? 'yellow-background' : ''
+      let now = new Date()
+      let beforeStart = new Date(parseInt(item.startTime, 10))
+      return item.credits == 0 && now < beforeStart && item.decreasedCredits == 0 ? 'yellow-background' : ''
     },
     changeDateFilter(){
       if(this.date != null){

@@ -196,12 +196,12 @@ export default {
             let tmp = {}
             tmp['id'] = appointmens[i]['id']
             tmp['therapistname'] = appointmens[i]['therapist']['fullname']
-            tmp['start_time'] = convertToDate(appointmens[i]['details']['startTime'])
-            tmp['end_time'] = convertToDate(appointmens[i]['details']['endTime'])
-            tmp['startTime'] = appointmens[i]['details']['startTime']
-            tmp['endTime'] = appointmens[i]['details']['endTime']
-            tmp['decreasedCredits'] = appointmens[i]['details']['decreasedCredits']
-            tmp['meetingLink'] = appointmens[i]['details']['meetingLink']
+            tmp['start_time'] = convertToDate(appointmens[i]['startTime'])
+            tmp['end_time'] = convertToDate(appointmens[i]['endTime'])
+            tmp['startTime'] = appointmens[i]['startTime']
+            tmp['endTime'] = appointmens[i]['endTime']
+            tmp['decreasedCredits'] = appointmens[i]['decreasedCredits']
+            tmp['meetingLink'] = appointmens[i]['meetingLink']
             tmp['meetingId'] = ""
             tmp['JoinToken'] = ""
             if(tmp['meetingLink'] != null && tmp['meetingLink'] != ""){
@@ -211,8 +211,8 @@ export default {
             }
 
             let now = new Date()
-            let beforeStart = new Date(parseInt(appointmens[i]['details']['startTime'], 10) - 300000)
-            let endTime = new Date(parseInt(appointmens[i]['details']['endTime'], 10))
+            let beforeStart = new Date(parseInt(appointmens[i]['startTime'], 10) - 300000)
+            let endTime = new Date(parseInt(appointmens[i]['endTime'], 10))
             if(now>endTime){
               tmp['status'] = 2
             }
