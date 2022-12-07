@@ -106,7 +106,8 @@
     "meeting": "Meeting",
     "join": "Join",
     "sign": "Please, sign the informed consent on the Mobile APP before joining your first session",
-    "create-error": "Error! Too early to book and appointment. Please change time"
+    "create-error": "Error! Appointments collide. Please change time",
+    "create-early-error": "Error! Too early to book and appointment. Please change time"
   },
   "invoice": {
     "invoices": "Invoices",
@@ -153,7 +154,8 @@
     "desc": "Description",
     "note": "Note",
     "area-exp": "Areas Of Expertise",
-    "delete-confirm": "Are you sure you want to delete this Therapist?"
+    "delete-confirm": "Are you sure you want to delete this Therapist?",
+    "error-admin": "Error - Admin cannot delete himself"
   },
   "profile": {
     "profile": "Profile",

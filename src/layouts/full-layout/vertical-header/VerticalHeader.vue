@@ -247,8 +247,14 @@ export default {
       }
       getNotiList(data).then((response) => {
         if (response.data.msg == "success") {
-          this.notifications = response.data.data.notifications
-          this.notiCnt = this.notifications.length
+          let notifications_res = response.data.data.notifications
+          this.notiCnt = notifications_res.length
+          if(this.notiCnt > 5){
+            this.notifications = notifications_res.slice(0,5)
+          }
+          else{
+            this.notifications = notifications_res
+          }
         }
       }).catch(error => {
         console.log(error)

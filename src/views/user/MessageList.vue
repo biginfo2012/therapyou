@@ -7,8 +7,8 @@
 
             <!---/Left chat list -->
             <v-navigation-drawer left v-model="drawer" class="flex-shrink-0">
-              <div class="px-3 border-bottom"><v-text-field placeholder="Search contact" hide-details outlined class="my-2" v-model="handleSearchInput"></v-text-field></div>
-              <v-list nav class="hightauto" >
+              <div class="px-3 border-bottom" style="visibility: visible"><v-text-field placeholder="Search contact" hide-details outlined class="my-2" v-model="handleSearchInput"></v-text-field></div>
+              <v-list nav class="hightauto" style="visibility: visible">
                 <v-list-item v-for="(conversation, i) in filteredList" :key="i" @click="(e) => openMessages(conversation, e)" :class="isActive ? 'active':'s'">
                   <v-avatar size="42" class="mr-3"><img src="@/assets/images/icons/logo-icon.png"/></v-avatar>
                   <v-list-item-content>

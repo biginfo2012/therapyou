@@ -394,6 +394,10 @@ export default {
           if(error.response.data.msg == "Error - Therapist has pending activity and cannot be deleted"){
             this.$dialog.notify.error(this.$t('message.therapist-error'))
           }
+          else if(error.response.data.msg == "Error - Admin cannot delete himself"){
+            console.log("ddd")
+            this.$dialog.notify.error(this.$t('therapist.error-admin'))
+          }
           else{
             this.$dialog.notify.error(error.response.data.msg)
           }
@@ -450,6 +454,10 @@ export default {
             console.log(response.data.msg)
             if(response.data.msg == "Error - Therapist has pending activity and cannot be deleted"){
               this.$dialog.notify.error(this.$t('message.therapist-error'))
+            }
+            else if(response.data.msg == "Error - Admin cannot delete himself"){
+              console.log("ddd")
+              this.$dialog.notify.error(this.$t('therapist.error-admin'))
             }
             else{
               this.$dialog.notify.error(response.data.msg)

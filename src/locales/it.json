@@ -106,7 +106,8 @@
     "meeting": "Meeting",
     "join": "Connettiti",
     "sign": "Firma il consenso informato sull'APP Mobile prima di partecipare alla tua prima sessione",
-    "create-error": "Errore! Un altro appuntamento è in corso per questo orario. Cambia orario"
+    "create-error": "Errore! Gli appuntamenti collidono. Cambia orario",
+    "create-early-error": "Errore! Troppo presto per prenotare l'appuntamento. Cambia orario"
   },
   "invoice": {
     "invoices": "Fatture",
@@ -153,7 +154,8 @@
     "desc": "Descrizione",
     "note": "Note",
     "area-exp": "Aree Di Competenza",
-    "delete-confirm": "Sicuro di voler eliminare questo Terapeuta?"
+    "delete-confirm": "Sicuro di voler eliminare questo Terapeuta?",
+    "error-admin": "Errore - L' Admin non può cancellare sè stesso"
   },
   "profile": {
     "profile": "Profilo",

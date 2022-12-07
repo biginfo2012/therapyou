@@ -112,7 +112,7 @@
                   <v-icon v-if="item.decreasedCredits == 1" small>mdi-check</v-icon>
                 </template>
                 <template v-slot:item.meeting="{ item }">
-                  <v-btn v-if="item.status == 1" class="mr-2" @click="decreaseCredits(item.meetingId, item.id, item.userId, item.userEmail)">
+                  <v-btn v-if="item.status == 1" class="mr-2" @click="decreaseCredits(item)">
                     {{$t('appointment.join')}}</v-btn>
 <!--                  <a v-if="item.status == 1" class="mr-2" target="_blank"-->
 <!--                     :href="meetingUrl + 'a=' + item.id + '&t=' + token + '&id=' + item.meetingId + '&email=' + email">-->
@@ -310,18 +310,18 @@ export default {
       }
       this.$refs.menu.save(this.date)
     },
-    decreaseCredits(meetingId, id, userId, userEmail){
-      this.decreaseUser(id, userId, userEmail)
-      let url = this.meetingUrl + 'a=' + id + '&t=' + this.token + '&id=' + meetingId + '&email=' + this.email
+    decreaseCredits(item){
+      this.decreaseUser(item)
+      let url = this.meetingUrl + 'a=' + item.id + '&t=' + this.token + '&id=' + item.meetingId + '&email=' + this.email
       window.open(url, '_blank', 'noreferrer');
     },
-    decreaseUser(id, userId, userEmail){
+    decreaseUser(item){
       let data = {
-        cognitoId: userId,
-        userEmail: userEmail,
+        cognitoId: item.userId,
+        userEmail: item.userEmail,
         creditsToBeDecreased: 1,
-        firstMeeting: false,
-        meetingId: id
+        firstMeeting: item.free == 1 ? true : false,
+        meetingId: item.id
       }
       decreaseCredits(data).then((response) => {
         if (!response.data.error) {
@@ -422,6 +422,7 @@ export default {
             tmp['meetingLink'] = appointmens[i]['meetingLink']
             tmp['userId'] = appointmens[i]['userId']
             tmp['userEmail'] = appointmens[i]['email']
+            tmp['free'] = appointmens[i]['free']
             tmp['meetingId'] = ""
             tmp['JoinToken'] = ""
             tmp['credits'] = appointmens[i]['credits']
@@ -563,8 +564,11 @@ export default {
             this.getData()
           }
           else{
-            if(response.data.msg == "Error! Too early to book and appointment. Please change time"){
+            if(response.data.msg == "Error! Appointments collide. Please change time"){
               this.$dialog.notify.error(this.$t('appointment.create-error'))
+            }
+            else if(response.data.msg == "Error! Too early to book and appointment. Please change time"){
+              this.$dialog.notify.error(this.$t('appointment.create-early-error'))
             }
             else{
               this.$dialog.notify.error(response.data.msg)
