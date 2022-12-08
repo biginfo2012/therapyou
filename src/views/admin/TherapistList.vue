@@ -6,15 +6,16 @@
         <v-list-item-subtitle class="text-wrap">
         </v-list-item-subtitle>
         <div class="mt-4">
-          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading" loading-text="Loading..." :footer-props="{'items-per-page-text':$t('general.per')}">
+          <v-data-table :headers="headers" :items="datas" sort-by="calories" class="border" :loading="loading"
+                        loading-text="Loading..." :footer-props="{'items-per-page-text':$t('general.per')}">
             <template v-slot:top>
               <v-toolbar flat>
-                <v-toolbar-title>{{$t('therapist.list')}}</v-toolbar-title>
+                <v-toolbar-title>{{ $t('therapist.list') }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" persistent max-width="1200px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="success" dark class="mb-2" v-on="on">{{$t('therapist.create')}}</v-btn>
+                    <v-btn color="success" dark class="mb-2" v-on="on">{{ $t('therapist.create') }}</v-btn>
                   </template>
                   <v-card>
                     <img src="@/assets/images/icons/logo-icon.gif" width="80" v-show="sending"
@@ -29,7 +30,7 @@
                             {{ errmsg }}
                           </v-alert>
                           <v-row>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex === -1">
+                            <v-col cols="12" sm="12" md="3" class="pb-0" v-if="editedIndex === -1">
                               <v-text-field
                                   v-model="editedItem.email"
                                   :rules="emailRules"
@@ -38,7 +39,7 @@
                                   :disabled="editedIndex === -1 ? false : true"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="3" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.name"
                                   :rules="nameRules"
@@ -46,7 +47,7 @@
                                   :label="$t('therapist.name')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0">
+                            <v-col cols="12" sm="12" md="3" class="pb-0">
                               <v-text-field
                                   v-model="editedItem.surname"
                                   :rules="surnameRules"
@@ -54,7 +55,16 @@
                                   :label="$t('therapist.surname')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="3" class="pb-0" v-if="editedIndex === -1">
+                              <v-text-field
+                                  v-model="editedItem.phoneNumber"
+                                  :rules="phoneRules"
+                                  required outlined
+                                  :label="$t('client.phone')"
+                                  :disabled="editedIndex === -1 ? false : true"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3" class="pb-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.suffix"
                                   :rules="fieldRules"
@@ -62,7 +72,7 @@
                                   :label="$t('therapist.suffix')"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="3" class="pb-0" v-if="editedIndex !== -1">
                               <v-text-field
                                   v-model="editedItem.specialization"
                                   :rules="fieldRules"
@@ -86,16 +96,17 @@
                                   :label="$t('therapist.register-region')"
                               ></v-text-field>
                             </v-col>
-<!--                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">-->
-<!--                              <v-text-field-->
-<!--                                  v-model="editedItem.registrationDate"-->
-<!--                                  type="date"-->
-<!--                                  hide-details outlined-->
-<!--                                  background-color="transparent"-->
-<!--                                  :label="$t('therapist.register-date')"-->
-<!--                              ></v-text-field>-->
-<!--                            </v-col>-->
-                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="4" class="pb-0 pt-0" v-if="editedIndex !== -1">
+                              <v-text-field
+                                  v-model="editedItem.registrationDate"
+                                  hide-details outlined
+                                  disabled
+                                  background-color="transparent"
+                                  :label="$t('therapist.register-date')"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center"
+                                   v-if="editedIndex !== -1">
                               <img :src="editedItem.profileImage" style="width: auto; height: 59px; max-width: 100%;"/>
                             </v-col>
                             <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
@@ -103,7 +114,8 @@
                                   :label="$t('therapist.profile-image')" outlined
                                   @change="uploadProfileFile"></v-file-input>
                             </v-col>
-                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center" v-if="editedIndex !== -1">
+                            <v-col cols="12" sm="12" md="1" class="pb-0 pt-0 pr-0 text-center"
+                                   v-if="editedIndex !== -1">
                               <img :src="editedItem.bannerImage" style="width: auto; height: 59px; max-width: 100%;"/>
                             </v-col>
                             <v-col cols="12" sm="12" md="3" class="pb-0 pt-0" v-if="editedIndex !== -1">
@@ -145,7 +157,7 @@
                                   <span
                                       v-if="index === 5"
                                       class="grey--text caption"
-                                  >(+{{ editedItem.areasOfExpertise.length > 5 ? editedItem.areasOfExpertise.length - 5 : 0}} others)</span>
+                                  >(+{{ editedItem.areasOfExpertise.length > 5 ? editedItem.areasOfExpertise.length - 5 : 0 }} others)</span>
                                 </template>
                               </v-select>
                             </v-col>
@@ -171,8 +183,14 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{ $t('general.cancel') }}</v-btn>
-                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{ $t('general.save') }}</v-btn>
+                      <v-btn color="blue darken-1" text @click="close" :disabled="sending">{{
+                          $t('general.cancel')
+                        }}
+                      </v-btn>
+                      <v-btn color="blue darken-1" text @click="save" :disabled="sending">{{
+                          $t('general.save')
+                        }}
+                      </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -281,7 +299,7 @@ export default {
           sortable: true,
           value: "registrationDate"
         },
-        { text: this.$t('general.actions'), value: "actions", sortable: false }
+        {text: this.$t('general.actions'), value: "actions", sortable: false}
       ],
       datas: [],
       editedIndex: -1,
@@ -339,16 +357,16 @@ export default {
         (v) => /^(?=.*[A-Z])/.test(v) || this.$t('error-messages.password-upper'),
         (v) => /^(?=.*[!@#$%^&*"])/.test(v) || this.$t('error-messages.password-special'),
       ],
-      phoneRules:[
+      phoneRules: [
         v => !!v || this.$t('error-messages.phone-required'),
       ],
-      nameRules:[
+      nameRules: [
         v => !!v || this.$t('error-messages.name-required'),
       ],
-      surnameRules:[
+      surnameRules: [
         v => !!v || this.$t('error-messages.surname-required'),
       ],
-      fieldRules:[
+      fieldRules: [
         v => !!v || this.$t('error-messages.field-required'),
       ],
       loginInfo: getLoginInfo()
@@ -364,7 +382,7 @@ export default {
     dialog(val) {
       val || this.close()
     },
-    errcode () {
+    errcode() {
       console.log('watched error code: ' + this.errcode)
       if (this.errcode !== '') {
         if (this.errcode === '"UsernameExistsException"') {
@@ -390,21 +408,19 @@ export default {
       if (error.response.status == 401) {
         this.$store.dispatch('tryAutoSignIn')
       } else {
-        if(isConfirm) {
-          if(error.response.data.msg == "Error - Therapist has pending activity and cannot be deleted"){
+        if (isConfirm) {
+          if (error.response.data.msg == "Error - Therapist has pending activity and cannot be deleted") {
             this.$dialog.notify.error(this.$t('message.therapist-error'))
-          }
-          else if(error.response.data.msg == "Error - Admin cannot delete himself"){
+          } else if (error.response.data.msg == "Error - Admin cannot delete himself") {
             console.log("ddd")
             this.$dialog.notify.error(this.$t('therapist.error-admin'))
-          }
-          else{
+          } else {
             this.$dialog.notify.error(error.response.data.msg)
           }
         }
       }
     },
-    getData(){
+    getData() {
       this.loading = true
       let data = {
         cognitoId: this.loginInfo.cognitoId,
@@ -413,7 +429,7 @@ export default {
       getTherapistList(data).then((response) => {
         if (response.data.msg == "success") {
           let therapists = response.data.data.therapistList
-          for (let i = 0; i < therapists.length; i++){
+          for (let i = 0; i < therapists.length; i++) {
             therapists[i]['registrationDate'] = dateFormatFit(therapists[i]['registrationDate'].substring(0, 10))
             therapists[i]['areasOfExpertise'] = JSON.parse(therapists[i]['areasOfExpertise'])
           }
@@ -440,7 +456,7 @@ export default {
         },
         persistent: false
       })
-      if(res){
+      if (res) {
         let data = {
           therapistToDelete: item.cognitoId,
           adminId: this.loginInfo.cognitoId
@@ -449,17 +465,14 @@ export default {
           if (response.data.msg == "success") {
             this.$dialog.notify.success(this.$t('message.delete-success'))
             this.getData()
-          }
-          else{
+          } else {
             console.log(response.data.msg)
-            if(response.data.msg == "Error - Therapist has pending activity and cannot be deleted"){
+            if (response.data.msg == "Error - Therapist has pending activity and cannot be deleted") {
               this.$dialog.notify.error(this.$t('message.therapist-error'))
-            }
-            else if(response.data.msg == "Error - Admin cannot delete himself"){
+            } else if (response.data.msg == "Error - Admin cannot delete himself") {
               console.log("ddd")
               this.$dialog.notify.error(this.$t('therapist.error-admin'))
-            }
-            else{
+            } else {
               this.$dialog.notify.error(response.data.msg)
             }
 
@@ -507,8 +520,7 @@ export default {
             if (response.data.msg == "success") {
               this.close()
               this.getData()
-            }
-            else{
+            } else {
               this.$dialog.notify.error(response.data.msg)
             }
           }).catch(error => {
@@ -520,6 +532,7 @@ export default {
             email: this.editedItem.email,
             name: this.editedItem.name,
             surname: this.editedItem.surname,
+            phone: this.editedItem.phoneNumber
           }
 
           signUpTherapist(data).then((response) => {
@@ -527,8 +540,7 @@ export default {
             if (response.data.msg == "success") {
               this.close()
               this.getData()
-            }
-            else{
+            } else {
               this.$dialog.notify.error(response.data.msg)
             }
           }).catch(error => {
@@ -540,8 +552,8 @@ export default {
       }
     },
 
-    async uploadBannerFile(file){
-      if(file != undefined){
+    async uploadBannerFile(file) {
+      if (file != undefined) {
         const result = await singleUpload(
             file,
             'invoices' // folder of the file, you should change it to your variable or a string
@@ -562,8 +574,8 @@ export default {
       }
 
     },
-    async uploadProfileFile(file){
-      if(file != undefined){
+    async uploadProfileFile(file) {
+      if (file != undefined) {
         const result = await singleUpload(
             file,
             'invoices' // folder of the file, you should change it to your variable or a string
@@ -590,7 +602,7 @@ export default {
 </script>
 
 <style>
-.mdi-exclamation{
+.mdi-exclamation {
   display: none !important;
 }
 </style>
