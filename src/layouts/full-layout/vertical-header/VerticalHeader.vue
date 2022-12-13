@@ -276,7 +276,7 @@ export default {
     this.userInfo.id = loginInfo.id
     this.userInfo.name = loginInfo.role != 3 ? loginInfo.name : (loginInfo.firstName + " " + loginInfo.lastName)
     this.userInfo.role = loginInfo.role == 2 ? "Admin" : (loginInfo.role == 1 ? this.$t('appointment.therapist-name') : this.$t("general.client"))
-    this.userInfo.profileImage = loginInfo.role != 3 ? loginInfo.profileImage : logoIcon
+    this.userInfo.profileImage = loginInfo.role == 3 ? logoIcon : (loginInfo.profileImage != null && loginInfo.profileImage != "" ? loginInfo.profileImage : logoIcon)
     this.setLanguageInfo()
     this.showNoti = isLoggedInAsUser()
     if(this.showNoti){

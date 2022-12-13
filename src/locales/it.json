@@ -53,7 +53,7 @@
     "password-upper": "La Password deve contenere almeno una maiuscola",
     "password-special": "La password deve contenere almeno un carattere speciale (!@#$%^&*\")",
     "code-required": "Codice richiesto",
-    "phone-required": "Telefono richiesto",
+    "phone-required": "Telefono richiesto con \"+\" e prefisso",
     "first-required": "Nome Paziente richiesto",
     "last-required": "Cognome Paziente richiesto",
     "name-required": "Nome richiesto",
