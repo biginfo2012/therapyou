@@ -104,6 +104,7 @@
     "no-paid": "No Paid",
     "go-meeting": "Go Meeting",
     "meeting": "Meeting",
+    "meeting-name": "Meeting Name",
     "join": "Join",
     "sign": "Please, sign the informed consent on the Mobile APP before joining your first session",
     "create-error": "Error! Appointments collide. Please change time",

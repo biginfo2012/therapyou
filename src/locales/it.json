@@ -104,6 +104,7 @@
     "no-paid": "Non Pagato",
     "go-meeting": "Avvio Meeting",
     "meeting": "Meeting",
+    "meeting-name": "Nome meeting",
     "join": "Connettiti",
     "sign": "Firma il consenso informato sull'APP Mobile prima di partecipare alla tua prima sessione",
     "create-error": "Errore! Gli appuntamenti collidono. Cambia orario",

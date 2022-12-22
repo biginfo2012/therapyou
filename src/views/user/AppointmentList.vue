@@ -209,6 +209,12 @@ export default {
           sortable: true,
           value: "meeting"
         },
+        {
+          text: this.$t('appointment.meeting-name'),
+          align: "start",
+          sortable: true,
+          value: "ExternalMeetingId"
+        },
         {text: this.$t('appointment.action'), value: "actions", sortable: false}
       ],
       datas: [],
@@ -425,10 +431,12 @@ export default {
             tmp['free'] = appointmens[i]['free']
             tmp['meetingId'] = ""
             tmp['JoinToken'] = ""
+            tmp['ExternalMeetingId'] = ""
             tmp['credits'] = appointmens[i]['credits']
             if(tmp['meetingLink'] != null && tmp['meetingLink'] != ""){
               let meetingLink = JSON.parse(tmp['meetingLink'])
               tmp['meetingId'] = meetingLink.Meeting.MeetingId
+              tmp['ExternalMeetingId'] = meetingLink.Meeting.ExternalMeetingId
               tmp['JoinToken'] = meetingLink.Attendees[0].JoinToken
             }
 
