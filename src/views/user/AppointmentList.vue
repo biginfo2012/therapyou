@@ -151,7 +151,7 @@ import {
   getAppointmentList,
   getUserList, singleAppointment
 } from "@/api"
-import {meetingUrl} from "@/constants/config"
+import {meetingUrlTherapist} from "@/constants/config"
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import DateTimePicker from "@/components/commonComponents/DateTimePicker";
@@ -236,7 +236,7 @@ export default {
       timer: null,
       email: localStorage.getItem('username'),
       token: getToken().idToken,
-      meetingUrl : meetingUrl
+      meetingUrl : meetingUrlTherapist
     }
   },
   computed: {
@@ -318,7 +318,8 @@ export default {
     },
     decreaseCredits(item){
       this.decreaseUser(item)
-      let url = this.meetingUrl + 'a=' + item.id + '&t=' + this.token + '&id=' + item.meetingId + '&email=' + this.email
+      //let url = this.meetingUrl + 'a=' + item.id + '&t=' + this.token + '&id=' + item.meetingId + '&email=' + this.email
+      let url = this.meetingUrl;
       window.open(url, '_blank', 'noreferrer');
     },
     decreaseUser(item){

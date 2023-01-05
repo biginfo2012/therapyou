@@ -215,6 +215,7 @@
                       v-model="password"
                       :rules="passwordRules"
                       :append-icon="hidepw ? 'mdi-eye' : 'mdi-eye-off'"
+                      @click:append="hidepw = !hidepw"
                       :type="hidepw ? 'password' : 'text'"
                       outlined required>
                   </v-text-field>

@@ -127,7 +127,7 @@
 
 import {getLoginInfo, convertToDate, convertEToDate, getCurrentDate, getToken, dateFormatFit} from '@/utils'
 import {createAppointment, deleteAppointment, getAppointmentList, getTherapistList, getUserList} from "@/api"
-import {meetingUrl} from "@/constants/config"
+import {meetingUrlTherapist} from "@/constants/config"
 import DateTimePicker from "@/components/commonComponents/DateTimePicker";
 
 export default {
@@ -210,7 +210,7 @@ export default {
       loginInfo: getLoginInfo(),
       email: localStorage.getItem('username'),
       token: getToken().idToken,
-      meetingUrl : meetingUrl
+      meetingUrl : meetingUrlTherapist
     }
   },
   computed: {
