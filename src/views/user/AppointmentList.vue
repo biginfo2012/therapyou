@@ -267,7 +267,6 @@ export default {
           }
         }
       }
-
     }
   },
 
@@ -277,7 +276,7 @@ export default {
   mounted() {
     this.timer = setInterval(() => {
       this.getSingleData()
-    }, 60 *1000)
+    }, 10 * 1000)
   },
 
   methods: {
@@ -447,7 +446,7 @@ export default {
             if(now>endTime){
               tmp['status'] = 2
             }
-            else if(now > beforeStart && tmp['meetingLink'] != null) {
+            else if(now > beforeStart && tmp['meetingLink'] != null && tmp['meetingLink'] != "") {
               tmp['status'] = 1
             }
             else {
@@ -488,7 +487,7 @@ export default {
     },
     getSingleData(){
       for (let i = 0; i < this.datas.length; i++) {
-        if(this.datas[i]['status'] != 2 && this.datas[i]['meetingLink'] == null){
+        if(this.datas[i]['status'] == 0){
           let now = new Date()
           let beforeStart = new Date(parseInt(this.datas[i]['startTime'], 10) - 300000)
           if(now > beforeStart) {
@@ -501,6 +500,9 @@ export default {
               // if (response.data.msg == "success") {
               //
               // }
+            }).catch(error => {
+              console.log(error)
+              this.handle(error)
             })
             singleAppointment(this.datas[i]['id']).then((response) => {
               if(response.data.msg == "success"){
@@ -508,6 +510,8 @@ export default {
                 if(this.datas[i]['meetingLink'] != null){
                   let meetingLink = JSON.parse(this.datas[i]['meetingLink'])
                   this.datas[i]['meetingId'] = meetingLink.Meeting.MeetingId
+                  this.datas[i]['ExternalMeetingId'] = meetingLink.Meeting.ExternalMeetingId
+                  this.datas[i]['JoinToken'] = meetingLink.Attendees[0].JoinToken
                   this.datas[i]['status'] = 1
                 }
               }

@@ -135,7 +135,7 @@ export default {
   mounted() {
     this.timer = setInterval(() => {
       this.getSingleData()
-    }, 60 *1000)
+    }, 10 * 1000)
   },
 
   methods: {
@@ -216,7 +216,7 @@ export default {
             if(now>endTime){
               tmp['status'] = 2
             }
-            else if(now > beforeStart && tmp['meetingLink'] != null) {
+            else if(now > beforeStart && tmp['meetingLink'] != null && tmp['meetingLink'] != "") {
               tmp['status'] = 1
             }
             else {
@@ -233,7 +233,7 @@ export default {
     },
     getSingleData(){
       for (let i = 0; i < this.datas.length; i++) {
-        if(this.datas[i]['status'] != 2 && this.datas[i]['meetingLink'] == null){
+        if(this.datas[i]['status'] == 0){
           let now = new Date()
           let beforeStart = new Date(parseInt(this.datas[i]['startTime'], 10) - 300000)
           if(now > beforeStart) {
@@ -246,6 +246,8 @@ export default {
                   this.datas[i]['status'] = 1
                 }
               }
+            }).catch(error => {
+              this.handle(error)
             })
           }
           else if(now < beforeStart) {
