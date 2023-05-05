@@ -136,6 +136,34 @@ export default {
       this.showerr = false
       this.showsent = false
       this.errcode = ''
+      // cognitoUser.forgotPassword({
+      //   onSuccess: function(data) {
+      //     // successfully initiated reset password request
+      //     console.log('CodeDeliveryData from forgotPassword: ' + data);
+      //   },
+      //   onFailure: function(err) {
+      //     alert(err.message || JSON.stringify(err));
+      //   },
+      //   //Optional automatic callback
+      //   inputVerificationCode: function(data) {
+      //     console.log('Code sent to: ' + data);
+      //     cognitoUser.confirmPassword(this.code, this.password, {
+      //       onSuccess: (data) => {
+      //         console.log('forgot password confirmed: ' + JSON.stringify(data))
+      //         this[l] = false
+      //         this.loader = null
+      //         router.push('/changed')
+      //       },
+      //       onFailure: (err) => {
+      //         var code = JSON.stringify(err.code)
+      //         console.log('forgot password confirm error: ' + code)
+      //         this.errcode = code
+      //         this[l] = false
+      //         this.loader = null
+      //       }
+      //     })
+      //   },
+      // });
 
       cognitoUser.confirmPassword(this.code, this.password, {
         onSuccess: (data) => {
@@ -145,6 +173,7 @@ export default {
           router.push('/changed')
         },
         onFailure: (err) => {
+          console.log(err)
           var code = JSON.stringify(err.code)
           console.log('forgot password confirm error: ' + code)
           this.errcode = code
@@ -152,6 +181,7 @@ export default {
           this.loader = null
         }
       })
+
     },
     onFind () {
       this.loader = 'loading'
